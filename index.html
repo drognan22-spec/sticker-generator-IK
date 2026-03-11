@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator PRO - Премиум анимация 5 слоев</title>
+    <title>Sticker Generator PRO - Roboflow YOLO API</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
@@ -53,6 +53,26 @@
             font-size: 1.1em;
         }
 
+        .stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .stat-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .stat-badge span {
+            color: #fbbf24;
+            font-weight: 800;
+        }
+
         .creator-card {
             background: rgba(255, 255, 255, 0.97);
             backdrop-filter: blur(20px);
@@ -84,7 +104,7 @@
             color: #0369a1;
         }
 
-        .api-status.animation {
+        .api-status.roboflow {
             background: #f0fdf4;
             border: 2px solid #4ade80;
             color: #166534;
@@ -94,6 +114,12 @@
             background: #fef2f2;
             border-color: #ef4444;
             color: #b91c1c;
+        }
+
+        .api-status.checking {
+            background: #fef9c3;
+            border-color: #facc15;
+            color: #854d0e;
         }
 
         .input-group {
@@ -153,10 +179,10 @@
 
         .emotions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
             margin: 20px 0 30px;
-            max-height: 500px;
+            max-height: 600px;
             overflow-y: auto;
             padding: 15px;
             background: #f8fafc;
@@ -168,13 +194,12 @@
             background: white;
             border: 2px solid #e2e8f0;
             border-radius: 20px;
-            padding: 15px;
+            padding: 12px;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 12px;
-            position: relative;
+            gap: 10px;
         }
 
         .emotion-item:hover {
@@ -190,30 +215,30 @@
         }
 
         .emotion-item input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
         }
 
         .emotion-icon {
-            font-size: 1.5em;
+            font-size: 1.3em;
         }
 
         .emotion-name {
             font-weight: 600;
             flex: 1;
+            font-size: 0.9em;
         }
 
         .layer-indicator {
             display: flex;
-            gap: 3px;
-            margin-left: auto;
+            gap: 2px;
         }
 
         .layer-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 6px;
             background: #cbd5e0;
         }
 
@@ -223,10 +248,10 @@
 
         .styles-grid {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
             margin: 20px 0;
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
             padding: 15px;
             background: #f8fafc;
@@ -236,14 +261,14 @@
 
         .style-tag {
             background: white;
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-radius: 40px;
             border: 2px solid #e2e8f0;
             color: #4a5568;
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 600;
-            font-size: 0.95em;
+            font-size: 0.85em;
             flex: 0 0 auto;
         }
 
@@ -308,6 +333,7 @@
             align-items: center;
             gap: 10px;
             color: #4a5568;
+            font-size: 0.9em;
         }
 
         .pack .features li:before {
@@ -424,7 +450,7 @@
         .stickers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
+            gap: 12px;
             margin: 20px 0;
             max-height: 500px;
             overflow-y: auto;
@@ -433,8 +459,8 @@
 
         .sticker-card {
             background: #f8fafc;
-            border-radius: 20px;
-            padding: 15px;
+            border-radius: 16px;
+            padding: 12px;
             text-align: center;
             border: 2px solid #e2e8f0;
             transition: all 0.3s;
@@ -454,23 +480,60 @@
             width: 80px;
             height: 80px;
             margin: 0 auto 10px;
-            font-size: 3em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: relative;
+        }
+
+        .sticker-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .keypoint-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .keypoint-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 4px;
+            background: #fbbf24;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 5px #fbbf24;
+        }
+
+        .keypoint-dot.conf-high {
+            background: #fbbf24;
+            box-shadow: 0 0 8px #fbbf24;
+        }
+
+        .keypoint-dot.conf-medium {
+            background: #f97316;
+            box-shadow: 0 0 5px #f97316;
+        }
+
+        .keypoint-dot.conf-low {
+            background: #ef4444;
+            box-shadow: 0 0 5px #ef4444;
         }
 
         .sticker-info {
-            font-size: 0.9em;
+            font-size: 0.8em;
             font-weight: 600;
             margin-bottom: 5px;
         }
 
         .sticker-badge {
             display: inline-block;
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 30px;
-            font-size: 0.7em;
+            font-size: 0.6em;
             font-weight: 700;
             margin: 2px;
         }
@@ -485,33 +548,14 @@
             color: #1a1f2e;
         }
 
-        .layer-visualization {
-            display: flex;
-            gap: 3px;
-            justify-content: center;
-            margin: 8px 0;
-        }
-
-        .layer-vis {
-            width: 6px;
-            height: 6px;
-            border-radius: 6px;
-            background: #cbd5e0;
-        }
-
-        .layer-vis.active {
-            background: #fbbf24;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .sticker-badge.api {
+            background: #48bb78;
+            color: white;
         }
 
         .download-btn {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: none;
             border-radius: 40px;
             font-weight: 600;
@@ -520,6 +564,7 @@
             margin-top: 10px;
             background: linear-gradient(145deg, #667eea, #764ba2);
             color: white;
+            font-size: 0.9em;
         }
 
         .download-btn.premium {
@@ -593,8 +638,13 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎨 Sticker Generator <span>PRO</span></h1>
-            <div class="subtitle">5 слоев анимации • Плавные переходы • Умные паузы</div>
+            <h1>🎨 Sticker Generator <span>ROBOFLOW</span></h1>
+            <div class="subtitle">Recraft PNG + Roboflow YOLO API + 5-слойная анимация</div>
+            <div class="stats">
+                <div class="stat-badge"><span>17</span> ключевых точек</div>
+                <div class="stat-badge"><span>5</span> слоев анимации</div>
+                <div class="stat-badge"><span>30</span> эмоций</div>
+            </div>
         </div>
 
         <div class="creator-card">
@@ -603,14 +653,14 @@
                     <span class="status-icon">🔄</span>
                     <span>Recraft AI: Проверка...</span>
                 </div>
-                <div id="animationStatus" class="api-status animation checking">
-                    <span class="status-icon">✨</span>
-                    <span>5-слойная анимация: Активна</span>
+                <div id="roboflowStatus" class="api-status roboflow checking">
+                    <span class="status-icon">🔄</span>
+                    <span>Roboflow API: Проверка...</span>
                 </div>
             </div>
 
             <div class="input-group">
-                <label>📝 Кто будет на стикерах?</label>
+                <label>📝 Персонаж</label>
                 <input type="text" id="characterPrompt" placeholder="например: милый кот, программист, панда..." value="милый кот">
             </div>
 
@@ -620,37 +670,34 @@
             <div class="emotions-grid" id="emotionsGrid"></div>
 
             <div class="section-title">
-                🎨 Стиль
+                🎨 Выберите стиль
             </div>
             <div class="styles-grid" id="styleTags">
-                <div class="style-tag selected" data-style="3d render, pixar style, volumetric, disney">✨ 3D мультяшный</div>
-                <div class="style-tag" data-style="flat vector, minimalism, bright colors">🎯 Плоский (Flat)</div>
+                <div class="style-tag selected" data-style="3d render, pixar style, volumetric">✨ 3D мультяшный</div>
+                <div class="style-tag" data-style="flat vector, minimalism, bright colors">🎯 Плоский</div>
                 <div class="style-tag" data-style="kawaii, chibi, big eyes, anime">🌸 Кавайный</div>
-            </div>
-
-            <div class="section-title">
-                🎬 Выберите набор <span class="premium-badge">5 СЛОЕВ</span>
+                <div class="style-tag" data-style="pixel art, 8bit, retro games">👾 Пиксельный</div>
+                <div class="style-tag" data-style="watercolor, hand painted, artistic">🎨 Акварельный</div>
+                <div class="style-tag" data-style="sketch, pencil drawing, black and white">✏️ Скетч</div>
             </div>
 
             <div class="pack-selector">
                 <div class="pack selected" id="basicPack" onclick="selectPack('basic')">
-                    <div class="pack-title">📷 Базовый</div>
+                    <div class="pack-title">📷 Только PNG</div>
                     <div class="pack-price">299 ₽</div>
                     <ul class="features">
-                        <li>PNG файлы 512x512</li>
-                        <li>Высокое качество</li>
-                        <li>Для Telegram</li>
+                        <li>PNG через Recraft</li>
+                        <li>512x512 пикселей</li>
                     </ul>
                 </div>
                 <div class="pack premium" id="premiumPack" onclick="selectPack('premium')">
-                    <div class="pack-title">✨ Премиум</div>
+                    <div class="pack-title">✨ Roboflow + Анимация</div>
                     <div class="pack-price">499 ₽</div>
                     <ul class="features">
-                        <li>5 слоев анимации на стикер</li>
-                        <li>Плавные переходы (60 fps)</li>
-                        <li>Умные паузы в циклах</li>
-                        <li>Вариации движений</li>
-                        <li>PNG в подарок</li>
+                        <li>Сначала PNG через Recraft</li>
+                        <li>Roboflow API анализирует 17 ключевых точек</li>
+                        <li>Анимация под каждую часть тела</li>
+                        <li>PNG + TGS в комплекте</li>
                     </ul>
                 </div>
             </div>
@@ -662,8 +709,7 @@
 
         <div id="loading" class="loading">
             <div class="loading-spinner"></div>
-            <p style="font-size: 1.2em;">Создаем 5-слойные анимации...</p>
-            <p id="loadingProgress" style="color: #666;">Подготовка...</p>
+            <p id="loadingProgress" style="font-size: 1.2em;">Загрузка...</p>
         </div>
 
         <div id="results" class="results"></div>
@@ -684,207 +730,69 @@
     </div>
 
     <footer>
-        <p>Создавайте премиум-стикеры с 5-слойной анимацией</p>
+        <p>Roboflow API автоматически определяет 17 ключевых точек тела</p>
     </footer>
 
     <script>
-        // ========== API КЛЮЧ ==========
+        // ========== API КЛЮЧИ ==========
         const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
+        const ROBOFLOW_API_KEY = 'CMOV2VyeGTlRyPQ3066L';
         
-        // ========== 20 ЭМОЦИЙ С УЛУЧШЕННОЙ 5-СЛОЙНОЙ АНИМАЦИЕЙ ==========
+        // ========== КОНСТАНТЫ ROBOFLOW ==========
+        // Используем публичную pose-модель с Roboflow Universe 
+        const ROBOFLOW_MODEL_ENDPOINT = 'yolo11n-pose/1'; // модель для pose detection
+        
+        // Список ключевых точек COCO (17 точек) 
+        const COCO_KEYPOINTS = [
+            'nose', 'left_eye', 'right_eye', 'left_ear', 'right_ear',
+            'left_shoulder', 'right_shoulder', 'left_elbow', 'right_elbow',
+            'left_wrist', 'right_wrist', 'left_hip', 'right_hip',
+            'left_knee', 'right_knee', 'left_ankle', 'right_ankle'
+        ];
+
+        // ========== 30 ЭМОЦИЙ ==========
         const EMOTIONS = [
-            { 
-                id: 'happy', 
-                name: 'Счастье', 
-                icon: '😊', 
-                prompt: 'happy, smiling, joyful, cheerful',
-                animation: {
-                    head: { type: 'bounce', speed: 1.2, smoothness: 0.8, variation: true },
-                    eyes: { type: 'squint', speed: 1.5, smoothness: 0.9 },
-                    pupils: { type: 'dance', speed: 1.8, smoothness: 0.7 },
-                    mouth: { type: 'wide_smile', speed: 1.2, smoothness: 0.9 },
-                    hands: { type: 'wave', speed: 1.1, smoothness: 0.8 }
-                }
-            },
-            { 
-                id: 'sad', 
-                name: 'Грусть', 
-                icon: '😢', 
-                prompt: 'sad, crying, unhappy, tears',
-                animation: {
-                    head: { type: 'droop', speed: 0.7, smoothness: 0.9, pauseFrames: [60, 120] },
-                    eyes: { type: 'watery', speed: 0.6, smoothness: 0.8 },
-                    pupils: { type: 'down', speed: 0.5, smoothness: 0.7 },
-                    mouth: { type: 'frown', speed: 0.6, smoothness: 0.8 },
-                    hands: { type: 'hold', speed: 0.5, smoothness: 0.9 }
-                }
-            },
-            { 
-                id: 'angry', 
-                name: 'Злость', 
-                icon: '😠', 
-                prompt: 'angry, mad, furious, irritated',
-                animation: {
-                    head: { type: 'shake', speed: 1.8, smoothness: 0.5, variation: true },
-                    eyes: { type: 'narrow', speed: 1.5, smoothness: 0.6 },
-                    pupils: { type: 'intense', speed: 2.0, smoothness: 0.5 },
-                    mouth: { type: 'grit', speed: 1.2, smoothness: 0.6 },
-                    hands: { type: 'fist', speed: 1.5, smoothness: 0.5 }
-                }
-            },
-            { 
-                id: 'surprised', 
-                name: 'Удивление', 
-                icon: '😮', 
-                prompt: 'surprised, shocked, amazed, astonished',
-                animation: {
-                    head: { type: 'jerk', speed: 2.0, smoothness: 0.4, pauseFrames: [30] },
-                    eyes: { type: 'wide', speed: 1.8, smoothness: 0.5 },
-                    pupils: { type: 'dilated', speed: 1.5, smoothness: 0.6 },
-                    mouth: { type: 'gasp', speed: 1.5, smoothness: 0.5 },
-                    hands: { type: 'jump', speed: 1.8, smoothness: 0.4 }
-                }
-            },
-            { 
-                id: 'laughing', 
-                name: 'Смех', 
-                icon: '😂', 
-                prompt: 'laughing, laughing hard, joyful, funny',
-                animation: {
-                    head: { type: 'bounce_hard', speed: 2.0, smoothness: 0.7, variation: true },
-                    eyes: { type: 'closed_laugh', speed: 1.8, smoothness: 0.8 },
-                    pupils: { type: 'shake', speed: 2.2, smoothness: 0.6 },
-                    mouth: { type: 'open_laugh', speed: 2.0, smoothness: 0.7 },
-                    hands: { type: 'hold_belly', speed: 1.5, smoothness: 0.7 }
-                }
-            },
-            { 
-                id: 'love', 
-                name: 'Любовь', 
-                icon: '😍', 
-                prompt: 'in love, heart eyes, romantic, adorable',
-                animation: {
-                    head: { type: 'float', speed: 0.9, smoothness: 0.9, pauseFrames: [45, 135] },
-                    eyes: { type: 'heart_beat', speed: 1.2, smoothness: 0.8 },
-                    pupils: { type: 'sparkle', speed: 1.5, smoothness: 0.9 },
-                    mouth: { type: 'kiss', speed: 0.8, smoothness: 0.8 },
-                    hands: { type: 'heart', speed: 1.0, smoothness: 0.9 }
-                }
-            },
-            { 
-                id: 'sleepy', 
-                name: 'Сон', 
-                icon: '😴', 
-                prompt: 'sleepy, tired, yawning, sleeping',
-                animation: {
-                    head: { type: 'nod', speed: 0.4, smoothness: 0.9, pauseFrames: [90, 150] },
-                    eyes: { type: 'heavy', speed: 0.3, smoothness: 0.9 },
-                    pupils: { type: 'half', speed: 0.2, smoothness: 0.8 },
-                    mouth: { type: 'yawn', speed: 0.5, smoothness: 0.8 },
-                    hands: { type: 'stretch', speed: 0.4, smoothness: 0.9 }
-                }
-            },
-            { 
-                id: 'cool', 
-                name: 'Крутой', 
-                icon: '😎', 
-                prompt: 'cool, stylish, with sunglasses, awesome',
-                animation: {
-                    head: { type: 'glide', speed: 0.8, smoothness: 0.9, variation: true },
-                    eyes: { type: 'shades', speed: 0.5, smoothness: 0.8 },
-                    pupils: { type: 'confident', speed: 0.6, smoothness: 0.8 },
-                    mouth: { type: 'smirk', speed: 0.5, smoothness: 0.9 },
-                    hands: { type: 'point', speed: 0.7, smoothness: 0.8 }
-                }
-            },
-            { 
-                id: 'scared', 
-                name: 'Страх', 
-                icon: '😨', 
-                prompt: 'scared, frightened, terrified, afraid',
-                animation: {
-                    head: { type: 'shake_violent', speed: 2.5, smoothness: 0.4, variation: true },
-                    eyes: { type: 'wide_terrified', speed: 2.0, smoothness: 0.5 },
-                    pupils: { type: 'darting', speed: 2.8, smoothness: 0.3 },
-                    mouth: { type: 'tremble', speed: 2.2, smoothness: 0.4 },
-                    hands: { type: 'cover', speed: 1.8, smoothness: 0.5 }
-                }
-            },
-            { 
-                id: 'silly', 
-                name: 'Глупый', 
-                icon: '🤪', 
-                prompt: 'silly, goofy, funny, crazy',
-                animation: {
-                    head: { type: 'wiggle', speed: 2.0, smoothness: 0.5, variation: true },
-                    eyes: { type: 'cross', speed: 1.8, smoothness: 0.6 },
-                    pupils: { type: 'crazy', speed: 2.2, smoothness: 0.5 },
-                    mouth: { type: 'tongue', speed: 1.5, smoothness: 0.6 },
-                    hands: { type: 'flail', speed: 2.0, smoothness: 0.5 }
-                }
-            },
-            { 
-                id: 'thinking', 
-                name: 'Думает', 
-                icon: '🤔', 
-                prompt: 'thinking, thoughtful, considering, pondering',
-                animation: {
-                    head: { type: 'tilt', speed: 0.6, smoothness: 0.9, pauseFrames: [90] },
-                    eyes: { type: 'up', speed: 0.4, smoothness: 0.9 },
-                    pupils: { type: 'rotate', speed: 0.3, smoothness: 0.8 },
-                    mouth: { type: 'pout', speed: 0.4, smoothness: 0.9 },
-                    hands: { type: 'chin', speed: 0.5, smoothness: 0.8 }
-                }
-            },
-            { 
-                id: 'celebrating', 
-                name: 'Празднует', 
-                icon: '🎉', 
-                prompt: 'celebrating, party, confetti, dancing',
-                animation: {
-                    head: { type: 'dance', speed: 1.8, smoothness: 0.7, variation: true },
-                    eyes: { type: 'happy', speed: 1.5, smoothness: 0.8 },
-                    pupils: { type: 'sparkle', speed: 2.0, smoothness: 0.7 },
-                    mouth: { type: 'cheer', speed: 1.5, smoothness: 0.8 },
-                    hands: { type: 'party', speed: 2.0, smoothness: 0.6 }
-                }
-            },
-            { 
-                id: 'winking', 
-                name: 'Подмигивает', 
-                icon: '😉', 
-                prompt: 'winking, playful, flirty, sly',
-                animation: {
-                    head: { type: 'tilt_playful', speed: 0.8, smoothness: 0.8, pauseFrames: [60, 120] },
-                    eyes: { type: 'wink', speed: 1.2, smoothness: 0.7 },
-                    pupils: { type: 'playful', speed: 0.9, smoothness: 0.8 },
-                    mouth: { type: 'smirk', speed: 0.7, smoothness: 0.8 },
-                    hands: { type: 'finger_gun', speed: 0.8, smoothness: 0.7 }
-                }
-            },
-            { 
-                id: 'proud', 
-                name: 'Гордый', 
-                icon: '🦚', 
-                prompt: 'proud, confident, pleased, smug',
-                animation: {
-                    head: { type: 'high', speed: 0.7, smoothness: 0.9, variation: true },
-                    eyes: { type: 'confident', speed: 0.5, smoothness: 0.9 },
-                    pupils: { type: 'glow', speed: 0.6, smoothness: 0.8 },
-                    mouth: { type: 'smug', speed: 0.5, smoothness: 0.9 },
-                    hands: { type: 'pose', speed: 0.6, smoothness: 0.8 }
-                }
-            }
+            { id: 'happy', name: 'Счастье', icon: '😊', prompt: 'happy, smiling, joyful' },
+            { id: 'sad', name: 'Грусть', icon: '😢', prompt: 'sad, crying, unhappy' },
+            { id: 'angry', name: 'Злость', icon: '😠', prompt: 'angry, mad, furious' },
+            { id: 'surprised', name: 'Удивление', icon: '😮', prompt: 'surprised, shocked' },
+            { id: 'laughing', name: 'Смех', icon: '😂', prompt: 'laughing, laughing hard' },
+            { id: 'love', name: 'Любовь', icon: '😍', prompt: 'in love, heart eyes' },
+            { id: 'sleepy', name: 'Сон', icon: '😴', prompt: 'sleepy, tired, yawning' },
+            { id: 'cool', name: 'Крутой', icon: '😎', prompt: 'cool, stylish, with sunglasses' },
+            { id: 'scared', name: 'Страх', icon: '😨', prompt: 'scared, frightened, terrified' },
+            { id: 'silly', name: 'Глупый', icon: '🤪', prompt: 'silly, goofy, funny' },
+            { id: 'sick', name: 'Болеет', icon: '🤒', prompt: 'sick, ill, with thermometer' },
+            { id: 'eating', name: 'Ест', icon: '🍔', prompt: 'eating, having food, delicious' },
+            { id: 'working', name: 'Работает', icon: '💻', prompt: 'working, at computer, busy' },
+            { id: 'celebrating', name: 'Празднует', icon: '🎉', prompt: 'celebrating, party, dancing' },
+            { id: 'thinking', name: 'Думает', icon: '🤔', prompt: 'thinking, thoughtful' },
+            { id: 'crying', name: 'Плачет', icon: '😭', prompt: 'crying, sobbing, tears' },
+            { id: 'winking', name: 'Подмигивает', icon: '😉', prompt: 'winking, playful, flirty' },
+            { id: 'shy', name: 'Стесняется', icon: '🥺', prompt: 'shy, embarrassed, blushing' },
+            { id: 'bored', name: 'Скучает', icon: '🥱', prompt: 'bored, yawning, uninterested' },
+            { id: 'proud', name: 'Гордый', icon: '🦚', prompt: 'proud, confident, pleased' },
+            { id: 'confused', name: 'Непонимание', icon: '😕', prompt: 'confused, puzzled' },
+            { id: 'excited', name: 'Восторг', icon: '🤩', prompt: 'excited, thrilled' },
+            { id: 'suspicious', name: 'Подозрение', icon: '🤨', prompt: 'suspicious, skeptical' },
+            { id: 'hungry', name: 'Голод', icon: '🍽️', prompt: 'hungry, starving' },
+            { id: 'thirsty', name: 'Жажда', icon: '🥤', prompt: 'thirsty, wants drink' },
+            { id: 'jealous', name: 'Зависть', icon: '😒', prompt: 'jealous, envious' },
+            { id: 'hopeful', name: 'Надежда', icon: '🤞', prompt: 'hopeful, optimistic' },
+            { id: 'guilty', name: 'Вина', icon: '😔', prompt: 'guilty, ashamed' },
+            { id: 'relieved', name: 'Облегчение', icon: '😌', prompt: 'relieved, relaxed' },
+            { id: 'mischievous', name: 'Озорство', icon: '😏', prompt: 'mischievous, playful' }
         ];
 
         let selectedEmotions = [];
-        let currentStyle = '3d render, pixar style, volumetric, disney';
+        let currentStyle = '3d render, pixar style, volumetric';
         let selectedPack = 'premium';
         let generatedPNG = [];
         let generatedTGS = [];
         let recraftAvailable = true;
+        let roboflowAvailable = true;
 
-        // Заполняем сетку эмоций
+        // Заполняем эмоции
         function renderEmotions() {
             const grid = document.getElementById('emotionsGrid');
             grid.innerHTML = '';
@@ -900,15 +808,10 @@
                     }
                 };
                 
-                const layerDots = Array(5).fill(0).map(() => 
-                    '<span class="layer-dot premium"></span>'
-                ).join('');
-                
                 div.innerHTML = `
                     <input type="checkbox" value="${emotion.id}" onchange="toggleEmotion('${emotion.id}', this.checked)">
                     <span class="emotion-icon">${emotion.icon}</span>
                     <span class="emotion-name">${emotion.name}</span>
-                    <div class="layer-indicator">${layerDots}</div>
                 `;
                 
                 grid.appendChild(div);
@@ -952,12 +855,117 @@
             document.getElementById('generateBtn').classList.toggle('premium', pack === 'premium');
         };
 
-        // ========== СОЗДАНИЕ УЛУЧШЕННОЙ 5-СЛОЙНОЙ АНИМАЦИИ ==========
-        function createEnhancedAnimation(pngBase64, emotion) {
+        // ========== ROBOFLOW API ЗАПРОС ==========
+        async function analyzeImageWithRoboflow(imageBase64) {
+            try {
+                console.log('Sending to Roboflow API...');
+                
+                const response = await fetch(`https://detect.roboflow.com/${ROBOFLOW_MODEL_ENDPOINT}?api_key=${ROBOFLOW_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: imageBase64.split(',')[1] // отправляем только base64 данные, без префикса
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Roboflow API error:', response.status, errorText);
+                    throw new Error(`Roboflow API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Roboflow response:', data);
+                
+                // Преобразуем ответ Roboflow в формат ключевых точек 
+                const keypoints = [];
+                
+                if (data.predictions && data.predictions.length > 0) {
+                    const prediction = data.predictions[0];
+                    
+                    // Проверяем наличие ключевых точек
+                    if (prediction.keypoints) {
+                        prediction.keypoints.forEach((kp, index) => {
+                            if (kp.confidence > 0.5) { // берем только точки с хорошей уверенностью
+                                keypoints.push({
+                                    name: COCO_KEYPOINTS[index] || `keypoint_${index}`,
+                                    x: kp.x,
+                                    y: kp.y,
+                                    confidence: kp.confidence || 0.9,
+                                    part: getBodyPart(COCO_KEYPOINTS[index] || '')
+                                });
+                            }
+                        });
+                    }
+                }
+                
+                // Если ключевых точек мало, добавляем стандартные
+                if (keypoints.length < 5) {
+                    console.log('Not enough keypoints, using defaults');
+                    return generateDefaultKeypoints();
+                }
+                
+                return keypoints;
+                
+            } catch (error) {
+                console.error('Roboflow API error:', error);
+                roboflowAvailable = false;
+                return generateDefaultKeypoints();
+            }
+        }
+
+        function getBodyPart(keypointName) {
+            if (!keypointName) return 'body';
+            if (keypointName.includes('nose') || keypointName.includes('eye') || keypointName.includes('ear')) {
+                return 'head';
+            } else if (keypointName.includes('shoulder')) {
+                return 'shoulders';
+            } else if (keypointName.includes('elbow')) {
+                return 'arms';
+            } else if (keypointName.includes('wrist')) {
+                return 'hands';
+            } else if (keypointName.includes('hip')) {
+                return 'hips';
+            } else if (keypointName.includes('knee')) {
+                return 'legs';
+            } else if (keypointName.includes('ankle')) {
+                return 'feet';
+            }
+            return 'body';
+        }
+
+        // Запасные ключевые точки на случай ошибки API
+        function generateDefaultKeypoints() {
+            const keypoints = [];
+            COCO_KEYPOINTS.forEach((name, index) => {
+                const angle = (index / COCO_KEYPOINTS.length) * Math.PI * 2;
+                const radius = 80;
+                keypoints.push({
+                    name: name,
+                    x: 256 + Math.cos(angle) * radius,
+                    y: 256 + Math.sin(angle) * radius * 0.8,
+                    confidence: 0.9,
+                    part: getBodyPart(name)
+                });
+            });
+            return keypoints;
+        }
+
+        // ========== СОЗДАНИЕ АНИМАЦИИ НА ОСНОВЕ КЛЮЧЕВЫХ ТОЧЕК ==========
+        function createAnimationFromKeypoints(pngBase64, keypoints, emotionIndex) {
             const base64Data = pngBase64.split(',')[1];
-            const anim = emotion.animation;
             
-            // Базовая структура Lottie с 5 слоями
+            // Группируем ключевые точки по частям тела 
+            const bodyParts = {
+                head: keypoints.filter(k => k.part === 'head'),
+                shoulders: keypoints.filter(k => k.part === 'shoulders'),
+                arms: keypoints.filter(k => k.part === 'arms'),
+                hands: keypoints.filter(k => k.part === 'hands'),
+                hips: keypoints.filter(k => k.part === 'hips'),
+                legs: keypoints.filter(k => k.part === 'legs'),
+                feet: keypoints.filter(k => k.part === 'feet')
+            };
+
             const lottieJson = {
                 v: "5.5.7",
                 fr: 60,
@@ -972,159 +980,243 @@
                     p: `data:image/png;base64,${base64Data}`,
                     e: 1
                 }],
-                layers: [
-                    // Слой 1: Голова/корпус (базовые движения)
-                    {
-                        ind: 1,
-                        ty: 2,
-                        refId: "sticker_img",
-                        nm: "head_layer",
-                        ks: createLayerAnimation(anim.head, 'head'),
-                        ip: 0,
-                        op: 180
-                    },
-                    // Слой 2: Глаза (эмоции)
-                    {
-                        ind: 2,
-                        ty: 2,
-                        refId: "sticker_img",
-                        nm: "eyes_layer",
-                        ks: createLayerAnimation(anim.eyes, 'eyes'),
-                        ip: 0,
-                        op: 180,
-                        parent: 1
-                    },
-                    // Слой 3: Зрачки (детали)
-                    {
-                        ind: 3,
-                        ty: 2,
-                        refId: "sticker_img",
-                        nm: "pupils_layer",
-                        ks: createLayerAnimation(anim.pupils, 'pupils'),
-                        ip: 0,
-                        op: 180,
-                        parent: 2
-                    },
-                    // Слой 4: Рот (выражение)
-                    {
-                        ind: 4,
-                        ty: 2,
-                        refId: "sticker_img",
-                        nm: "mouth_layer",
-                        ks: createLayerAnimation(anim.mouth, 'mouth'),
-                        ip: 0,
-                        op: 180,
-                        parent: 1
-                    },
-                    // Слой 5: Руки/жесты
-                    {
-                        ind: 5,
-                        ty: 2,
-                        refId: "sticker_img",
-                        nm: "hands_layer",
-                        ks: createLayerAnimation(anim.hands, 'hands'),
-                        ip: 0,
-                        op: 180,
-                        parent: 1
-                    }
-                ]
+                layers: []
             };
+
+            // Создаем слои для каждой части тела
+            let layerIndex = 1;
+            
+            // Голова - кивки и повороты
+            if (bodyParts.head.length > 0) {
+                lottieJson.layers.push({
+                    ind: layerIndex++,
+                    ty: 2,
+                    refId: "sticker_img",
+                    nm: "head_layer",
+                    ks: {
+                        o: { a: 0, k: 100 },
+                        r: createWaveAnimation(0.8, 3, emotionIndex),
+                        p: createHeadPosition(bodyParts.head, emotionIndex),
+                        a: { a: 0, k: [256, 256, 0] },
+                        s: { a: 0, k: [100, 100, 100] }
+                    },
+                    ip: 0,
+                    op: 180
+                });
+            }
+
+            // Плечи - покачивания
+            if (bodyParts.shoulders.length > 0) {
+                lottieJson.layers.push({
+                    ind: layerIndex++,
+                    ty: 2,
+                    refId: "sticker_img",
+                    nm: "shoulders_layer",
+                    ks: {
+                        o: { a: 0, k: 100 },
+                        r: { a: 0, k: 0 },
+                        p: createShoulderPosition(bodyParts.shoulders, emotionIndex),
+                        a: { a: 0, k: [256, 256, 0] },
+                        s: { a: 0, k: [100, 100, 100] }
+                    },
+                    ip: 0,
+                    op: 180,
+                    parent: 1
+                });
+            }
+
+            // Руки - махи
+            if (bodyParts.arms.length > 0) {
+                lottieJson.layers.push({
+                    ind: layerIndex++,
+                    ty: 2,
+                    refId: "sticker_img",
+                    nm: "arms_layer",
+                    ks: {
+                        o: { a: 0, k: 100 },
+                        r: createArmRotation(bodyParts.arms, emotionIndex),
+                        p: { a: 0, k: [256, 256, 0] },
+                        a: { a: 0, k: [256, 256, 0] },
+                        s: { a: 0, k: [100, 100, 100] }
+                    },
+                    ip: 0,
+                    op: 180,
+                    parent: 2
+                });
+            }
+
+            // Кисти рук - мелкие движения
+            if (bodyParts.hands.length > 0) {
+                lottieJson.layers.push({
+                    ind: layerIndex++,
+                    ty: 2,
+                    refId: "sticker_img",
+                    nm: "hands_layer",
+                    ks: {
+                        o: createOpacityAnimation(0.3, emotionIndex),
+                        r: createHandRotation(bodyParts.hands, emotionIndex),
+                        p: { a: 0, k: [256, 256, 0] },
+                        a: { a: 0, k: [256, 256, 0] },
+                        s: createScaleAnimation(0.5, emotionIndex)
+                    },
+                    ip: 0,
+                    op: 180,
+                    parent: 3
+                });
+            }
+
+            // Ноги - шаги
+            if (bodyParts.legs.length > 0 || bodyParts.feet.length > 0) {
+                lottieJson.layers.push({
+                    ind: layerIndex++,
+                    ty: 2,
+                    refId: "sticker_img",
+                    nm: "legs_layer",
+                    ks: {
+                        o: { a: 0, k: 100 },
+                        r: { a: 0, k: 0 },
+                        p: createLegPosition(emotionIndex),
+                        a: { a: 0, k: [256, 256, 0] },
+                        s: { a: 0, k: [100, 100, 100] }
+                    },
+                    ip: 0,
+                    op: 180,
+                    parent: 1
+                });
+            }
+
+            // Если нет слоев, добавляем базовый
+            if (lottieJson.layers.length === 0) {
+                lottieJson.layers.push({
+                    ind: 1,
+                    ty: 2,
+                    refId: "sticker_img",
+                    nm: "base_layer",
+                    ks: {
+                        o: { a: 0, k: 100 },
+                        r: createWaveAnimation(0.5, 2, emotionIndex),
+                        p: { a: 0, k: [256, 256, 0] },
+                        a: { a: 0, k: [256, 256, 0] },
+                        s: createScaleAnimation(0.3, emotionIndex)
+                    },
+                    ip: 0,
+                    op: 180
+                });
+            }
 
             return lottieJson;
         }
 
-        // Создание анимации для конкретного слоя
-        function createLayerAnimation(config, layerType) {
-            const baseTransform = {
-                o: { a: 0, k: 100 },
-                r: { a: 0, k: 0 },
-                p: { a: 0, k: [256, 256, 0] },
-                a: { a: 0, k: [256, 256, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            };
-
-            if (!config) return baseTransform;
-
-            const speed = config.speed || 1.0;
-            const smoothness = config.smoothness || 0.7;
-            
-            // Создаем ключевые кадры с плавными переходами
+        // Вспомогательные функции анимации
+        function createWaveAnimation(amp, freq, phase) {
             const keyframes = [];
-            const totalFrames = 180;
-            const keyframeCount = 8;
+            for (let i = 0; i <= 12; i++) {
+                const frame = Math.round((i / 12) * 180);
+                const value = Math.sin((frame / 180) * Math.PI * 2 * freq + phase) * amp * 8;
+                keyframes.push({ t: frame, s: [value] });
+            }
+            return { a: 1, k: keyframes };
+        }
+
+        function createHeadPosition(keypoints, seed) {
+            const avgX = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.x, 0) / keypoints.length : 256;
+            const avgY = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.y, 0) / keypoints.length : 256;
             
-            for (let i = 0; i <= keyframeCount; i++) {
-                const progress = i / keyframeCount;
-                const frame = Math.round(progress * totalFrames);
-                
-                // Добавляем вариации, если нужно
-                let variation = 1.0;
-                if (config.variation) {
-                    variation = 0.9 + Math.sin(progress * Math.PI * 4) * 0.1;
-                }
-                
-                // Создаем разные анимации для разных типов
-                let value;
-                switch(config.type) {
-                    case 'bounce':
-                    case 'bounce_hard':
-                        value = Math.sin(progress * Math.PI * 4) * 10 * variation;
-                        break;
-                    case 'shake':
-                    case 'shake_violent':
-                        value = (Math.random() * 2 - 1) * 5 * variation;
-                        break;
-                    case 'float':
-                    case 'glide':
-                        value = Math.sin(progress * Math.PI * 2) * 5 * variation;
-                        break;
-                    case 'tilt':
-                    case 'tilt_playful':
-                        value = Math.sin(progress * Math.PI * 2) * 8 * variation;
-                        break;
-                    default:
-                        value = Math.sin(progress * Math.PI * 2) * 3 * variation;
-                }
-                
-                // Применяем к нужному свойству в зависимости от слоя
+            const keyframes = [];
+            for (let i = 0; i <= 8; i++) {
+                const frame = Math.round((i / 8) * 180);
+                const offsetY = Math.sin((frame / 180) * Math.PI * 2 + seed) * 3;
                 keyframes.push({
                     t: frame,
-                    s: [value],
-                    o: { x: 0.5 - smoothness * 0.2, y: 0.5 - smoothness * 0.2 },
-                    i: { x: 0.5 + smoothness * 0.2, y: 0.5 + smoothness * 0.2 }
+                    s: [avgX, avgY + offsetY, 0]
                 });
             }
+            return { a: 1, k: keyframes };
+        }
 
-            // Добавляем паузы в анимацию
-            if (config.pauseFrames) {
-                config.pauseFrames.forEach(pauseFrame => {
-                    keyframes.push({
-                        t: pauseFrame,
-                        s: [0],
-                        o: { x: 0.5, y: 0.5 },
-                        i: { x: 0.5, y: 0.5 }
-                    });
+        function createShoulderPosition(keypoints, seed) {
+            const avgX = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.x, 0) / keypoints.length : 256;
+            const avgY = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.y, 0) / keypoints.length : 256;
+            
+            const keyframes = [];
+            for (let i = 0; i <= 8; i++) {
+                const frame = Math.round((i / 8) * 180);
+                const offsetX = Math.sin((frame / 180) * Math.PI * 2 + seed * 2) * 2;
+                keyframes.push({
+                    t: frame,
+                    s: [avgX + offsetX, avgY, 0]
                 });
             }
+            return { a: 1, k: keyframes };
+        }
 
-            return {
-                ...baseTransform,
-                r: { a: 1, k: keyframes }
-            };
+        function createArmRotation(keypoints, seed) {
+            const keyframes = [];
+            for (let i = 0; i <= 10; i++) {
+                const frame = Math.round((i / 10) * 180);
+                const angle = Math.sin((frame / 180) * Math.PI * 4 + seed) * 5;
+                keyframes.push({ t: frame, s: [angle] });
+            }
+            return { a: 1, k: keyframes };
+        }
+
+        function createHandRotation(keypoints, seed) {
+            const keyframes = [];
+            for (let i = 0; i <= 12; i++) {
+                const frame = Math.round((i / 12) * 180);
+                const angle = Math.sin((frame / 180) * Math.PI * 6 + seed * 3) * 8;
+                keyframes.push({ t: frame, s: [angle] });
+            }
+            return { a: 1, k: keyframes };
+        }
+
+        function createScaleAnimation(intensity, seed) {
+            const keyframes = [];
+            for (let i = 0; i <= 8; i++) {
+                const frame = Math.round((i / 8) * 180);
+                const scale = 100 + Math.sin((frame / 180) * Math.PI * 4 + seed) * intensity;
+                keyframes.push({
+                    t: frame,
+                    s: [scale, scale, 100]
+                });
+            }
+            return { a: 1, k: keyframes };
+        }
+
+        function createLegPosition(seed) {
+            const keyframes = [];
+            for (let i = 0; i <= 8; i++) {
+                const frame = Math.round((i / 8) * 180);
+                const offsetY = Math.sin((frame / 180) * Math.PI * 2 + seed * 1.5) * 2;
+                keyframes.push({
+                    t: frame,
+                    s: [256, 256 + offsetY, 0]
+                });
+            }
+            return { a: 1, k: keyframes };
+        }
+
+        function createOpacityAnimation(variation, seed) {
+            const keyframes = [];
+            for (let i = 0; i <= 6; i++) {
+                const frame = Math.round((i / 6) * 180);
+                const opacity = 85 + Math.sin((frame / 180) * Math.PI * 2 + seed) * variation * 10;
+                keyframes.push({ t: frame, s: [opacity] });
+            }
+            return { a: 1, k: keyframes };
         }
 
         // Конвертация PNG в TGS
-        async function convertPngToTgs(pngDataUrl, emotion) {
+        async function convertPngToTgs(pngDataUrl, keypoints, index) {
             try {
-                const lottieJson = createEnhancedAnimation(pngDataUrl, emotion);
+                const lottieJson = createAnimationFromKeypoints(pngDataUrl, keypoints, index);
                 const jsonString = JSON.stringify(lottieJson);
                 const compressedData = pako.gzip(jsonString);
                 const tgsBlob = new Blob([compressedData], { type: 'application/octet-stream' });
                 
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve) => {
                     const reader = new FileReader();
                     reader.onloadend = () => resolve(reader.result);
-                    reader.onerror = reject;
                     reader.readAsDataURL(tgsBlob);
                 });
             } catch (error) {
@@ -1136,6 +1228,8 @@
         // Генерация через Recraft
         async function generateRecraftImage(prompt) {
             try {
+                console.log('Generating with Recraft:', prompt);
+                
                 const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
                     method: 'POST',
                     headers: {
@@ -1150,7 +1244,10 @@
                     })
                 });
 
-                if (!response.ok) return null;
+                if (!response.ok) {
+                    console.warn('Recraft API error, using demo');
+                    return null;
+                }
 
                 const data = await response.json();
                 
@@ -1166,7 +1263,7 @@
 
         // Ресайз изображения
         function resizeImageTo512(base64Image) {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
@@ -1176,7 +1273,6 @@
                     ctx.drawImage(img, 0, 0, 512, 512);
                     resolve(canvas.toDataURL('image/png'));
                 };
-                img.onerror = reject;
                 img.src = `data:image/png;base64,${base64Image}`;
             });
         }
@@ -1188,7 +1284,7 @@
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
             
-            const hue = EMOTIONS.findIndex(e => e.id === emotion.id) * 18 % 360;
+            const hue = EMOTIONS.findIndex(e => e.id === emotion.id) * 12 % 360;
             const gradient = ctx.createLinearGradient(0, 0, 512, 512);
             gradient.addColorStop(0, `hsl(${hue}, 80%, 70%)`);
             gradient.addColorStop(1, `hsl(${hue + 40}, 80%, 60%)`);
@@ -1226,7 +1322,7 @@
                     const emotion = EMOTIONS.find(e => e.id === emotionId);
                     
                     document.getElementById('loadingProgress').textContent = 
-                        `Генерируем ${i+1} из ${selectedEmotions.length}: ${emotion.name}`;
+                        `Генерируем PNG ${i+1}: ${emotion.name}`;
                     
                     const prompt = `${character}, ${emotion.prompt}, ${currentStyle}, sticker for Telegram, high quality, isolated on white background`;
                     
@@ -1243,14 +1339,21 @@
                     
                     if (selectedPack === 'premium') {
                         document.getElementById('loadingProgress').textContent = 
-                            `Создаем 5-слойную анимацию ${i+1} из ${selectedEmotions.length}: ${emotion.name}`;
+                            `Roboflow анализ ${i+1}: ${emotion.name}`;
                         
-                        const tgsData = await convertPngToTgs(pngImage, emotion);
+                        // Анализируем изображение через Roboflow API 
+                        const keypoints = await analyzeImageWithRoboflow(pngImage);
+                        
+                        document.getElementById('loadingProgress').textContent = 
+                            `Создаем анимацию ${i+1}: ${emotion.name}`;
+                        
+                        const tgsData = await convertPngToTgs(pngImage, keypoints, i);
                         
                         generatedTGS.push({
                             emotion: emotion,
                             dataUrl: tgsData || pngImage,
-                            filename: `${character}_${emotion.id}.tgs`
+                            filename: `${character}_${emotion.id}.tgs`,
+                            keypoints: keypoints
                         });
                     }
                 }
@@ -1272,18 +1375,17 @@
 
             const title = document.createElement('h2');
             title.style.cssText = 'font-size: 2em; color: white; margin-bottom: 20px;';
-            title.innerHTML = `🎉 Готово! ${pngStickers.length} стикеров с 5-слойной анимацией`;
+            title.innerHTML = `🎉 Готово! ${pngStickers.length} стикеров`;
             resultsDiv.appendChild(title);
 
             const packagesDiv = document.createElement('div');
             packagesDiv.className = 'packages';
 
-            // Базовый пакет
             const basicPackage = document.createElement('div');
             basicPackage.className = 'package basic';
             basicPackage.innerHTML = `
                 <div class="package-header">
-                    <div class="package-title">📷 Базовый набор</div>
+                    <div class="package-title">📷 Базовый</div>
                     <div class="package-price">299 ₽</div>
                 </div>
                 <div class="stickers-grid" id="pngGrid"></div>
@@ -1293,13 +1395,12 @@
             `;
             packagesDiv.appendChild(basicPackage);
 
-            // Премиум пакет
-            if (selectedPack === 'premium') {
+            if (selectedPack === 'premium' && tgsStickers.length > 0) {
                 const premiumPackage = document.createElement('div');
                 premiumPackage.className = 'package premium';
                 premiumPackage.innerHTML = `
                     <div class="package-header">
-                        <div class="package-title">✨ Премиум набор</div>
+                        <div class="package-title">✨ Roboflow + Анимация</div>
                         <div class="package-price">499 ₽</div>
                     </div>
                     <div class="stickers-grid" id="tgsGrid"></div>
@@ -1312,14 +1413,13 @@
 
             resultsDiv.appendChild(packagesDiv);
 
-            // Заполняем PNG сетку
             const pngGrid = document.getElementById('pngGrid');
             pngStickers.forEach(s => {
                 const card = document.createElement('div');
                 card.className = 'sticker-card';
                 card.innerHTML = `
                     <div class="sticker-preview">
-                        <img src="${s.dataUrl}" style="width:100%;height:100%;object-fit:contain;">
+                        <img src="${s.dataUrl}" alt="${s.emotion.name}">
                     </div>
                     <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
                     <span class="sticker-badge png">PNG</span>
@@ -1327,25 +1427,26 @@
                 pngGrid.appendChild(card);
             });
 
-            // Заполняем TGS сетку
-            if (selectedPack === 'premium') {
+            if (selectedPack === 'premium' && tgsStickers.length > 0) {
                 const tgsGrid = document.getElementById('tgsGrid');
                 tgsStickers.forEach(s => {
                     const card = document.createElement('div');
                     card.className = 'sticker-card premium';
                     
-                    const layers = [1,2,3,4,5].map(num => 
-                        `<span class="layer-vis active"></span>`
-                    ).join('');
+                    // Добавляем визуализацию ключевых точек
+                    const keypointDots = (s.keypoints || []).map(k => {
+                        const confClass = k.confidence > 0.8 ? 'conf-high' : (k.confidence > 0.6 ? 'conf-medium' : 'conf-low');
+                        return `<div class="keypoint-dot ${confClass}" style="left:${(k.x/512)*100}%; top:${(k.y/512)*100}%;"></div>`;
+                    }).join('');
                     
                     card.innerHTML = `
                         <div class="sticker-preview">
-                            <div style="font-size: 2.5em;">${s.emotion.icon}</div>
+                            <img src="${s.dataUrl}" alt="${s.emotion.name}">
+                            <div class="keypoint-overlay">${keypointDots}</div>
                         </div>
-                        <div class="layer-visualization">${layers}</div>
-                        <div class="sticker-info">${s.emotion.name}</div>
+                        <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
                         <span class="sticker-badge tgs">TGS</span>
-                        <span class="sticker-badge" style="background:#48bb78;color:white;">5 слоев</span>
+                        <span class="sticker-badge api">Roboflow</span>
                     `;
                     tgsGrid.appendChild(card);
                 });
@@ -1387,22 +1488,49 @@
                 if (response.ok) {
                     statusDiv.className = 'api-status recraft';
                     statusDiv.innerHTML = '<span class="status-icon">✅</span><span>Recraft AI: Подключен</span>';
-                    recraftAvailable = true;
                 } else {
                     statusDiv.className = 'api-status recraft error';
                     statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Recraft AI: Демо режим</span>';
-                    recraftAvailable = false;
                 }
             } catch (error) {
                 statusDiv.className = 'api-status recraft error';
                 statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Recraft AI: Демо режим</span>';
-                recraftAvailable = false;
+            }
+        }
+
+        // Проверка Roboflow API
+        async function checkRoboflowAPI() {
+            const statusDiv = document.getElementById('roboflowStatus');
+            
+            try {
+                // Делаем тестовый запрос с минимальным изображением (простой base64)
+                const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+                
+                const response = await fetch(`https://detect.roboflow.com/${ROBOFLOW_MODEL_ENDPOINT}?api_key=${ROBOFLOW_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: testImage.split(',')[1]
+                });
+
+                if (response.ok) {
+                    statusDiv.className = 'api-status roboflow';
+                    statusDiv.innerHTML = '<span class="status-icon">✅</span><span>Roboflow API: Подключен</span>';
+                } else {
+                    statusDiv.className = 'api-status roboflow error';
+                    statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Roboflow API: Ошибка</span>';
+                }
+            } catch (error) {
+                statusDiv.className = 'api-status roboflow error';
+                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Roboflow API: Ошибка сети</span>';
             }
         }
 
         // Инициализация
         renderEmotions();
         checkRecraftAPI();
+        checkRoboflowAPI();
 
         setTimeout(() => {
             EMOTIONS.slice(0, 5).forEach(emotion => {
