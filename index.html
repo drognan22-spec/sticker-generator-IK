@@ -736,11 +736,15 @@
     <script>
         // ========== API КЛЮЧИ ==========
         const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
-        const ROBOFLOW_API_KEY = 'CMOV2VyeGTlRyPQ3066L';
+        const ROBOFLOW_API_KEY = 'rf_KLBpuPIa1CVLhJiUj27P9fOBWjt2';
         
         // ========== КОНСТАНТЫ ROBOFLOW ==========
-        // Используем универсальную модель для pose detection
-        const ROBOFLOW_MODEL_ENDPOINT = 'yolov8n-pose/1'; // другая модель, может работать
+        // Правильные endpoints для Roboflow API
+        const ROBOFLOW_ENDPOINTS = [
+            'https://detect.roboflow.com',
+            'https://outline.roboflow.com'
+        ];
+        const ROBOFLOW_MODEL = 'yolo11n-pose/1';
         
         // Список ключевых точек COCO (17 точек) 
         const COCO_KEYPOINTS = [
@@ -791,6 +795,7 @@
         let generatedTGS = [];
         let recraftAvailable = true;
         let roboflowAvailable = true;
+        let activeRoboflowEndpoint = null;
 
         // Заполняем эмоции
         function renderEmotions() {
@@ -855,55 +860,83 @@
             document.getElementById('generateBtn').classList.toggle('premium', pack === 'premium');
         };
 
-        // ========== ROBOFLOW API ЗАПРОС ==========
+        // ========== ROBOFLOW API ЗАПРОС (ИСПРАВЛЕННЫЙ) ==========
         async function analyzeImageWithRoboflow(imageBase64) {
+            if (!roboflowAvailable) {
+                console.log('Roboflow API not available, using default keypoints');
+                return generateDefaultKeypoints();
+            }
+
             try {
                 console.log('Sending to Roboflow API...');
                 
                 // Извлекаем только данные base64 без префикса
                 const base64Data = imageBase64.split(',')[1];
                 
-                const response = await fetch(`https://outline.roboflow.com/${ROBOFLOW_MODEL_ENDPOINT}?api_key=${ROBOFLOW_API_KEY}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: base64Data
-                });
+                // Если уже знаем рабочий endpoint, используем его
+                if (activeRoboflowEndpoint) {
+                    try {
+                        const response = await fetch(`${activeRoboflowEndpoint}/${ROBOFLOW_MODEL}?api_key=${ROBOFLOW_API_KEY}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: base64Data
+                        });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Roboflow API error:', response.status, errorText);
-                    
-                    // Пробуем другой endpoint
-                    const response2 = await fetch(`https://detect.roboflow.com/${ROBOFLOW_MODEL_ENDPOINT}?api_key=${ROBOFLOW_API_KEY}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: base64Data
-                    });
-                    
-                    if (!response2.ok) {
-                        throw new Error(`Roboflow API error: ${response2.status}`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('Roboflow response:', data);
+                            return processRoboflowResponse(data);
+                        }
+                    } catch (e) {
+                        console.warn(`Endpoint ${activeRoboflowEndpoint} failed, trying others...`);
+                        activeRoboflowEndpoint = null;
                     }
-                    
-                    const data2 = await response2.json();
-                    console.log('Roboflow response (detect):', data2);
-                    return processRoboflowResponse(data2);
                 }
+                
+                // Пробуем все endpoints по очереди
+                for (const endpoint of ROBOFLOW_ENDPOINTS) {
+                    try {
+                        console.log(`Trying endpoint: ${endpoint}`);
+                        
+                        const response = await fetch(`${endpoint}/${ROBOFLOW_MODEL}?api_key=${ROBOFLOW_API_KEY}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: base64Data
+                        });
 
-                const data = await response.json();
-                console.log('Roboflow response (outline):', data);
-                return processRoboflowResponse(data);
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log(`✅ Success with endpoint: ${endpoint}`);
+                            activeRoboflowEndpoint = endpoint;
+                            
+                            // Обновляем статус
+                            document.getElementById('roboflowStatus').className = 'api-status roboflow';
+                            document.getElementById('roboflowStatus').innerHTML = '<span class="status-icon">✅</span><span>Roboflow API: Подключен</span>';
+                            
+                            return processRoboflowResponse(data);
+                        } else {
+                            const errorText = await response.text();
+                            console.warn(`❌ Endpoint ${endpoint} failed: ${response.status} - ${errorText}`);
+                        }
+                    } catch (e) {
+                        console.warn(`❌ Endpoint ${endpoint} error:`, e.message);
+                    }
+                }
+                
+                throw new Error('All Roboflow endpoints failed');
                 
             } catch (error) {
                 console.error('Roboflow API error:', error);
                 roboflowAvailable = false;
                 
-                // Обновляем статус на странице
+                // Показываем ошибку
                 document.getElementById('roboflowStatus').className = 'api-status roboflow error';
-                document.getElementById('roboflowStatus').innerHTML = '<span class="status-icon">⚠️</span><span>Roboflow API: Используем демо-режим</span>';
+                document.getElementById('roboflowStatus').innerHTML = 
+                    `<span class="status-icon">❌</span><span>Roboflow API: ${error.message}</span>`;
                 
                 return generateDefaultKeypoints();
             }
@@ -915,10 +948,11 @@
             if (data.predictions && data.predictions.length > 0) {
                 const prediction = data.predictions[0];
                 
-                // Проверяем наличие ключевых точек
+                // Проверяем наличие ключевых точек в разных форматах
                 if (prediction.keypoints) {
+                    // Формат с keypoints массивом
                     prediction.keypoints.forEach((kp, index) => {
-                        if (kp.confidence > 0.3) { // берем точки с минимальной уверенностью
+                        if (kp.confidence > 0.3) {
                             keypoints.push({
                                 name: COCO_KEYPOINTS[index] || `keypoint_${index}`,
                                 x: kp.x,
@@ -930,17 +964,21 @@
                     });
                 }
                 
-                // Альтернативный формат - ключевые точки могут быть в другом месте
+                // Альтернативный формат - keypoints_xy и keypoints_conf
                 if (prediction.keypoints_xy && prediction.keypoints_xy.length > 0) {
                     for (let i = 0; i < prediction.keypoints_xy.length; i += 2) {
-                        if (i/2 < COCO_KEYPOINTS.length) {
-                            keypoints.push({
-                                name: COCO_KEYPOINTS[Math.floor(i/2)],
-                                x: prediction.keypoints_xy[i],
-                                y: prediction.keypoints_xy[i+1],
-                                confidence: prediction.keypoints_conf ? prediction.keypoints_conf[Math.floor(i/2)] : 0.7,
-                                part: getBodyPart(COCO_KEYPOINTS[Math.floor(i/2)] || '')
-                            });
+                        const pointIndex = Math.floor(i / 2);
+                        if (pointIndex < COCO_KEYPOINTS.length) {
+                            const confidence = prediction.keypoints_conf ? prediction.keypoints_conf[pointIndex] : 0.7;
+                            if (confidence > 0.3) {
+                                keypoints.push({
+                                    name: COCO_KEYPOINTS[pointIndex],
+                                    x: prediction.keypoints_xy[i],
+                                    y: prediction.keypoints_xy[i + 1],
+                                    confidence: confidence,
+                                    part: getBodyPart(COCO_KEYPOINTS[pointIndex])
+                                });
+                            }
                         }
                     }
                 }
@@ -952,6 +990,7 @@
                 return generateDefaultKeypoints();
             }
             
+            console.log(`Processed ${keypoints.length} keypoints from API`);
             return keypoints;
         }
 
@@ -1544,42 +1583,38 @@
             const statusDiv = document.getElementById('roboflowStatus');
             
             try {
-                // Делаем тестовый запрос с минимальным изображением
+                // Тестовое изображение 1x1 пиксель
                 const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
                 const base64Data = testImage.split(',')[1];
                 
-                const response = await fetch(`https://outline.roboflow.com/${ROBOFLOW_MODEL_ENDPOINT}?api_key=${ROBOFLOW_API_KEY}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: base64Data
-                });
-
-                if (response.ok) {
-                    statusDiv.className = 'api-status roboflow';
-                    statusDiv.innerHTML = '<span class="status-icon">✅</span><span>Roboflow API: Подключен</span>';
-                } else {
-                    // Пробуем другой endpoint
-                    const response2 = await fetch(`https://detect.roboflow.com/${ROBOFLOW_MODEL_ENDPOINT}?api_key=${ROBOFLOW_API_KEY}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: base64Data
-                    });
-                    
-                    if (response2.ok) {
-                        statusDiv.className = 'api-status roboflow';
-                        statusDiv.innerHTML = '<span class="status-icon">✅</span><span>Roboflow API: Подключен</span>';
-                    } else {
-                        statusDiv.className = 'api-status roboflow error';
-                        statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Roboflow API: Будет использован демо-режим</span>';
+                // Проверяем все endpoints
+                for (const endpoint of ROBOFLOW_ENDPOINTS) {
+                    try {
+                        const response = await fetch(`${endpoint}/${ROBOFLOW_MODEL}?api_key=${ROBOFLOW_API_KEY}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: base64Data
+                        });
+                        
+                        if (response.ok) {
+                            statusDiv.className = 'api-status roboflow';
+                            statusDiv.innerHTML = '<span class="status-icon">✅</span><span>Roboflow API: Подключен</span>';
+                            activeRoboflowEndpoint = endpoint;
+                            return;
+                        }
+                    } catch (e) {
+                        // Продолжаем проверять следующий endpoint
                     }
                 }
+                
+                statusDiv.className = 'api-status roboflow error';
+                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Roboflow API: Недоступен</span>';
+                
             } catch (error) {
                 statusDiv.className = 'api-status roboflow error';
-                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Roboflow API: Будет использован демо-режим</span>';
+                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Roboflow API: Недоступен</span>';
             }
         }
 
