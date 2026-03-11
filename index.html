@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator для Telegram</title>
+    <title>Sticker Generator PRO - Recraft AI</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
@@ -647,51 +647,30 @@
             });
         });
 
-        // Проверка API ключа при загрузке
-        async function testApiKey() {
-            const statusDiv = document.getElementById('apiStatus');
-            statusDiv.style.display = 'block';
-            statusDiv.className = 'api-status';
-            statusDiv.innerHTML = '⚡ Проверка подключения к Recraft API...';
-            
-            try {
-                // Простой тестовый запрос
-                const testPrompt = 'test image, simple smile emoji';
-                const response = await fetch('https://api.recraft.ai/v1/images/generations', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${RECRAFT_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        prompt: testPrompt,
-                        n: 1,
-                        size: '512x512'
-                    })
-                });
-
-                if (response.ok) {
-                    statusDiv.className = 'api-status success';
-                    statusDiv.innerHTML = '✅ Recraft API подключен успешно! Можно генерировать стикеры.';
-                } else {
-                    const error = await response.text();
-                    statusDiv.className = 'api-status error';
-                    statusDiv.innerHTML = `❌ Ошибка подключения к API: ${response.status}. Проверьте ключ.`;
-                    console.error('API Error:', error);
-                }
-            } catch (error) {
-                statusDiv.className = 'api-status error';
-                statusDiv.innerHTML = `❌ Ошибка сети: ${error.message}`;
-                console.error('Network Error:', error);
-            }
+        // ========== ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ РЕСАЙЗА ==========
+        function resizeImageTo512(base64Image) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 512;
+                    canvas.height = 512;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 512, 512);
+                    const resizedBase64 = canvas.toDataURL('image/png');
+                    resolve(resizedBase64);
+                };
+                img.onerror = reject;
+                img.src = `data:image/png;base64,${base64Image}`;
+            });
         }
 
-        // Генерация через Recraft (правильный endpoint)
+        // ========== ГЕНЕРАЦИЯ ЧЕРЕЗ RECRAFT ==========
         async function generateRealImageRecraft(prompt) {
             try {
-                console.log('Sending request to Recraft with prompt:', prompt);
+                console.log('Sending to Recraft with prompt:', prompt);
                 
-                const response = await fetch('https://api.recraft.ai/v1/images/generations', {
+                const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${RECRAFT_API_KEY}`,
@@ -700,39 +679,42 @@
                     body: JSON.stringify({
                         prompt: prompt,
                         n: 1,
-                        size: '512x512'
+                        size: '1024x1024',  // Recraft поддерживает этот размер
+                        response_format: 'b64_json'
                     })
                 });
 
+                console.log('Response status:', response.status);
+
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('Recraft API error:', response.status, errorText);
-                    throw new Error(`API Error: ${response.status}`);
+                    console.error('API Error:', response.status, errorText);
+                    
+                    if (response.status === 401) return null;
+                    if (response.status === 403) return null;
+                    if (response.status === 429) return null;
+                    
+                    throw new Error(`Ошибка API: ${response.status}`);
                 }
 
                 const data = await response.json();
-                console.log('Recraft response:', data);
+                console.log('Recraft response received');
                 
-                // Recraft возвращает массив с URL или base64
-                if (data.data && data.data[0] && data.data[0].url) {
-                    // Если пришел URL, загружаем изображение
-                    const imgResponse = await fetch(data.data[0].url);
-                    const blob = await imgResponse.blob();
-                    return URL.createObjectURL(blob);
-                } else if (data.data && data.data[0] && data.data[0].b64_json) {
-                    // Если пришел base64
-                    return `data:image/png;base64,${data.data[0].b64_json}`;
+                if (data.data && data.data[0] && data.data[0].b64_json) {
+                    // Уменьшаем до 512x512 для Telegram
+                    const resizedImage = await resizeImageTo512(data.data[0].b64_json);
+                    return resizedImage;
                 }
                 
-                throw new Error('Unexpected API response format');
+                return null;
                 
             } catch (error) {
                 console.error('Error in generateRealImageRecraft:', error);
-                throw error;
+                return null;
             }
         }
 
-        // Демо-генерация (запасной вариант)
+        // ========== ДЕМО-ГЕНЕРАЦИЯ (запасной вариант) ==========
         function generateDemoImage(emotion, isAnimated) {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
@@ -769,41 +751,48 @@
             ctx.beginPath();
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 6;
-            if (emotion.id === 'happy' || emotion.id === 'laughing' || emotion.id === 'love') {
+            if (emotion.id === 'happy' || emotion.id === 'laughing' || emotion.id === 'love' || emotion.id === 'cool') {
                 ctx.arc(256, 240, 50, 0, Math.PI);
-            } else if (emotion.id === 'sad' || emotion.id === 'crying') {
+            } else if (emotion.id === 'sad' || emotion.id === 'crying' || emotion.id === 'sick') {
                 ctx.arc(256, 280, 50, Math.PI, 0, true);
-            } else if (emotion.id === 'surprised') {
+            } else if (emotion.id === 'surprised' || emotion.id === 'scared') {
                 ctx.arc(256, 240, 25, 0, Math.PI * 2);
                 ctx.fillStyle = '#333';
                 ctx.fill();
+            } else if (emotion.id === 'winking') {
+                ctx.arc(200, 170, 20, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(312, 170, 20, 0, Math.PI);
+                ctx.stroke();
+                ctx.arc(256, 240, 40, 0.2, Math.PI - 0.2);
             } else {
                 ctx.arc(256, 240, 40, 0.2, Math.PI - 0.2);
             }
             ctx.stroke();
             
-            // Добавляем эмодзи сверху
+            // Добавляем эмодзи внизу
             ctx.fillStyle = '#333';
-            ctx.font = 'bold 60px Arial';
-            ctx.fillText(emotion.icon, 200, 380);
+            ctx.font = 'bold 80px Arial';
+            ctx.fillText(emotion.icon, 200, 400);
             
             // Если анимированный - добавляем звездочки
             if (isAnimated) {
                 for (let i = 0; i < 3; i++) {
                     ctx.fillStyle = '#fbbf24';
                     ctx.beginPath();
-                    ctx.arc(100 + i * 150, 450, 15, 0, Math.PI * 2);
+                    ctx.arc(100 + i * 150, 450, 20, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.fillStyle = 'white';
-                    ctx.font = 'bold 20px Arial';
-                    ctx.fillText('✨', 90 + i * 150, 455);
+                    ctx.font = 'bold 25px Arial';
+                    ctx.fillText('✨', 90 + i * 150, 460);
                 }
             }
             
             return canvas.toDataURL('image/png');
         }
 
-        // Генерация набора
+        // ========== ГЕНЕРАЦИЯ НАБОРА ==========
         window.generatePack = async () => {
             const character = document.getElementById('characterPrompt').value.trim();
             
@@ -827,28 +816,28 @@
                         `Генерируем ${i+1} из ${selectedEmotions.length}: ${emotion.name}`;
                     
                     // Статичный стикер
-                    const staticPrompt = `${character}, ${emotion.prompt}, ${currentStyle}, static sticker for Telegram, 512x512, high quality, isolated on white background`;
+                    const staticPrompt = `${character}, ${emotion.prompt}, ${currentStyle}, static sticker for Telegram, high quality, isolated on white background`;
                     
                     // Анимированный стикер
-                    const animatedPrompt = `${character}, ${emotion.prompt}, ${currentStyle}, animated sticker for Telegram, with motion effect, 512x512, high quality, isolated on white background`;
+                    const animatedPrompt = `${character}, ${emotion.prompt}, ${currentStyle}, animated sticker for Telegram, with motion effect, high quality, isolated on white background`;
                     
                     let staticImage, animatedImage;
                     
                     if (useRealAPI) {
-                        try {
-                            staticImage = await generateRealImageRecraft(staticPrompt);
-                            animatedImage = await generateRealImageRecraft(animatedPrompt);
-                        } catch (error) {
-                            console.log('Switching to demo mode due to API error');
+                        staticImage = await generateRealImageRecraft(staticPrompt);
+                        animatedImage = await generateRealImageRecraft(animatedPrompt);
+                        
+                        // Если API вернул null, переключаемся на демо
+                        if (!staticImage || !animatedImage) {
+                            console.log('Switching to demo mode');
                             useRealAPI = false;
                             staticImage = generateDemoImage(emotion, false);
                             animatedImage = generateDemoImage(emotion, true);
                             
-                            // Показываем сообщение
                             const statusDiv = document.getElementById('apiStatus');
                             statusDiv.style.display = 'block';
                             statusDiv.className = 'api-status error';
-                            statusDiv.innerHTML = '⚠️ Переключено на демо-режим. Проверьте API ключ.';
+                            statusDiv.innerHTML = '⚠️ Переключено на демо-режим. Проверьте API ключ и баланс.';
                         }
                     } else {
                         staticImage = generateDemoImage(emotion, false);
@@ -878,7 +867,7 @@
             }
         };
 
-        // Отображение результатов
+        // ========== ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ==========
         function displayResults(staticStickers, animatedStickers) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
@@ -960,7 +949,7 @@
             document.getElementById('telegramGuide').style.display = 'block';
         }
 
-        // Скачивание всех стикеров из набора
+        // ========== СКАЧИВАНИЕ ==========
         window.downloadAll = (type) => {
             const stickers = type === 'static' ? generatedStatic : generatedAnimated;
             stickers.forEach(s => {
@@ -971,6 +960,50 @@
             });
             alert(`Скачивание ${stickers.length} стикеров начато!`);
         };
+
+        // ========== ПРОВЕРКА API КЛЮЧА ==========
+        async function testApiKey() {
+            const statusDiv = document.getElementById('apiStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'api-status';
+            statusDiv.innerHTML = '⚡ Проверка подключения к Recraft API...';
+            
+            try {
+                const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${RECRAFT_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: 'test smile emoji',
+                        n: 1,
+                        size: '1024x1024'
+                    })
+                });
+
+                if (response.ok) {
+                    statusDiv.className = 'api-status success';
+                    statusDiv.innerHTML = '✅ Recraft API подключен успешно! Можно генерировать стикеры.';
+                } else {
+                    const error = await response.text();
+                    statusDiv.className = 'api-status error';
+                    
+                    if (response.status === 401) {
+                        statusDiv.innerHTML = '❌ Неверный API ключ. Проверьте ключ в коде.';
+                    } else if (response.status === 403) {
+                        statusDiv.innerHTML = '❌ Нет доступа. Возможно, закончились API units. Проверьте баланс на recraft.ai';
+                    } else if (response.status === 429) {
+                        statusDiv.innerHTML = '❌ Слишком много запросов. Подождите немного.';
+                    } else {
+                        statusDiv.innerHTML = `❌ Ошибка API: ${response.status}. ${error}`;
+                    }
+                }
+            } catch (error) {
+                statusDiv.className = 'api-status error';
+                statusDiv.innerHTML = `❌ Ошибка сети: ${error.message}`;
+            }
+        }
 
         // Инициализация
         renderEmotions();
