@@ -334,6 +334,14 @@
             margin: 20px 0;
         }
 
+        .api-status {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
         footer {
             text-align: center;
             margin-top: 20px;
@@ -349,7 +357,18 @@
         <!-- Основная панель создания -->
         <div class="creator-panel">
             <div class="panel-title">
-                📝 1. Опишите вашего персонажа
+                📝 1. Введите ваш API ключ Recraft
+                <span>обязательно</span>
+            </div>
+            
+            <div class="input-group">
+                <label>API ключ (получите на recraft.ai)</label>
+                <input type="text" id="apiKey" placeholder="recr_ваш_ключ_сюда" value="">
+                <p style="color: #666; font-size: 12px; margin-top: 5px;">🔐 Ключ хранится только в вашем браузере</p>
+            </div>
+
+            <div class="panel-title" style="margin-top: 30px;">
+                📝 2. Опишите вашего персонажа
                 <span>обязательно</span>
             </div>
             
@@ -359,14 +378,14 @@
             </div>
 
             <div class="panel-title" style="margin-top: 30px;">
-                😊 2. Выберите эмоции для набора
+                😊 3. Выберите эмоции для набора
                 <span>минимум 5</span>
             </div>
 
             <div class="emotions-grid" id="emotionsGrid"></div>
 
             <div class="panel-title" style="margin-top: 30px;">
-                🎨 3. Выберите стиль
+                🎨 4. Выберите стиль
             </div>
 
             <div class="example-tags" id="styleTags">
@@ -388,7 +407,7 @@
         <div id="loading" class="loading">
             <div class="loading-spinner"></div>
             <p style="margin-bottom: 10px;">🎨 Нейросеть рисует ваши стикеры...</p>
-            <p style="color: #666; font-size: 14px;">Это займет около 30 секунд</p>
+            <p style="color: #666; font-size: 14px;">Это займет около 30-60 секунд</p>
         </div>
 
         <!-- Результаты -->
@@ -424,6 +443,49 @@
     </footer>
 
     <script>
+        // ========== НАСТРОЙКИ RECRAFT AI ==========
+        // Функция для генерации через Recraft AI
+        async function generateRealImageRecraft(prompt, apiKey) {
+            try {
+                console.log('Отправляем запрос к Recraft AI...');
+                
+                const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        n: 1,
+                        size: '512x512',
+                        model: 'recraftv3',
+                        style: 'digital_illustration',
+                        response_format: 'b64_json'
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    console.error('Ошибка API:', response.status, errorData);
+                    throw new Error(`Ошибка API: ${response.status} - ${errorData}`);
+                }
+
+                const data = await response.json();
+                console.log('Ответ от Recraft получен');
+                
+                if (data.data && data.data[0] && data.data[0].b64_json) {
+                    return `data:image/png;base64,${data.data[0].b64_json}`;
+                }
+                
+                throw new Error('Неожиданный формат ответа от Recraft');
+                
+            } catch (error) {
+                console.error('Ошибка в generateRealImageRecraft:', error);
+                throw error;
+            }
+        }
+
         // База эмоций для стикеров
         const EMOTIONS = [
             { id: 'happy', name: '😊 Счастье', icon: '😊', prompt: 'счастливый, улыбается, радостный' },
@@ -459,7 +521,7 @@
                     if (e.target.type !== 'checkbox') {
                         const checkbox = div.querySelector('input');
                         checkbox.checked = !checkbox.checked;
-                        toggleEmotion(emotion, checkbox.checked);
+                        toggleEmotion(emotion.id, checkbox.checked);
                     }
                 };
                 
@@ -518,12 +580,46 @@
             document.getElementById('characterPrompt').value = character;
         };
 
+        // Демо-генерация (запасной вариант)
+        function generateDemoImage(prompt, emotion) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            
+            // Рисуем градиентный фон
+            const hue = Math.random() * 360;
+            const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+            gradient.addColorStop(0, `hsl(${hue}, 70%, 60%)`);
+            gradient.addColorStop(1, `hsl(${hue + 60}, 70%, 60%)`);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 512, 512);
+            
+            // Добавляем текст
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 40px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(emotion.icon, 256, 150);
+            ctx.font = 'bold 30px Arial';
+            ctx.fillText(prompt.substring(0, 15), 256, 300);
+            ctx.font = '20px Arial';
+            ctx.fillText(emotion.name, 256, 400);
+            
+            return canvas.toDataURL('image/png');
+        }
+
         // Генерация набора
         window.generatePack = async () => {
             const character = document.getElementById('characterPrompt').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
             
             if (!character) {
                 alert('Пожалуйста, опишите вашего персонажа!');
+                return;
+            }
+
+            if (!apiKey) {
+                alert('Пожалуйста, введите ваш API ключ Recraft!');
                 return;
             }
 
@@ -548,40 +644,31 @@
                     const emotion = EMOTIONS.find(e => e.id === emotionId);
                     
                     // Создаем промпт для генерации
-                    const prompt = `${character}, ${emotion.prompt}, ${currentStyle}, изолирован на белом фоне, эмодзи стикер, 512x512`;
+                    const prompt = `${character}, ${emotion.prompt}, ${currentStyle}, изолирован на белом фоне, эмодзи стикер, 512x512, высокое качество`;
                     
-                    // Создаем демо-изображение (в реальности здесь будет API)
-                    await new Promise(resolve => setTimeout(resolve, 500)); // Имитация загрузки
+                    let imageDataUrl;
                     
-                    // Создаем canvas для демо
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 512;
-                    canvas.height = 512;
-                    const ctx = canvas.getContext('2d');
-                    
-                    // Рисуем градиентный фон
-                    const gradient = ctx.createLinearGradient(0, 0, 512, 512);
-                    gradient.addColorStop(0, `hsl(${i * 36}, 70%, 60%)`);
-                    gradient.addColorStop(1, `hsl(${i * 36 + 60}, 70%, 60%)`);
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(0, 0, 512, 512);
-                    
-                    // Добавляем текст
-                    ctx.fillStyle = 'white';
-                    ctx.font = 'bold 40px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(emotion.icon, 256, 150);
-                    ctx.font = 'bold 30px Arial';
-                    ctx.fillText(character, 256, 300);
-                    ctx.font = '20px Arial';
-                    ctx.fillText(emotion.name, 256, 400);
-                    
-                    const dataUrl = canvas.toDataURL('image/png');
+                    try {
+                        // Пробуем реальную генерацию через Recraft
+                        console.log(`Генерируем стикер ${i+1}: ${emotion.name}`);
+                        imageDataUrl = await generateRealImageRecraft(prompt, apiKey);
+                        console.log(`Стикер ${i+1} готов`);
+                    } catch (error) {
+                        console.error('Ошибка Recraft, используем демо:', error);
+                        // Если ошибка - используем демо-генерацию
+                        imageDataUrl = generateDemoImage(character, emotion);
+                        
+                        // Показываем сообщение об ошибке
+                        const apiStatus = document.createElement('div');
+                        apiStatus.className = 'api-status';
+                        apiStatus.innerHTML = `⚠️ Ошибка API Recraft: ${error.message}. Используется демо-режим. Проверьте ключ API и попробуйте снова.`;
+                        document.getElementById('results').appendChild(apiStatus);
+                    }
                     
                     generatedStickers.push({
                         id: i,
                         emotion: emotion,
-                        dataUrl: dataUrl,
+                        dataUrl: imageDataUrl,
                         filename: `${character}_${emotion.id}.png`
                     });
                 }
@@ -589,7 +676,7 @@
                 displayResults(generatedStickers);
                 
             } catch (error) {
-                console.error(error);
+                console.error('Общая ошибка:', error);
                 alert('Ошибка при генерации. Пожалуйста, попробуйте еще раз.');
             } finally {
                 document.getElementById('loading').style.display = 'none';
@@ -613,7 +700,7 @@
             actionsDiv.className = 'pack-actions';
             actionsDiv.innerHTML = `
                 <button class="btn btn-secondary" onclick="downloadAllStickers()">
-                    📥 Скачать весь набор (ZIP)
+                    📥 Скачать весь набор (10 стикеров)
                 </button>
                 <button class="btn" onclick="copyEmojiList()">
                     📋 Копировать список эмодзи
@@ -630,7 +717,7 @@
                 card.className = 'sticker-card';
                 card.innerHTML = `
                     <img src="${sticker.dataUrl}" alt="${sticker.emotion.name}">
-                    <div class="sticker-emotion">${sticker.emotion.name}</div>
+                    <div class="sticker-emotion">${sticker.emotion.name} ${sticker.emotion.icon}</div>
                     <button class="download-btn" onclick="downloadSticker('${sticker.dataUrl}', '${sticker.filename}')">
                         💾 Скачать
                     </button>
@@ -652,12 +739,12 @@
             link.click();
         };
 
-        // Скачивание всех стикеров (в реальности здесь должна быть архивация)
+        // Скачивание всех стикеров
         window.downloadAllStickers = () => {
             generatedStickers.forEach(sticker => {
                 downloadSticker(sticker.dataUrl, sticker.filename);
             });
-            alert('Все стикеры скачиваются по отдельности. Для удобства мы добавим ZIP-архивацию позже!');
+            alert('Все стикеры скачиваются!');
         };
 
         // Копирование списка эмодзи для бота
