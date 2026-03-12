@@ -1307,108 +1307,111 @@
         <p>30 профессий • 30 эмоций • TGS анимация • История с ограничением</p>
     </footer>
 
-    <script>
-        // ========== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА ==========
-        window.openProjectInfo = function() {
-            document.getElementById('projectModal').classList.add('active');
-        };
+<script>
+// ========== API КЛЮЧ RECRAFT (СТРОГО В НАЧАЛЕ) ==========
+const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
+console.log('✅ Ключ Recraft загружен');
 
-        window.closeProjectInfo = function() {
-            document.getElementById('projectModal').classList.remove('active');
-        };
+// ========== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА ==========
+window.openProjectInfo = function() {
+    document.getElementById('projectModal').classList.add('active');
+};
 
-        window.onclick = function(event) {
-            const modal = document.getElementById('projectModal');
-            if (event.target === modal) {
-                modal.classList.remove('active');
-            }
-        };
+window.closeProjectInfo = function() {
+    document.getElementById('projectModal').classList.remove('active');
+};
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                document.getElementById('projectModal').classList.remove('active');
+window.onclick = function(event) {
+    const modal = document.getElementById('projectModal');
+    if (event.target === modal) {
+        modal.classList.remove('active');
+    }
+};
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('projectModal').classList.remove('active');
+    }
+});
+
+// ========== MEDIAPIPE ==========
+let poseDetector = null;
+let mediapipeReady = false;
+
+async function initMediaPipe() {
+    const statusDiv = document.getElementById('mediapipeStatus');
+    try {
+        if (typeof Pose === 'undefined') {
+            throw new Error('MediaPipe библиотека не загружена');
+        }
+        
+        const pose = new Pose({
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
             }
         });
         
-        // ========== MEDIAPIPE ==========
-        let poseDetector = null;
-        let mediapipeReady = false;
+        pose.setOptions({
+            modelComplexity: 1,
+            smoothLandmarks: true,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
+        
+        await pose.initialize();
+        poseDetector = pose;
+        mediapipeReady = true;
+        
+        statusDiv.className = 'api-status mediapipe';
+        statusDiv.innerHTML = '<span class="status-icon">✅</span><span>MediaPipe: 33 точки</span>';
+        if (typeof addDebugLog === 'function') addDebugLog('success', 'MediaPipe готов');
+    } catch (error) {
+        console.error('MediaPipe init error:', error);
+        statusDiv.className = 'api-status mediapipe error';
+        statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Ошибка загрузки</span>';
+        mediapipeReady = false;
+    }
+}
 
-        async function initMediaPipe() {
-            const statusDiv = document.getElementById('mediapipeStatus');
-            try {
-                // Проверяем, загружена ли библиотека Pose
-                if (typeof Pose === 'undefined') {
-                    throw new Error('MediaPipe библиотека не загружена');
-                }
-                
-                const pose = new Pose({
-                    locateFile: (file) => {
-                        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-                    }
-                });
-                
-                pose.setOptions({
-                    modelComplexity: 1,
-                    smoothLandmarks: true,
-                    minDetectionConfidence: 0.5,
-                    minTrackingConfidence: 0.5
-                });
-                
-                await pose.initialize();
-                poseDetector = pose;
-                mediapipeReady = true;
-                
-                statusDiv.className = 'api-status mediapipe';
-                statusDiv.innerHTML = '<span class="status-icon">✅</span><span>MediaPipe: 33 точки</span>';
-                if (typeof addDebugLog === 'function') addDebugLog('success', 'MediaPipe готов');
-            } catch (error) {
-                console.error('MediaPipe init error:', error);
-                statusDiv.className = 'api-status mediapipe error';
-                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Ошибка загрузки</span>';
-                mediapipeReady = false;
-            }
-        }
+// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+function toggleDebug() {
+    const panel = document.getElementById('debugPanel');
+    if (panel) {
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+}
 
-        // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
-        function toggleDebug() {
-            const panel = document.getElementById('debugPanel');
-            if (panel) {
-                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-            }
-        }
+function clearDebug() {
+    const logs = document.getElementById('debugLogs');
+    if (logs) logs.innerHTML = '';
+}
 
-        function clearDebug() {
-            const logs = document.getElementById('debugLogs');
-            if (logs) logs.innerHTML = '';
-        }
+function addDebugLog(type, message, data = null) {
+    const logs = document.getElementById('debugLogs');
+    if (!logs) return;
+    
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = document.createElement('div');
+    logEntry.style.marginBottom = '8px';
+    logEntry.style.borderBottom = '1px solid #334155';
+    logEntry.style.paddingBottom = '4px';
+    
+    let icon = 'ℹ️';
+    if (type === 'error') icon = '❌';
+    else if (type === 'success') icon = '✅';
+    else if (type === 'info') icon = 'ℹ️';
+    
+    logEntry.innerHTML = `
+        <span style="color: #fbbf24;">${timestamp}</span>
+        <span style="color: ${type === 'error' ? '#ef4444' : (type === 'success' ? '#4ade80' : '#38bdf8')}">${icon} ${message}</span>
+        ${data ? `<pre style="font-size: 10px; color: #94a3b8;">${JSON.stringify(data, null, 2).substring(0, 200)}</pre>` : ''}
+    `;
+    logs.appendChild(logEntry);
+    logs.scrollTop = logs.scrollHeight;
+}
 
-        function addDebugLog(type, message, data = null) {
-            const logs = document.getElementById('debugLogs');
-            if (!logs) return;
-            
-            const timestamp = new Date().toLocaleTimeString();
-            const logEntry = document.createElement('div');
-            logEntry.style.marginBottom = '8px';
-            logEntry.style.borderBottom = '1px solid #334155';
-            logEntry.style.paddingBottom = '4px';
-            
-            let icon = 'ℹ️';
-            if (type === 'error') icon = '❌';
-            else if (type === 'success') icon = '✅';
-            else if (type === 'info') icon = 'ℹ️';
-            
-            logEntry.innerHTML = `
-                <span style="color: #fbbf24;">${timestamp}</span>
-                <span style="color: ${type === 'error' ? '#ef4444' : (type === 'success' ? '#4ade80' : '#38bdf8')}">${icon} ${message}</span>
-                ${data ? `<pre style="font-size: 10px; color: #94a3b8;">${JSON.stringify(data, null, 2).substring(0, 200)}</pre>` : ''}
-            `;
-            logs.appendChild(logEntry);
-            logs.scrollTop = logs.scrollHeight;
-        }
-
-        // ========== 30 ПРОФЕССИЙ ==========
-        const PROFESSIONS = [
+// ========== 30 ПРОФЕССИЙ ==========
+const PROFESSIONS = [
     {
         id: 'zoomer',
         name: '📱 Зумер',
@@ -2373,145 +2376,145 @@
     }
 ];
 
-        // ========== 30 ЭМОЦИЙ ==========
-        const EMOTIONS = [
-            { id: 'happy', name: 'Счастье', icon: '😊', prompt: 'happy, smiling, joyful' },
-            { id: 'sad', name: 'Грусть', icon: '😢', prompt: 'sad, crying, unhappy' },
-            { id: 'angry', name: 'Злость', icon: '😠', prompt: 'angry, mad, furious' },
-            { id: 'surprised', name: 'Удивление', icon: '😮', prompt: 'surprised, shocked' },
-            { id: 'laughing', name: 'Смех', icon: '😂', prompt: 'laughing, laughing hard' },
-            { id: 'love', name: 'Любовь', icon: '😍', prompt: 'in love, heart eyes' },
-            { id: 'sleepy', name: 'Сон', icon: '😴', prompt: 'sleepy, tired, yawning' },
-            { id: 'cool', name: 'Крутой', icon: '😎', prompt: 'cool, stylish, with sunglasses' },
-            { id: 'scared', name: 'Страх', icon: '😨', prompt: 'scared, frightened, terrified' },
-            { id: 'silly', name: 'Глупый', icon: '🤪', prompt: 'silly, goofy, funny' },
-            { id: 'sick', name: 'Болеет', icon: '🤒', prompt: 'sick, ill, with thermometer' },
-            { id: 'eating', name: 'Ест', icon: '🍔', prompt: 'eating, having food, delicious' },
-            { id: 'working', name: 'Работает', icon: '💻', prompt: 'working, at computer, busy' },
-            { id: 'celebrating', name: 'Празднует', icon: '🎉', prompt: 'celebrating, party, dancing' },
-            { id: 'thinking', name: 'Думает', icon: '🤔', prompt: 'thinking, thoughtful' },
-            { id: 'crying', name: 'Плачет', icon: '😭', prompt: 'crying, sobbing, tears' },
-            { id: 'winking', name: 'Подмигивает', icon: '😉', prompt: 'winking, playful, flirty' },
-            { id: 'shy', name: 'Стесняется', icon: '🥺', prompt: 'shy, embarrassed, blushing' },
-            { id: 'bored', name: 'Скучает', icon: '🥱', prompt: 'bored, yawning, uninterested' },
-            { id: 'proud', name: 'Гордый', icon: '🦚', prompt: 'proud, confident, pleased' }
-        ];
+// ========== 30 ЭМОЦИЙ ==========
+const EMOTIONS = [
+    { id: 'happy', name: 'Счастье', icon: '😊', prompt: 'happy, smiling, joyful' },
+    { id: 'sad', name: 'Грусть', icon: '😢', prompt: 'sad, crying, unhappy' },
+    { id: 'angry', name: 'Злость', icon: '😠', prompt: 'angry, mad, furious' },
+    { id: 'surprised', name: 'Удивление', icon: '😮', prompt: 'surprised, shocked' },
+    { id: 'laughing', name: 'Смех', icon: '😂', prompt: 'laughing, laughing hard' },
+    { id: 'love', name: 'Любовь', icon: '😍', prompt: 'in love, heart eyes' },
+    { id: 'sleepy', name: 'Сон', icon: '😴', prompt: 'sleepy, tired, yawning' },
+    { id: 'cool', name: 'Крутой', icon: '😎', prompt: 'cool, stylish, with sunglasses' },
+    { id: 'scared', name: 'Страх', icon: '😨', prompt: 'scared, frightened, terrified' },
+    { id: 'silly', name: 'Глупый', icon: '🤪', prompt: 'silly, goofy, funny' },
+    { id: 'sick', name: 'Болеет', icon: '🤒', prompt: 'sick, ill, with thermometer' },
+    { id: 'eating', name: 'Ест', icon: '🍔', prompt: 'eating, having food, delicious' },
+    { id: 'working', name: 'Работает', icon: '💻', prompt: 'working, at computer, busy' },
+    { id: 'celebrating', name: 'Празднует', icon: '🎉', prompt: 'celebrating, party, dancing' },
+    { id: 'thinking', name: 'Думает', icon: '🤔', prompt: 'thinking, thoughtful' },
+    { id: 'crying', name: 'Плачет', icon: '😭', prompt: 'crying, sobbing, tears' },
+    { id: 'winking', name: 'Подмигивает', icon: '😉', prompt: 'winking, playful, flirty' },
+    { id: 'shy', name: 'Стесняется', icon: '🥺', prompt: 'shy, embarrassed, blushing' },
+    { id: 'bored', name: 'Скучает', icon: '🥱', prompt: 'bored, yawning, uninterested' },
+    { id: 'proud', name: 'Гордый', icon: '🦚', prompt: 'proud, confident, pleased' }
+];
 
-        let selectedProfession = null;
-        let selectedEmotions = [];
-        let currentStyle = '3d render, pixar style, volumetric';
-        let selectedPack = 'premium';
-        let generatedPNG = [];
-        let generatedTGS = [];
-        let generationHistory = [];
+let selectedProfession = null;
+let selectedEmotions = [];
+let currentStyle = '3d render, pixar style, volumetric';
+let selectedPack = 'premium';
+let generatedPNG = [];
+let generatedTGS = [];
+let generationHistory = [];
 
-        // ========== ФУНКЦИИ ИНТЕРФЕЙСА ==========
-        function renderProfessions() {
-            const grid = document.getElementById('professionsGrid');
-            if (!grid) return;
-            
-            grid.innerHTML = '';
-            PROFESSIONS.forEach(profession => {
-                const div = document.createElement('div');
-                div.className = 'profession-item';
-                div.onclick = (e) => {
-                    selectProfession(profession.id, e);
-                };
-                div.innerHTML = `<span class="profession-icon">${profession.icon}</span><span class="profession-name">${profession.name}</span>`;
-                grid.appendChild(div);
-            });
-        }
-
-        window.selectProfession = (professionId, event) => {
-            selectedProfession = professionId;
-            document.querySelectorAll('.profession-item').forEach(item => item.classList.remove('selected'));
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.add('selected');
-            }
-            const profession = PROFESSIONS.find(p => p.id === professionId);
-            if (profession) {
-                const countEl = document.getElementById('selectedProfessionCount');
-                if (countEl) countEl.textContent = profession.name;
-            }
+// ========== ФУНКЦИИ ИНТЕРФЕЙСА ==========
+function renderProfessions() {
+    const grid = document.getElementById('professionsGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    PROFESSIONS.forEach(profession => {
+        const div = document.createElement('div');
+        div.className = 'profession-item';
+        div.onclick = (e) => {
+            selectProfession(profession.id, e);
         };
+        div.innerHTML = `<span class="profession-icon">${profession.icon}</span><span class="profession-name">${profession.name}</span>`;
+        grid.appendChild(div);
+    });
+}
 
-        function renderEmotions() {
-            const grid = document.getElementById('emotionsGrid');
-            if (!grid) return;
-            
-            grid.innerHTML = '';
-            EMOTIONS.forEach(emotion => {
-                const div = document.createElement('div');
-                div.className = 'emotion-item';
-                div.onclick = (e) => {
-                    if (e.target.type !== 'checkbox') {
-                        const checkbox = div.querySelector('input');
-                        if (checkbox) {
-                            checkbox.checked = !checkbox.checked;
-                            toggleEmotion(emotion.id, checkbox.checked);
-                        }
-                    }
-                };
-                div.innerHTML = `
-                    <input type="checkbox" value="${emotion.id}" onchange="toggleEmotion('${emotion.id}', this.checked)">
-                    <span class="emotion-icon">${emotion.icon}</span>
-                    <span class="emotion-name">${emotion.name}</span>
-                `;
-                grid.appendChild(div);
-            });
-        }
+window.selectProfession = (professionId, event) => {
+    selectedProfession = professionId;
+    document.querySelectorAll('.profession-item').forEach(item => item.classList.remove('selected'));
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('selected');
+    }
+    const profession = PROFESSIONS.find(p => p.id === professionId);
+    if (profession) {
+        const countEl = document.getElementById('selectedProfessionCount');
+        if (countEl) countEl.textContent = profession.name;
+    }
+};
 
-        window.toggleEmotion = (emotionId, checked) => {
-            if (checked) {
-                if (!selectedEmotions.includes(emotionId)) selectedEmotions.push(emotionId);
-            } else {
-                selectedEmotions = selectedEmotions.filter(id => id !== emotionId);
-            }
-            
-            document.querySelectorAll('.emotion-item').forEach(item => {
-                const checkbox = item.querySelector('input');
-                if (checkbox && checkbox.checked) {
-                    item.classList.add('selected');
-                } else {
-                    item.classList.remove('selected');
+function renderEmotions() {
+    const grid = document.getElementById('emotionsGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    EMOTIONS.forEach(emotion => {
+        const div = document.createElement('div');
+        div.className = 'emotion-item';
+        div.onclick = (e) => {
+            if (e.target.type !== 'checkbox') {
+                const checkbox = div.querySelector('input');
+                if (checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    toggleEmotion(emotion.id, checkbox.checked);
                 }
-            });
-            
-            const countEl = document.getElementById('selectedCount');
-            if (countEl) countEl.textContent = selectedEmotions.length;
-            
-            const generateBtn = document.getElementById('generateBtn');
-            if (generateBtn) {
-                generateBtn.disabled = selectedEmotions.length === 0 || !selectedProfession;
             }
         };
+        div.innerHTML = `
+            <input type="checkbox" value="${emotion.id}" onchange="toggleEmotion('${emotion.id}', this.checked)">
+            <span class="emotion-icon">${emotion.icon}</span>
+            <span class="emotion-name">${emotion.name}</span>
+        `;
+        grid.appendChild(div);
+    });
+}
 
-        document.querySelectorAll('.style-tag').forEach(tag => {
-            tag.addEventListener('click', function() {
-                document.querySelectorAll('.style-tag').forEach(t => t.classList.remove('selected'));
-                this.classList.add('selected');
-                currentStyle = this.dataset.style;
-            });
-        });
+window.toggleEmotion = (emotionId, checked) => {
+    if (checked) {
+        if (!selectedEmotions.includes(emotionId)) selectedEmotions.push(emotionId);
+    } else {
+        selectedEmotions = selectedEmotions.filter(id => id !== emotionId);
+    }
+    
+    document.querySelectorAll('.emotion-item').forEach(item => {
+        const checkbox = item.querySelector('input');
+        if (checkbox && checkbox.checked) {
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+    
+    const countEl = document.getElementById('selectedCount');
+    if (countEl) countEl.textContent = selectedEmotions.length;
+    
+    const generateBtn = document.getElementById('generateBtn');
+    if (generateBtn) {
+        generateBtn.disabled = selectedEmotions.length === 0 || !selectedProfession;
+    }
+};
 
-        window.selectPack = (pack) => {
-            selectedPack = pack;
-            const basicPack = document.getElementById('basicPack');
-            const premiumPack = document.getElementById('premiumPack');
-            const generateBtn = document.getElementById('generateBtn');
-            
-            if (basicPack) basicPack.classList.toggle('selected', pack === 'basic');
-            if (premiumPack) premiumPack.classList.toggle('selected', pack === 'premium');
-            if (generateBtn) generateBtn.classList.toggle('premium', pack === 'premium');
-        };
+document.querySelectorAll('.style-tag').forEach(tag => {
+    tag.addEventListener('click', function() {
+        document.querySelectorAll('.style-tag').forEach(t => t.classList.remove('selected'));
+        this.classList.add('selected');
+        currentStyle = this.dataset.style;
+    });
+});
 
-        // ========== ФУНКЦИИ ГЕНЕРАЦИИ ==========
-        async function generateRecraftPNG(prompt) {
+window.selectPack = (pack) => {
+    selectedPack = pack;
+    const basicPack = document.getElementById('basicPack');
+    const premiumPack = document.getElementById('premiumPack');
+    const generateBtn = document.getElementById('generateBtn');
+    
+    if (basicPack) basicPack.classList.toggle('selected', pack === 'basic');
+    if (premiumPack) premiumPack.classList.toggle('selected', pack === 'premium');
+    if (generateBtn) generateBtn.classList.toggle('premium', pack === 'premium');
+};
+
+// ========== ФУНКЦИИ ГЕНЕРАЦИИ ==========
+async function generateRecraftPNG(prompt) {
     addDebugLog('info', `🖼️ Запрос PNG: ${prompt.substring(0, 100)}...`);
     
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 секунд на генерацию
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
         
         const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
             method: 'POST',
@@ -2560,7 +2563,7 @@ async function generateRecraftSVG(prompt) {
     
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 секунд на генерацию
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
         
         const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
             method: 'POST',
@@ -2582,59 +2585,26 @@ async function generateRecraftSVG(prompt) {
         if (!response.ok) {
             const errorText = await response.text();
             addDebugLog('error', `❌ SVG generation failed: ${response.status} - ${errorText.substring(0, 100)}`);
-            
-            // Дополнительная диагностика
-            if (response.status === 401) {
-                addDebugLog('error', '❌ Неверный API ключ Recraft');
-            } else if (response.status === 429) {
-                addDebugLog('error', '❌ Слишком много запросов к Recraft');
-            } else if (response.status === 500) {
-                addDebugLog('error', '❌ Внутренняя ошибка сервера Recraft');
-            }
             return null;
         }
         
         const data = await response.json();
         
-        // Проверяем формат ответа
         if (data.data && data.data[0] && data.data[0].url) {
-            addDebugLog('success', `✅ SVG URL получен: ${data.data[0].url}`);
+            addDebugLog('success', `✅ SVG URL получен, загружаем файл...`);
             
-            try {
-                const svgResponse = await fetch(data.data[0].url);
-                if (!svgResponse.ok) {
-                    addDebugLog('error', `❌ Не удалось загрузить SVG файл: ${svgResponse.status}`);
-                    return null;
-                }
-                
-                const svgText = await svgResponse.text();
-                
-                // Проверяем, что это действительно SVG
-                if (svgText.includes('<svg') || svgText.includes('<?xml')) {
-                    addDebugLog('success', `✅ SVG загружен, размер: ${svgText.length} символов`);
-                    return svgText;
-                } else {
-                    addDebugLog('error', '❌ Получен не SVG файл');
-                    return null;
-                }
-            } catch (svgError) {
-                addDebugLog('error', `❌ Ошибка загрузки SVG: ${svgError.message}`);
-                return null;
-            }
-        } else if (data.data && data.data[0] && data.data[0].svg) {
-            // Некоторые версии API возвращают SVG напрямую
-            addDebugLog('success', `✅ SVG получен напрямую, размер: ${data.data[0].svg.length} символов`);
-            return data.data[0].svg;
+            const svgResponse = await fetch(data.data[0].url);
+            const svgText = await svgResponse.text();
+            
+            addDebugLog('success', `✅ SVG загружен, размер: ${svgText.length} символов`);
+            return svgText;
         }
         
         addDebugLog('error', '❌ Неожиданный формат ответа от Recraft');
-        console.error('Unexpected response:', data);
         return null;
     } catch (error) {
         if (error.name === 'AbortError') {
             addDebugLog('error', '❌ Таймаут генерации SVG (30 секунд)');
-        } else if (error.message.includes('Failed to fetch')) {
-            addDebugLog('error', '❌ Нет соединения с сервером Recraft. Проверьте интернет.');
         } else {
             addDebugLog('error', `❌ Ошибка сети при генерации SVG: ${error.message}`);
         }
@@ -2642,540 +2612,22 @@ async function generateRecraftSVG(prompt) {
     }
 }
 
-        // ========== TGS ГЕНЕРАЦИЯ ==========
-        async function compressToTGS(lottieJson) {
-            lottieJson.tgs = 1;
-            const compressed = pako.gzip(JSON.stringify(lottieJson));
-            const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-            
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
-            });
-        }
-
-        // Конвертация SVG в Lottie
-        async function convertSvgToLottie(svgString) {
-            // Базовая структура Lottie
-            const lottieJson = {
-                v: "5.5.2",
-                fr: 30,
-                ip: 0,
-                op: 90,
-                w: 512,
-                h: 512,
-                layers: []
-            };
-            
-            try {
-                // Парсим SVG для извлечения слоёв
-                const parser = new DOMParser();
-                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-                const groups = svgDoc.querySelectorAll('g, svg > *');
-                
-                groups.forEach((group, index) => {
-                    // Создаём слой для каждой группы
-                    const layer = {
-                        ddd: 0,
-                        ind: index + 1,
-                        ty: 4, // shape layer
-                        nm: group.getAttribute('id') || `layer_${index}`,
-                        sr: 1,
-                        ks: {
-                            o: { a: 0, k: 100 },
-                            r: { a: 0, k: 0 },
-                            p: { a: 0, k: [256, 256, 0] },
-                            a: { a: 0, k: [256, 256, 0] },
-                            s: { a: 0, k: [100, 100, 100] }
-                        },
-                        ao: 0,
-                        ip: 0,
-                        op: 90,
-                        st: 0,
-                        bm: 0
-                    };
-                    lottieJson.layers.push(layer);
-                });
-            } catch (e) {
-                console.error('SVG parse error:', e);
-            }
-            
-            return lottieJson;
-        }
-
-        // Применение 5-слойной анимации
-        function applyPoseAnimation(lottieJson, poseData) {
-            if (!poseData) return lottieJson;
-            
-            lottieJson.layers.forEach((layer, index) => {
-                // Анимация для первых слоёв (голова)
-                if (index === 0 && poseData.hasFace) {
-                    layer.ks.r = {
-                        a: 1,
-                        k: [
-                            { t: 0, s: [0] },
-                            { t: 30, s: [5] },
-                            { t: 60, s: [-3] },
-                            { t: 90, s: [0] }
-                        ]
-                    };
-                }
-                
-                // Анимация для средних слоёв (руки)
-                if (index === 1 && poseData.hasArms) {
-                    layer.ks.p = {
-                        a: 1,
-                        k: [
-                            { t: 0, s: [256, 256, 0] },
-                            { t: 30, s: [266, 256, 0] },
-                            { t: 60, s: [246, 256, 0] },
-                            { t: 90, s: [256, 256, 0] }
-                        ]
-                    };
-                }
-                
-                // Анимация для последних слоёв (ноги)
-                if (index === 2 && poseData.hasLegs) {
-                    layer.ks.p = {
-                        a: 1,
-                        k: [
-                            { t: 0, s: [256, 256, 0] },
-                            { t: 30, s: [256, 266, 0] },
-                            { t: 60, s: [256, 246, 0] },
-                            { t: 90, s: [256, 256, 0] }
-                        ]
-                    };
-                }
-                
-                // Пульсация для всех слоёв
-                layer.ks.s = {
-                    a: 1,
-                    k: [
-                        { t: 0, s: [100, 100, 100] },
-                        { t: 30, s: [105, 105, 100] },
-                        { t: 60, s: [95, 95, 100] },
-                        { t: 90, s: [100, 100, 100] }
-                    ]
-                };
-            });
-            
-            return lottieJson;
-        }
-
-        // Добавление текстового слоя
-        function addTextLayer(lottieJson, text) {
-            const textLayer = {
-                ddd: 0,
-                ind: lottieJson.layers.length + 1,
-                ty: 5,
-                nm: "humor_text",
-                sr: 1,
-                ks: {
-                    o: { a: 0, k: 100 },
-                    r: { a: 0, k: 0 },
-                    p: { a: 0, k: [256, 400, 0] },
-                    a: { a: 0, k: [0, 0, 0] },
-                    s: { a: 0, k: [100, 100, 100] }
-                },
-                t: {
-                    d: {
-                        k: [{
-                            t: 0,
-                            s: {
-                                t: text,
-                                s: 24,
-                                f: "Arial",
-                                fc: [0, 0, 0, 1],
-                                j: 2
-                            }
-                        }]
-                    }
-                },
-                ip: 0,
-                op: lottieJson.op || 90
-            };
-            
-            lottieJson.layers.push(textLayer);
-            return lottieJson;
-        }
-
-        // ========== MEDIAPIPE АНАЛИЗ ==========
-        async function analyzeImageWithMediaPipe(imageElement) {
-            if (!mediapipeReady || !poseDetector) return null;
-            
-            try {
-                const results = await new Promise((resolve) => {
-                    poseDetector.onResults(resolve);
-                    poseDetector.send({ image: imageElement });
-                });
-                
-                if (results.poseLandmarks) {
-                    const hasFace = results.poseLandmarks.some((lm, idx) => [0,1,2,3,4].includes(idx) && lm.visibility > 0.5);
-                    const hasArms = results.poseLandmarks.some((lm, idx) => [5,6,7,8,9,10].includes(idx) && lm.visibility > 0.5);
-                    const hasLegs = results.poseLandmarks.some((lm, idx) => [11,12,13,14,15,16].includes(idx) && lm.visibility > 0.5);
-                    
-                    return { hasFace, hasArms, hasLegs };
-                }
-                return null;
-            } catch (error) {
-                return null;
-            }
-        }
-
-        // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
-        window.generatePack = async () => {
-            const character = document.getElementById('characterPrompt').value.trim();
-            
-            if (!character || !selectedProfession || selectedEmotions.length === 0) {
-                alert('Пожалуйста, выберите персонажа, профессию и эмоции');
-                return;
-            }
-
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('generateBtn').disabled = true;
-            document.getElementById('results').innerHTML = '';
-
-            try {
-                generatedPNG = [];
-                generatedTGS = [];
-                
-                const profession = PROFESSIONS.find(p => p.id === selectedProfession);
-
-                for (let i = 0; i < selectedEmotions.length; i++) {
-                    const emotionId = selectedEmotions[i];
-                    const emotion = EMOTIONS.find(e => e.id === emotionId);
-                    
-                    document.getElementById('loadingProgress').textContent = 
-                        `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name}`;
-                    
-                    const useHumor = Math.random() < 0.7;
-                    const humorText = useHumor ? profession.humor[Math.floor(Math.random() * profession.humor.length)] : null;
-                    
-                    // ==== 1. ГЕНЕРАЦИЯ PNG (ДЛЯ БАЗОВОГО НАБОРА) ====
-                    const pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
-                    let pngImage = await generateRecraftPNG(pngPrompt);
-                    
-                    // ==== 2. MEDIAPIPE АНАЛИЗ ====
-                    let poseData = null;
-                    if (pngImage) {
-                        const img = new Image();
-                        await new Promise((resolve) => { img.onload = resolve; img.src = pngImage; });
-                        poseData = await analyzeImageWithMediaPipe(img);
-                    }
-                    
-                    // ==== 3. СОХРАНЯЕМ PNG ====
-                    if (pngImage) {
-                        generatedPNG.push({
-                            emotion: emotion,
-                            profession: profession.name,
-                            humor: humorText,
-                            dataUrl: pngImage,
-                            filename: `${character}_${profession.id}_${emotion.id}_${i}.png`,
-                            hasHumor: useHumor
-                        });
-                    }
-                    
-                    // ==== 4. ГЕНЕРАЦИЯ TGS (ТОЛЬКО ДЛЯ ПРЕМИУМ) - ИСПОЛЬЗУЕМ SVG! ====
-                    if (selectedPack === 'premium') {
-                        try {
-                            // Формируем промпт для вектора (НЕ ИСПОЛЬЗУЕМ PNG)
-                            const vectorPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, flat design, clean lines, white background`;
-                            
-                            // ПОЛУЧАЕМ SVG ОТ RECRAFT
-                            const svgData = await generateRecraftSVG(vectorPrompt);
-                            
-                            if (svgData) {
-                                // Конвертируем SVG в Lottie с сохранением слоёв
-                                let lottieJson = await convertSvgToLottie(svgData);
-                                
-                                // Применяем вашу 5-слойную анимацию на основе позы
-                                if (lottieJson && lottieJson.layers) {
-                                    lottieJson = applyPoseAnimation(lottieJson, poseData);
-                                    
-                                    // Добавляем текст с юмором
-                                    if (humorText) {
-                                        lottieJson = addTextLayer(lottieJson, humorText);
-                                    }
-                                    
-                                    // Сжимаем в TGS
-                                    const tgsData = await compressToTGS(lottieJson);
-                                    
-                                    generatedTGS.push({
-                                        emotion: emotion,
-                                        profession: profession.name,
-                                        humor: humorText,
-                                        dataUrl: tgsData,
-                                        filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
-                                    });
-                                    
-                                    if (typeof addDebugLog === 'function') addDebugLog('success', `✅ TGS создан из SVG для ${emotion.name}`);
-                                }
-                            } else {
-                                if (typeof addDebugLog === 'function') addDebugLog('error', `❌ Не удалось получить SVG для ${emotion.name}`);
-                            }
-                            
-                        } catch (e) {
-                            if (typeof addDebugLog === 'function') addDebugLog('error', `❌ TGS generation error: ${e.message}`);
-                            console.error('TGS error:', e);
-                        }
-                    }
-                }
-
-                displayResults(generatedPNG, generatedTGS, profession);
-                addToHistory(character, profession, currentStyle, selectedEmotions.length, generatedPNG, generatedTGS, selectedPack);
-                
-            } catch (error) {
-                alert('Ошибка: ' + error.message);
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('generateBtn').disabled = false;
-            }
+function resizeImageTo512(base64Image) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, 512, 512);
+            resolve(canvas.toDataURL('image/png'));
         };
+        img.src = `data:image/png;base64,${base64Image}`;
+    });
+}
 
-        // ========== ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ==========
-        function displayResults(pngStickers, tgsStickers, profession) {
-            const resultsDiv = document.getElementById('results');
-            if (!resultsDiv) return;
-            
-            resultsDiv.innerHTML = '';
-
-            const humorCount = pngStickers.filter(s => s.hasHumor).length;
-            const classicCount = pngStickers.length - humorCount;
-
-            const title = document.createElement('h2');
-            title.style.cssText = 'font-size: 2em; color: white; margin-bottom: 20px;';
-            title.innerHTML = `🎉 Готово! ${pngStickers.length} стикеров для профессии ${profession.name} (${humorCount} с юмором, ${classicCount} классических)`;
-            resultsDiv.appendChild(title);
-
-            const packagesDiv = document.createElement('div');
-            packagesDiv.className = 'packages';
-
-            // Базовый набор (PNG)
-            const basicPackage = document.createElement('div');
-            basicPackage.className = 'package basic';
-            basicPackage.innerHTML = `
-                <div class="package-header">
-                    <div class="package-title">📷 Базовый (PNG)</div>
-                    <div class="package-price">299 ₽</div>
-                </div>
-                <div class="stickers-grid" id="pngGrid"></div>
-                <button class="download-btn" onclick="downloadAll('png')">
-                    📥 Скачать PNG (${pngStickers.length})
-                </button>
-            `;
-            packagesDiv.appendChild(basicPackage);
-
-            // Премиум набор (TGS)
-            if (selectedPack === 'premium' && tgsStickers.length > 0) {
-                const premiumPackage = document.createElement('div');
-                premiumPackage.className = 'package premium';
-                premiumPackage.innerHTML = `
-                    <div class="package-header">
-                        <div class="package-title">✨ Премиум (TGS)</div>
-                        <div class="package-price">499 ₽</div>
-                    </div>
-                    <div class="stickers-grid" id="tgsGrid"></div>
-                    <button class="download-btn premium" onclick="downloadAll('tgs')">
-                        📥 Скачать TGS (${tgsStickers.length})
-                    </button>
-                `;
-                packagesDiv.appendChild(premiumPackage);
-            }
-
-            resultsDiv.appendChild(packagesDiv);
-
-            // Заполняем PNG сетку
-            const pngGrid = document.getElementById('pngGrid');
-            if (pngGrid) {
-                pngStickers.forEach(s => {
-                    const card = document.createElement('div');
-                    card.className = 'sticker-card';
-                    card.innerHTML = `
-                        <div class="sticker-preview">
-                            <img src="${s.dataUrl}" alt="${s.emotion.name}">
-                        </div>
-                        <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                        ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
-                        <span class="sticker-badge png">PNG</span>
-                    `;
-                    pngGrid.appendChild(card);
-                });
-            }
-
-            // Заполняем TGS сетку
-            if (selectedPack === 'premium' && tgsStickers.length > 0) {
-                const tgsGrid = document.getElementById('tgsGrid');
-                if (tgsGrid) {
-                    tgsStickers.forEach(s => {
-                        const card = document.createElement('div');
-                        card.className = 'sticker-card premium';
-                        card.innerHTML = `
-                            <div class="sticker-preview">
-                                <div style="font-size: 3em;">${s.emotion.icon}</div>
-                            </div>
-                            <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                            ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
-                            <span class="sticker-badge tgs">TGS</span>
-                            <span class="sticker-badge lottie">Lottie</span>
-                        `;
-                        tgsGrid.appendChild(card);
-                    });
-                }
-            }
-
-            const telegramGuide = document.getElementById('telegramGuide');
-            if (telegramGuide) telegramGuide.style.display = 'block';
-        }
-
-        // ========== СКАЧИВАНИЕ ==========
-        window.downloadAll = (type) => {
-            const stickers = type === 'png' ? generatedPNG : generatedTGS;
-            stickers.forEach(s => {
-                const link = document.createElement('a');
-                link.download = s.filename;
-                link.href = s.dataUrl;
-                link.click();
-            });
-            alert(`Скачивание ${stickers.length} файлов начато!`);
-        };
-
-        // ========== ИСТОРИЯ ==========
-        function loadHistory() {
-            try {
-                const saved = localStorage.getItem('stickerHistory');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (Array.isArray(parsed)) {
-                        generationHistory = parsed.slice(0, 30);
-                    } else {
-                        generationHistory = [];
-                    }
-                } else {
-                    generationHistory = [];
-                }
-            } catch (e) {
-                generationHistory = [];
-                try {
-                    localStorage.removeItem('stickerHistory');
-                } catch (e) {}
-            }
-            renderHistory();
-        }
-
-        function saveHistory() {
-            try {
-                const historyToSave = generationHistory.map(entry => ({
-                    id: entry.id,
-                    date: entry.date,
-                    character: entry.character,
-                    profession: entry.profession,
-                    professionIcon: entry.professionIcon,
-                    style: entry.style,
-                    emotions: entry.emotions,
-                    humorCount: entry.humorCount,
-                    classicCount: entry.classicCount,
-                    packType: entry.packType,
-                    firstHumor: entry.firstHumor
-                }));
-                localStorage.setItem('stickerHistory', JSON.stringify(historyToSave.slice(0, 30)));
-            } catch (e) {
-                try {
-                    localStorage.removeItem('stickerHistory');
-                } catch (e) {}
-            }
-        }
-
-        function addToHistory(character, profession, style, emotionsCount, pngStickers, tgsStickers, packType) {
-            const humorCount = pngStickers.filter(s => s.humor).length;
-            const entry = {
-                id: Date.now(),
-                date: new Date().toLocaleString(),
-                character: character,
-                profession: profession.name,
-                professionIcon: profession.icon,
-                style: style,
-                emotions: emotionsCount,
-                humorCount: humorCount,
-                classicCount: emotionsCount - humorCount,
-                packType: packType,
-                pngCount: pngStickers.length,
-                tgsCount: tgsStickers.length,
-                firstHumor: pngStickers[0]?.humor || 'классический'
-            };
-            generationHistory.unshift(entry);
-            if (generationHistory.length > 30) generationHistory = generationHistory.slice(0, 30);
-            saveHistory();
-        }
-
-        function clearHistory() {
-            if (confirm('Очистить всю историю?')) {
-                generationHistory = [];
-                try {
-                    localStorage.removeItem('stickerHistory');
-                } catch (e) {}
-                renderHistory();
-            }
-        }
-
-        function renderHistory() {
-            const grid = document.getElementById('historyGrid');
-            if (!grid) return;
-            
-            if (generationHistory.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #4a5568;">История пуста</div>';
-                return;
-            }
-            
-            grid.innerHTML = generationHistory.map(entry => {
-                const entryStr = JSON.stringify(entry).replace(/"/g, '&quot;');
-                return `
-                <div class="history-card">
-                    <div class="history-date">📅 ${entry.date}</div>
-                    <div class="history-prompt">
-                        <strong>${entry.professionIcon} ${entry.profession}</strong><br>
-                        <strong>Персонаж:</strong> ${entry.character}<br>
-                        <strong>${entry.humorCount} мемных, ${entry.classicCount} классических</strong>
-                    </div>
-                    <div class="history-actions">
-                        <button class="history-btn edit" onclick='regenerateFromHistory(${entryStr})'>
-                            ✏️ Редактировать
-                        </button>
-                    </div>
-                </div>
-            `}).join('');
-        }
-
-        function regenerateFromHistory(entry) {
-            document.getElementById('characterPrompt').value = entry.character;
-            const profession = PROFESSIONS.find(p => p.name === entry.profession);
-            if (profession) {
-                // Симулируем клик по профессии
-                const items = document.querySelectorAll('.profession-item');
-                items.forEach(item => {
-                    if (item.textContent.includes(profession.name)) {
-                        item.click();
-                    }
-                });
-            }
-            switchTab('generator');
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            if (tab === 'generator') {
-                document.querySelector('.tab').classList.add('active');
-                document.getElementById('generator-tab').classList.add('active');
-            } else {
-                document.querySelectorAll('.tab')[1].classList.add('active');
-                document.getElementById('history-tab').classList.add('active');
-                renderHistory();
-            }
-        }
-
-        // ========== ПРОВЕРКА API ==========
+// ========== ПРОВЕРКА API С ЛОГИРОВАНИЕМ ==========
 async function checkRecraftAPI() {
     const statusDiv = document.getElementById('recraftStatus');
     if (!statusDiv) return;
@@ -3184,7 +2636,7 @@ async function checkRecraftAPI() {
     
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
         
         const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
             method: 'POST',
@@ -3225,32 +2677,543 @@ async function checkRecraftAPI() {
     }
 }
 
-        // ========== ИНИЦИАЛИЗАЦИЯ ==========
-        // Ждём загрузки DOM
-        document.addEventListener('DOMContentLoaded', function() {
-            renderProfessions();
-            renderEmotions();
-            checkRecraftAPI();
-            initMediaPipe();
-            loadHistory();
+// ========== TGS ГЕНЕРАЦИЯ ==========
+async function compressToTGS(lottieJson) {
+    lottieJson.tgs = 1;
+    const compressed = pako.gzip(JSON.stringify(lottieJson));
+    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+    
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+    });
+}
 
-            // Выбираем первые 5 эмоций по умолчанию
-            setTimeout(() => {
-                EMOTIONS.slice(0, 5).forEach(emotion => {
-                    const checkbox = document.querySelector(`input[value="${emotion.id}"]`);
-                    if (checkbox) {
-                        checkbox.checked = true;
-                        toggleEmotion(emotion.id, true);
-                    }
-                });
-                
-                // Выбираем зумера по умолчанию
-                const zoomerItem = document.querySelector('.profession-item');
-                if (zoomerItem) {
-                    zoomerItem.click();
-                }
-            }, 100);
+// Конвертация SVG в Lottie
+async function convertSvgToLottie(svgString) {
+    const lottieJson = {
+        v: "5.5.2",
+        fr: 30,
+        ip: 0,
+        op: 90,
+        w: 512,
+        h: 512,
+        layers: []
+    };
+    
+    try {
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+        const groups = svgDoc.querySelectorAll('g, svg > *');
+        
+        groups.forEach((group, index) => {
+            const layer = {
+                ddd: 0,
+                ind: index + 1,
+                ty: 4,
+                nm: group.getAttribute('id') || `layer_${index}`,
+                sr: 1,
+                ks: {
+                    o: { a: 0, k: 100 },
+                    r: { a: 0, k: 0 },
+                    p: { a: 0, k: [256, 256, 0] },
+                    a: { a: 0, k: [256, 256, 0] },
+                    s: { a: 0, k: [100, 100, 100] }
+                },
+                ao: 0,
+                ip: 0,
+                op: 90,
+                st: 0,
+                bm: 0
+            };
+            lottieJson.layers.push(layer);
         });
-    </script>
+    } catch (e) {
+        console.error('SVG parse error:', e);
+    }
+    
+    return lottieJson;
+}
+
+// Применение 5-слойной анимации
+function applyPoseAnimation(lottieJson, poseData) {
+    if (!poseData) return lottieJson;
+    
+    lottieJson.layers.forEach((layer, index) => {
+        if (index === 0 && poseData.hasFace) {
+            layer.ks.r = {
+                a: 1,
+                k: [
+                    { t: 0, s: [0] },
+                    { t: 30, s: [5] },
+                    { t: 60, s: [-3] },
+                    { t: 90, s: [0] }
+                ]
+            };
+        }
+        
+        if (index === 1 && poseData.hasArms) {
+            layer.ks.p = {
+                a: 1,
+                k: [
+                    { t: 0, s: [256, 256, 0] },
+                    { t: 30, s: [266, 256, 0] },
+                    { t: 60, s: [246, 256, 0] },
+                    { t: 90, s: [256, 256, 0] }
+                ]
+            };
+        }
+        
+        if (index === 2 && poseData.hasLegs) {
+            layer.ks.p = {
+                a: 1,
+                k: [
+                    { t: 0, s: [256, 256, 0] },
+                    { t: 30, s: [256, 266, 0] },
+                    { t: 60, s: [256, 246, 0] },
+                    { t: 90, s: [256, 256, 0] }
+                ]
+            };
+        }
+        
+        layer.ks.s = {
+            a: 1,
+            k: [
+                { t: 0, s: [100, 100, 100] },
+                { t: 30, s: [105, 105, 100] },
+                { t: 60, s: [95, 95, 100] },
+                { t: 90, s: [100, 100, 100] }
+            ]
+        };
+    });
+    
+    return lottieJson;
+}
+
+// Добавление текстового слоя
+function addTextLayer(lottieJson, text) {
+    const textLayer = {
+        ddd: 0,
+        ind: lottieJson.layers.length + 1,
+        ty: 5,
+        nm: "humor_text",
+        sr: 1,
+        ks: {
+            o: { a: 0, k: 100 },
+            r: { a: 0, k: 0 },
+            p: { a: 0, k: [256, 400, 0] },
+            a: { a: 0, k: [0, 0, 0] },
+            s: { a: 0, k: [100, 100, 100] }
+        },
+        t: {
+            d: {
+                k: [{
+                    t: 0,
+                    s: {
+                        t: text,
+                        s: 24,
+                        f: "Arial",
+                        fc: [0, 0, 0, 1],
+                        j: 2
+                    }
+                }]
+            }
+        },
+        ip: 0,
+        op: lottieJson.op || 90
+    };
+    
+    lottieJson.layers.push(textLayer);
+    return lottieJson;
+}
+
+// ========== MEDIAPIPE АНАЛИЗ ==========
+async function analyzeImageWithMediaPipe(imageElement) {
+    if (!mediapipeReady || !poseDetector) return null;
+    
+    try {
+        const results = await new Promise((resolve) => {
+            poseDetector.onResults(resolve);
+            poseDetector.send({ image: imageElement });
+        });
+        
+        if (results.poseLandmarks) {
+            const hasFace = results.poseLandmarks.some((lm, idx) => [0,1,2,3,4].includes(idx) && lm.visibility > 0.5);
+            const hasArms = results.poseLandmarks.some((lm, idx) => [5,6,7,8,9,10].includes(idx) && lm.visibility > 0.5);
+            const hasLegs = results.poseLandmarks.some((lm, idx) => [11,12,13,14,15,16].includes(idx) && lm.visibility > 0.5);
+            
+            return { hasFace, hasArms, hasLegs };
+        }
+        return null;
+    } catch (error) {
+        return null;
+    }
+}
+
+// ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
+window.generatePack = async () => {
+    const character = document.getElementById('characterPrompt').value.trim();
+    
+    if (!character || !selectedProfession || selectedEmotions.length === 0) {
+        alert('Пожалуйста, выберите персонажа, профессию и эмоции');
+        return;
+    }
+
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('generateBtn').disabled = true;
+    document.getElementById('results').innerHTML = '';
+
+    try {
+        generatedPNG = [];
+        generatedTGS = [];
+        
+        const profession = PROFESSIONS.find(p => p.id === selectedProfession);
+
+        for (let i = 0; i < selectedEmotions.length; i++) {
+            const emotionId = selectedEmotions[i];
+            const emotion = EMOTIONS.find(e => e.id === emotionId);
+            
+            document.getElementById('loadingProgress').textContent = 
+                `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name}`;
+            
+            const useHumor = Math.random() < 0.7;
+            const humorText = useHumor ? profession.humor[Math.floor(Math.random() * profession.humor.length)] : null;
+            
+            // ==== 1. ГЕНЕРАЦИЯ PNG (ДЛЯ БАЗОВОГО НАБОРА) ====
+            const pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
+            let pngImage = await generateRecraftPNG(pngPrompt);
+            
+            // ==== 2. MEDIAPIPE АНАЛИЗ ====
+            let poseData = null;
+            if (pngImage) {
+                const img = new Image();
+                await new Promise((resolve) => { img.onload = resolve; img.src = pngImage; });
+                poseData = await analyzeImageWithMediaPipe(img);
+            }
+            
+            // ==== 3. СОХРАНЯЕМ PNG ====
+            if (pngImage) {
+                generatedPNG.push({
+                    emotion: emotion,
+                    profession: profession.name,
+                    humor: humorText,
+                    dataUrl: pngImage,
+                    filename: `${character}_${profession.id}_${emotion.id}_${i}.png`,
+                    hasHumor: useHumor
+                });
+            }
+            
+            // ==== 4. ГЕНЕРАЦИЯ TGS (ТОЛЬКО ДЛЯ ПРЕМИУМ) ====
+            if (selectedPack === 'premium') {
+                try {
+                    const vectorPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, flat design, clean lines, white background`;
+                    
+                    const svgData = await generateRecraftSVG(vectorPrompt);
+                    
+                    if (svgData) {
+                        let lottieJson = await convertSvgToLottie(svgData);
+                        
+                        if (lottieJson && lottieJson.layers) {
+                            lottieJson = applyPoseAnimation(lottieJson, poseData);
+                            
+                            if (humorText) {
+                                lottieJson = addTextLayer(lottieJson, humorText);
+                            }
+                            
+                            const tgsData = await compressToTGS(lottieJson);
+                            
+                            generatedTGS.push({
+                                emotion: emotion,
+                                profession: profession.name,
+                                humor: humorText,
+                                dataUrl: tgsData,
+                                filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
+                            });
+                            
+                            addDebugLog('success', `✅ TGS создан из SVG для ${emotion.name}`);
+                        }
+                    } else {
+                        addDebugLog('error', `❌ Не удалось получить SVG для ${emotion.name}`);
+                    }
+                    
+                } catch (e) {
+                    addDebugLog('error', `❌ TGS generation error: ${e.message}`);
+                    console.error('TGS error:', e);
+                }
+            }
+        }
+
+        displayResults(generatedPNG, generatedTGS, profession);
+        addToHistory(character, profession, currentStyle, selectedEmotions.length, generatedPNG, generatedTGS, selectedPack);
+        
+    } catch (error) {
+        alert('Ошибка: ' + error.message);
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('generateBtn').disabled = false;
+    }
+};
+
+// ========== ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ==========
+function displayResults(pngStickers, tgsStickers, profession) {
+    const resultsDiv = document.getElementById('results');
+    if (!resultsDiv) return;
+    
+    resultsDiv.innerHTML = '';
+
+    const humorCount = pngStickers.filter(s => s.hasHumor).length;
+    const classicCount = pngStickers.length - humorCount;
+
+    const title = document.createElement('h2');
+    title.style.cssText = 'font-size: 2em; color: white; margin-bottom: 20px;';
+    title.innerHTML = `🎉 Готово! ${pngStickers.length} стикеров для профессии ${profession.name} (${humorCount} с юмором, ${classicCount} классических)`;
+    resultsDiv.appendChild(title);
+
+    const packagesDiv = document.createElement('div');
+    packagesDiv.className = 'packages';
+
+    const basicPackage = document.createElement('div');
+    basicPackage.className = 'package basic';
+    basicPackage.innerHTML = `
+        <div class="package-header">
+            <div class="package-title">📷 Базовый (PNG)</div>
+            <div class="package-price">299 ₽</div>
+        </div>
+        <div class="stickers-grid" id="pngGrid"></div>
+        <button class="download-btn" onclick="downloadAll('png')">
+            📥 Скачать PNG (${pngStickers.length})
+        </button>
+    `;
+    packagesDiv.appendChild(basicPackage);
+
+    if (selectedPack === 'premium' && tgsStickers.length > 0) {
+        const premiumPackage = document.createElement('div');
+        premiumPackage.className = 'package premium';
+        premiumPackage.innerHTML = `
+            <div class="package-header">
+                <div class="package-title">✨ Премиум (TGS)</div>
+                <div class="package-price">499 ₽</div>
+            </div>
+            <div class="stickers-grid" id="tgsGrid"></div>
+            <button class="download-btn premium" onclick="downloadAll('tgs')">
+                📥 Скачать TGS (${tgsStickers.length})
+            </button>
+        `;
+        packagesDiv.appendChild(premiumPackage);
+    }
+
+    resultsDiv.appendChild(packagesDiv);
+
+    const pngGrid = document.getElementById('pngGrid');
+    if (pngGrid) {
+        pngStickers.forEach(s => {
+            const card = document.createElement('div');
+            card.className = 'sticker-card';
+            card.innerHTML = `
+                <div class="sticker-preview">
+                    <img src="${s.dataUrl}" alt="${s.emotion.name}">
+                </div>
+                <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
+                ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
+                <span class="sticker-badge png">PNG</span>
+            `;
+            pngGrid.appendChild(card);
+        });
+    }
+
+    if (selectedPack === 'premium' && tgsStickers.length > 0) {
+        const tgsGrid = document.getElementById('tgsGrid');
+        if (tgsGrid) {
+            tgsStickers.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'sticker-card premium';
+                card.innerHTML = `
+                    <div class="sticker-preview">
+                        <div style="font-size: 3em;">${s.emotion.icon}</div>
+                    </div>
+                    <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
+                    ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
+                    <span class="sticker-badge tgs">TGS</span>
+                `;
+                tgsGrid.appendChild(card);
+            });
+        }
+    }
+
+    const telegramGuide = document.getElementById('telegramGuide');
+    if (telegramGuide) telegramGuide.style.display = 'block';
+}
+
+// ========== СКАЧИВАНИЕ ==========
+window.downloadAll = (type) => {
+    const stickers = type === 'png' ? generatedPNG : generatedTGS;
+    stickers.forEach(s => {
+        const link = document.createElement('a');
+        link.download = s.filename;
+        link.href = s.dataUrl;
+        link.click();
+    });
+    alert(`Скачивание ${stickers.length} файлов начато!`);
+};
+
+// ========== ИСТОРИЯ ==========
+function loadHistory() {
+    try {
+        const saved = localStorage.getItem('stickerHistory');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed)) {
+                generationHistory = parsed.slice(0, 30);
+            } else {
+                generationHistory = [];
+            }
+        } else {
+            generationHistory = [];
+        }
+    } catch (e) {
+        generationHistory = [];
+        try {
+            localStorage.removeItem('stickerHistory');
+        } catch (e) {}
+    }
+    renderHistory();
+}
+
+function saveHistory() {
+    try {
+        const historyToSave = generationHistory.map(entry => ({
+            id: entry.id,
+            date: entry.date,
+            character: entry.character,
+            profession: entry.profession,
+            professionIcon: entry.professionIcon,
+            style: entry.style,
+            emotions: entry.emotions,
+            humorCount: entry.humorCount,
+            classicCount: entry.classicCount,
+            packType: entry.packType,
+            firstHumor: entry.firstHumor
+        }));
+        localStorage.setItem('stickerHistory', JSON.stringify(historyToSave.slice(0, 30)));
+    } catch (e) {
+        try {
+            localStorage.removeItem('stickerHistory');
+        } catch (e) {}
+    }
+}
+
+function addToHistory(character, profession, style, emotionsCount, pngStickers, tgsStickers, packType) {
+    const humorCount = pngStickers.filter(s => s.humor).length;
+    const entry = {
+        id: Date.now(),
+        date: new Date().toLocaleString(),
+        character: character,
+        profession: profession.name,
+        professionIcon: profession.icon,
+        style: style,
+        emotions: emotionsCount,
+        humorCount: humorCount,
+        classicCount: emotionsCount - humorCount,
+        packType: packType,
+        pngCount: pngStickers.length,
+        tgsCount: tgsStickers.length,
+        firstHumor: pngStickers[0]?.humor || 'классический'
+    };
+    generationHistory.unshift(entry);
+    if (generationHistory.length > 30) generationHistory = generationHistory.slice(0, 30);
+    saveHistory();
+}
+
+function clearHistory() {
+    if (confirm('Очистить всю историю?')) {
+        generationHistory = [];
+        try {
+            localStorage.removeItem('stickerHistory');
+        } catch (e) {}
+        renderHistory();
+    }
+}
+
+function renderHistory() {
+    const grid = document.getElementById('historyGrid');
+    if (!grid) return;
+    
+    if (generationHistory.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #4a5568;">История пуста</div>';
+        return;
+    }
+    
+    grid.innerHTML = generationHistory.map(entry => {
+        const entryStr = JSON.stringify(entry).replace(/"/g, '&quot;');
+        return `
+        <div class="history-card">
+            <div class="history-date">📅 ${entry.date}</div>
+            <div class="history-prompt">
+                <strong>${entry.professionIcon} ${entry.profession}</strong><br>
+                <strong>Персонаж:</strong> ${entry.character}<br>
+                <strong>${entry.humorCount} мемных, ${entry.classicCount} классических</strong>
+            </div>
+            <div class="history-actions">
+                <button class="history-btn edit" onclick='regenerateFromHistory(${entryStr})'>
+                    ✏️ Редактировать
+                </button>
+            </div>
+        </div>
+    `}).join('');
+}
+
+function regenerateFromHistory(entry) {
+    document.getElementById('characterPrompt').value = entry.character;
+    const profession = PROFESSIONS.find(p => p.name === entry.profession);
+    if (profession) {
+        const items = document.querySelectorAll('.profession-item');
+        items.forEach(item => {
+            if (item.textContent.includes(profession.name)) {
+                item.click();
+            }
+        });
+    }
+    switchTab('generator');
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    if (tab === 'generator') {
+        document.querySelector('.tab').classList.add('active');
+        document.getElementById('generator-tab').classList.add('active');
+    } else {
+        document.querySelectorAll('.tab')[1].classList.add('active');
+        document.getElementById('history-tab').classList.add('active');
+        renderHistory();
+    }
+}
+
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
+document.addEventListener('DOMContentLoaded', function() {
+    renderProfessions();
+    renderEmotions();
+    checkRecraftAPI();
+    initMediaPipe();
+    loadHistory();
+
+    setTimeout(() => {
+        EMOTIONS.slice(0, 5).forEach(emotion => {
+            const checkbox = document.querySelector(`input[value="${emotion.id}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+                toggleEmotion(emotion.id, true);
+            }
+        });
+        
+        const zoomerItem = document.querySelector('.profession-item');
+        if (zoomerItem) {
+            zoomerItem.click();
+        }
+    }, 100);
+});
+</script>
 </body>
 </html>
