@@ -3259,20 +3259,109 @@ window.debugTGS = async function() {
     reader.readAsDataURL(blob);
 };
 
-        
+       async function testTGS5() {
+    // Создаём canvas
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    
+    // Рисуем тестовое изображение
+    ctx.fillStyle = '#FF0000';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 48px Arial';
+    ctx.fillText('TGS', 200, 256);
+    
+    // Конвертируем canvas в blob
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    
+    // Конвертируем blob в base64
+    const base64Data = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const result = reader.result;
+            const base64 = result.split(',')[1];
+            resolve(base64);
+        };
+        reader.readAsDataURL(blob);
+    });
+    
+    console.log('Base64 длина:', base64Data.length);
+    
+    // Создаём TGS
+    const tgsData = {
+        tgs: 1,
+        v: "5.5.7",
+        fr: 30,
+        ip: 0,
+        op: 30,
+        w: 512,
+        h: 512,
+        assets: [{
+            id: "image_0",
+            w: 512,
+            h: 512,
+            u: "",
+            p: base64Data,
+            e: 1
+        }],
+        layers: [{
+            ddd: 0,
+            ind: 1,
+            ty: 2,
+            nm: "sticker",
+            refId: "image_0",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: { a: 0, k: [256, 256, 0] },
+                a: { a: 0, k: [256, 256, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ip: 0,
+            op: 30
+        }]
+    };
+    
+    // Сжимаем и сохраняем
+    const compressed = pako.gzip(JSON.stringify(tgsData));
+    const finalBlob = new Blob([compressed], { type: 'application/x-tgsticker' });
+    
+    const url = URL.createObjectURL(finalBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'test5.tgs';
+    link.click();
+    
+    console.log('✅ Файл test5.tgs создан!');
+} 
         
         async function convertPngToTgs(pngDataUrl, poseData, index) {
     try {
-        // Получаем base64 без префикса
-        const base64Data = pngDataUrl.split(',')[1];
+        // Преобразуем data URL в Blob
+        const response = await fetch(pngDataUrl);
+        const blob = await response.blob();
         
-        // Создаем правильную структуру TGS
+        // Конвертируем blob в base64 через FileReader
+        const base64Data = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result;
+                const base64 = result.split(',')[1];
+                resolve(base64);
+            };
+            reader.readAsDataURL(blob);
+        });
+        
+        // Минимальная рабочая структура TGS
         const tgsData = {
             tgs: 1,
             v: "5.5.7",
             fr: 30,
             ip: 0,
-            op: 45,
+            op: 30,
             w: 512,
             h: 512,
             assets: [{
@@ -3298,34 +3387,32 @@ window.debugTGS = async function() {
                     s: { a: 0, k: [100, 100, 100] }
                 },
                 ip: 0,
-                op: 45
+                op: 30
             }]
         };
         
-        // Добавляем простую анимацию (пульсацию) если есть данные о позе
+        // Добавляем анимацию если есть данные
         if (poseData && poseData.landmarks) {
+            // Здесь можно добавить вашу сложную анимацию
             tgsData.layers[0].ks.s = {
                 a: 1,
                 k: [
                     { t: 0, s: [100, 100, 100] },
                     { t: 15, s: [105, 105, 100] },
-                    { t: 30, s: [100, 100, 100] },
-                    { t: 45, s: [103, 103, 100] }
+                    { t: 30, s: [100, 100, 100] }
                 ]
             };
         }
         
-        // Конвертируем в JSON и сжимаем
+        // Сжимаем
         const jsonString = JSON.stringify(tgsData);
         const compressed = pako.gzip(jsonString, { level: 9 });
-        
-        // Создаем blob
-        const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+        const tgsBlob = new Blob([compressed], { type: 'application/x-tgsticker' });
         
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(blob);
+            reader.readAsDataURL(tgsBlob);
         });
         
     } catch (error) {
