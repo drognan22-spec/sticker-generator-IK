@@ -2728,120 +2728,272 @@ window.selectProfession = (professionId) => {
         }
 
         function createAnimationFromPose(pngBase64, poseData, emotionIndex) {
-            const base64Data = pngBase64.split(',')[1];
-            
-            const lottieJson = {
-                v: "5.5.7",
-                fr: 60,
-                ip: 0,
-                op: 180,
-                w: 512,
-                h: 512,
-                assets: [{
-                    id: "sticker_img",
-                    w: 512,
-                    h: 512,
-                    p: `data:image/png;base64,${base64Data}`,
-                    e: 1
-                }],
-                layers: []
-            };
+    // ИЗВЛЕКАЕМ ЧИСТЫЙ BASE64 (БЕЗ ПРЕФИКСА)
+    const base64Data = pngBase64.split(',')[1];
+    
+    // Группируем ключевые точки по частям тела 
+    const bodyParts = {
+        head: poseData?.hasFace ? [{ x: 256, y: 180 }] : [],
+        shoulders: poseData?.hasArms ? [{ x: 256, y: 200 }] : [],
+        arms: poseData?.hasArms ? [{ x: 256, y: 220 }] : [],
+        hands: poseData?.hasArms ? [{ x: 256, y: 240 }] : [],
+        hips: poseData?.hasLegs ? [{ x: 256, y: 260 }] : [],
+        legs: poseData?.hasLegs ? [{ x: 256, y: 280 }] : [],
+        feet: poseData?.hasLegs ? [{ x: 256, y: 300 }] : []
+    };
 
-            let layerIndex = 1;
-            
-            if (poseData && poseData.landmarks) {
-                lottieJson.layers.push({
-                    ind: layerIndex++,
-                    ty: 2,
-                    refId: "sticker_img",
-                    nm: "body_layer",
-                    ks: {
-                        o: { a: 0, k: 100 },
-                        r: createWaveAnimation(0.4, 2, emotionIndex),
-                        p: createPositionAnimation(256, 256, 2, emotionIndex),
-                        a: { a: 0, k: [256, 256, 0] },
-                        s: createScaleAnimation(0.3, emotionIndex)
-                    },
-                    ip: 0,
-                    op: 180
-                });
-                
-                if (poseData.hasFace) {
-                    lottieJson.layers.push({
-                        ind: layerIndex++,
-                        ty: 2,
-                        refId: "sticker_img",
-                        nm: "face_layer",
-                        ks: {
-                            o: createOpacityAnimation(0.2, emotionIndex),
-                            r: createWaveAnimation(0.3, 4, emotionIndex),
-                            p: createPositionAnimation(256, 180, 1, emotionIndex),
-                            a: { a: 0, k: [256, 256, 0] },
-                            s: createScaleAnimation(0.2, emotionIndex)
-                        },
-                        ip: 0,
-                        op: 180,
-                        parent: 1
-                    });
-                }
-                
-                if (poseData.hasArms) {
-                    lottieJson.layers.push({
-                        ind: layerIndex++,
-                        ty: 2,
-                        refId: "sticker_img",
-                        nm: "arms_layer",
-                        ks: {
-                            o: { a: 0, k: 100 },
-                            r: createWaveAnimation(0.6, 3, emotionIndex),
-                            p: createPositionAnimation(256, 220, 3, emotionIndex),
-                            a: { a: 0, k: [256, 256, 0] },
-                            s: createScaleAnimation(0.4, emotionIndex)
-                        },
-                        ip: 0,
-                        op: 180,
-                        parent: 1
-                    });
-                }
-                
-                if (poseData.hasLegs) {
-                    lottieJson.layers.push({
-                        ind: layerIndex++,
-                        ty: 2,
-                        refId: "sticker_img",
-                        nm: "legs_layer",
-                        ks: {
-                            o: { a: 0, k: 100 },
-                            r: createWaveAnimation(0.5, 2.5, emotionIndex),
-                            p: createPositionAnimation(256, 300, 2, emotionIndex),
-                            a: { a: 0, k: [256, 256, 0] },
-                            s: createScaleAnimation(0.3, emotionIndex)
-                        },
-                        ip: 0,
-                        op: 180,
-                        parent: 1
-                    });
-                }
-            } else {
-                lottieJson.layers.push({
-                    ind: 1,
-                    ty: 2,
-                    refId: "sticker_img",
-                    nm: "base_layer",
-                    ks: {
-                        o: { a: 0, k: 100 },
-                        r: createWaveAnimation(0.5, 2, emotionIndex),
-                        p: createPositionAnimation(256, 256, 3, emotionIndex),
-                        a: { a: 0, k: [256, 256, 0] },
-                        s: createScaleAnimation(0.3, emotionIndex)
-                    },
-                    ip: 0,
-                    op: 180
-                });
-            }
+    const lottieJson = {
+        v: "5.5.7",
+        fr: 60,
+        ip: 0,
+        op: 180,
+        w: 512,
+        h: 512,
+        assets: [{
+            id: "sticker_img",
+            w: 512,
+            h: 512,
+            p: base64Data,  // ТЕПЕРЬ БЕЗ ПРЕФИКСА!
+            e: 1
+        }],
+        layers: []
+    };
 
-            return lottieJson;
-        }
+    // Создаем слои для каждой части тела
+    let layerIndex = 1;
+    
+    // Голова - кивки и повороты
+    if (bodyParts.head.length > 0) {
+        lottieJson.layers.push({
+            ind: layerIndex++,
+            ty: 2,
+            refId: "sticker_img",
+            nm: "head_layer",
+            ks: {
+                o: { a: 0, k: 100 },
+                r: createWaveAnimation(0.8, 3, emotionIndex),
+                p: createHeadPosition(bodyParts.head, emotionIndex),
+                a: { a: 0, k: [256, 256, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ip: 0,
+            op: 180
+        });
+    }
+
+    // Плечи - покачивания
+    if (bodyParts.shoulders.length > 0) {
+        lottieJson.layers.push({
+            ind: layerIndex++,
+            ty: 2,
+            refId: "sticker_img",
+            nm: "shoulders_layer",
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: createShoulderPosition(bodyParts.shoulders, emotionIndex),
+                a: { a: 0, k: [256, 256, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ip: 0,
+            op: 180,
+            parent: 1
+        });
+    }
+
+    // Руки - махи
+    if (bodyParts.arms.length > 0) {
+        lottieJson.layers.push({
+            ind: layerIndex++,
+            ty: 2,
+            refId: "sticker_img",
+            nm: "arms_layer",
+            ks: {
+                o: { a: 0, k: 100 },
+                r: createArmRotation(bodyParts.arms, emotionIndex),
+                p: { a: 0, k: [256, 256, 0] },
+                a: { a: 0, k: [256, 256, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ip: 0,
+            op: 180,
+            parent: 2
+        });
+    }
+
+    // Кисти рук - мелкие движения
+    if (bodyParts.hands.length > 0) {
+        lottieJson.layers.push({
+            ind: layerIndex++,
+            ty: 2,
+            refId: "sticker_img",
+            nm: "hands_layer",
+            ks: {
+                o: createOpacityAnimation(0.3, emotionIndex),
+                r: createHandRotation(bodyParts.hands, emotionIndex),
+                p: { a: 0, k: [256, 256, 0] },
+                a: { a: 0, k: [256, 256, 0] },
+                s: createScaleAnimation(0.5, emotionIndex)
+            },
+            ip: 0,
+            op: 180,
+            parent: 3
+        });
+    }
+
+    // Ноги - шаги
+    if (bodyParts.legs.length > 0 || bodyParts.feet.length > 0) {
+        lottieJson.layers.push({
+            ind: layerIndex++,
+            ty: 2,
+            refId: "sticker_img",
+            nm: "legs_layer",
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: createLegPosition(emotionIndex),
+                a: { a: 0, k: [256, 256, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ip: 0,
+            op: 180,
+            parent: 1
+        });
+    }
+
+    // Если нет слоев, добавляем базовый
+    if (lottieJson.layers.length === 0) {
+        lottieJson.layers.push({
+            ind: 1,
+            ty: 2,
+            refId: "sticker_img",
+            nm: "base_layer",
+            ks: {
+                o: { a: 0, k: 100 },
+                r: createWaveAnimation(0.5, 2, emotionIndex),
+                p: { a: 0, k: [256, 256, 0] },
+                a: { a: 0, k: [256, 256, 0] },
+                s: createScaleAnimation(0.3, emotionIndex)
+            },
+            ip: 0,
+            op: 180
+        });
+    }
+
+    // ========== ГЛАВНОЕ ИСПРАВЛЕНИЕ ==========
+    // 1. Добавляем обязательное поле для Telegram
+    lottieJson.tgs = 1;
+    
+    // 2. Убеждаемся, что во всех слоях есть обязательные поля
+    lottieJson.layers.forEach(layer => {
+        if (!layer.hasOwnProperty('ddd')) layer.ddd = 0;
+        if (!layer.hasOwnProperty('ao')) layer.ao = 0;
+        if (!layer.hasOwnProperty('bm')) layer.bm = 0;
+        if (!layer.hasOwnProperty('sr')) layer.sr = 1;
+        if (!layer.hasOwnProperty('st')) layer.st = 0;
+    });
+
+    return lottieJson;
+}
+
+// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ) ==========
+function createWaveAnimation(amp, freq, phase) {
+    const keyframes = [];
+    for (let i = 0; i <= 12; i++) {
+        const frame = Math.round((i / 12) * 180);
+        const value = Math.sin((frame / 180) * Math.PI * 2 * freq + phase) * amp * 8;
+        keyframes.push({ t: frame, s: [value] });
+    }
+    return { a: 1, k: keyframes };
+}
+
+function createHeadPosition(keypoints, seed) {
+    const avgX = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.x, 0) / keypoints.length : 256;
+    const avgY = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.y, 0) / keypoints.length : 256;
+    
+    const keyframes = [];
+    for (let i = 0; i <= 8; i++) {
+        const frame = Math.round((i / 8) * 180);
+        const offsetY = Math.sin((frame / 180) * Math.PI * 2 + seed) * 3;
+        keyframes.push({
+            t: frame,
+            s: [avgX, avgY + offsetY, 0]
+        });
+    }
+    return { a: 1, k: keyframes };
+}
+
+function createShoulderPosition(keypoints, seed) {
+    const avgX = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.x, 0) / keypoints.length : 256;
+    const avgY = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.y, 0) / keypoints.length : 256;
+    
+    const keyframes = [];
+    for (let i = 0; i <= 8; i++) {
+        const frame = Math.round((i / 8) * 180);
+        const offsetX = Math.sin((frame / 180) * Math.PI * 2 + seed * 2) * 2;
+        keyframes.push({
+            t: frame,
+            s: [avgX + offsetX, avgY, 0]
+        });
+    }
+    return { a: 1, k: keyframes };
+}
+
+function createArmRotation(keypoints, seed) {
+    const keyframes = [];
+    for (let i = 0; i <= 10; i++) {
+        const frame = Math.round((i / 10) * 180);
+        const angle = Math.sin((frame / 180) * Math.PI * 4 + seed) * 5;
+        keyframes.push({ t: frame, s: [angle] });
+    }
+    return { a: 1, k: keyframes };
+}
+
+function createHandRotation(keypoints, seed) {
+    const keyframes = [];
+    for (let i = 0; i <= 12; i++) {
+        const frame = Math.round((i / 12) * 180);
+        const angle = Math.sin((frame / 180) * Math.PI * 6 + seed * 3) * 8;
+        keyframes.push({ t: frame, s: [angle] });
+    }
+    return { a: 1, k: keyframes };
+}
+
+function createScaleAnimation(intensity, seed) {
+    const keyframes = [];
+    for (let i = 0; i <= 8; i++) {
+        const frame = Math.round((i / 8) * 180);
+        const scale = 100 + Math.sin((frame / 180) * Math.PI * 4 + seed) * intensity;
+        keyframes.push({
+            t: frame,
+            s: [scale, scale, 100]
+        });
+    }
+    return { a: 1, k: keyframes };
+}
+
+function createLegPosition(seed) {
+    const keyframes = [];
+    for (let i = 0; i <= 8; i++) {
+        const frame = Math.round((i / 8) * 180);
+        const offsetY = Math.sin((frame / 180) * Math.PI * 2 + seed * 1.5) * 2;
+        keyframes.push({
+            t: frame,
+            s: [256, 256 + offsetY, 0]
+        });
+    }
+    return { a: 1, k: keyframes };
+}
+
+function createOpacityAnimation(variation, seed) {
+    const keyframes = [];
+    for (let i = 0; i <= 6; i++) {
+        const frame = Math.round((i / 6) * 180);
+        const opacity = 85 + Math.sin((frame / 180) * Math.PI * 2 + seed) * variation * 10;
+        keyframes.push({ t: frame, s: [opacity] });
+    }
+    return { a: 1, k: keyframes };
+}
 
         function createWaveAnimation(amp, freq, phase) {
             const keyframes = [];
