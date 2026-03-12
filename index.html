@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator PRO - Исправленная версия</title>
+    <title>Sticker Generator PRO - Полностью исправленная версия</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
@@ -680,6 +680,11 @@
             box-shadow: 0 30px 50px rgba(102, 126, 234, 0.6);
         }
 
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .loading {
             text-align: center;
             padding: 50px;
@@ -1253,8 +1258,8 @@
                         <ul class="features">
                             <li>30 TGS анимированных</li>
                             <li>5-слойная анимация</li>
-                            <li>Запасной режим</li>
-                            <li>Всегда работает</li>
+                            <li>Из векторной графики</li>
+                            <li>Telegram формат</li>
                         </ul>
                     </div>
                 </div>
@@ -1303,17 +1308,14 @@
     </footer>
 
     <script>
-        // ========== API КЛЮЧ ==========
-        const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
-        
         // ========== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА ==========
-        function openProjectInfo() {
+        window.openProjectInfo = function() {
             document.getElementById('projectModal').classList.add('active');
-        }
+        };
 
-        function closeProjectInfo() {
+        window.closeProjectInfo = function() {
             document.getElementById('projectModal').classList.remove('active');
-        }
+        };
 
         window.onclick = function(event) {
             const modal = document.getElementById('projectModal');
@@ -1335,39 +1337,56 @@
         async function initMediaPipe() {
             const statusDiv = document.getElementById('mediapipeStatus');
             try {
+                // Проверяем, загружена ли библиотека Pose
+                if (typeof Pose === 'undefined') {
+                    throw new Error('MediaPipe библиотека не загружена');
+                }
+                
                 const pose = new Pose({
-                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
+                    locateFile: (file) => {
+                        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+                    }
                 });
+                
                 pose.setOptions({
                     modelComplexity: 1,
                     smoothLandmarks: true,
                     minDetectionConfidence: 0.5,
                     minTrackingConfidence: 0.5
                 });
+                
                 await pose.initialize();
                 poseDetector = pose;
                 mediapipeReady = true;
+                
                 statusDiv.className = 'api-status mediapipe';
                 statusDiv.innerHTML = '<span class="status-icon">✅</span><span>MediaPipe: 33 точки</span>';
-                addDebugLog('success', 'MediaPipe готов');
+                if (typeof addDebugLog === 'function') addDebugLog('success', 'MediaPipe готов');
             } catch (error) {
+                console.error('MediaPipe init error:', error);
                 statusDiv.className = 'api-status mediapipe error';
-                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Ошибка</span>';
+                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Ошибка загрузки</span>';
+                mediapipeReady = false;
             }
         }
 
         // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
         function toggleDebug() {
-            document.getElementById('debugPanel').style.display = 
-                document.getElementById('debugPanel').style.display === 'none' ? 'block' : 'none';
+            const panel = document.getElementById('debugPanel');
+            if (panel) {
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            }
         }
 
         function clearDebug() {
-            document.getElementById('debugLogs').innerHTML = '';
+            const logs = document.getElementById('debugLogs');
+            if (logs) logs.innerHTML = '';
         }
 
         function addDebugLog(type, message, data = null) {
             const logs = document.getElementById('debugLogs');
+            if (!logs) return;
+            
             const timestamp = new Date().toLocaleTimeString();
             const logEntry = document.createElement('div');
             logEntry.style.marginBottom = '8px';
@@ -1377,17 +1396,19 @@
             let icon = 'ℹ️';
             if (type === 'error') icon = '❌';
             else if (type === 'success') icon = '✅';
+            else if (type === 'info') icon = 'ℹ️';
             
             logEntry.innerHTML = `
-                <span class="timestamp">${timestamp}</span>
-                <span>${icon} ${message}</span>
-                ${data ? `<pre style="font-size: 10px;">${JSON.stringify(data, null, 2).substring(0, 200)}</pre>` : ''}
+                <span style="color: #fbbf24;">${timestamp}</span>
+                <span style="color: ${type === 'error' ? '#ef4444' : (type === 'success' ? '#4ade80' : '#38bdf8')}">${icon} ${message}</span>
+                ${data ? `<pre style="font-size: 10px; color: #94a3b8;">${JSON.stringify(data, null, 2).substring(0, 200)}</pre>` : ''}
             `;
             logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
         }
 
         // ========== 30 ПРОФЕССИЙ ==========
- const PROFESSIONS = [
+        const PROFESSIONS = [
     {
         id: 'zoomer',
         name: '📱 Зумер',
@@ -2011,346 +2032,7 @@
             'чаевые: 0%, наглость: 100%',
             'вода: бесплатно, лёд: дороже',
             'кухня: вечно горит',
-            'специальное блюдо: то что надо срочно продать',
-            'раздельный чек на 8 человек',
-            'последний столик: никогда не уходит',
-            'улыбаюсь, хотя внутри крик',
-            'поднос: моя жизнь в равновесии',
-            'когда клиент позвал через 5 секунд',
-            'мой блокнот: всё помню, ничего не записываю',
-            'чаевые: мелочь, но приятно',
-            'когда заказ перепутали (я виноват)',
-            'официант: акробат с подносом',
-            'мой день: бег, бег, бег',
-            'когда клиент жалуется на еду',
-            'ресторан: театр, где я актёр',
-            'мой фартук: чище чем совесть',
-            'когда закрытие, а гости сидят',
-            'официант: психолог для голодных',
-            'мой поднос: тяжелее чем кажется'
-        ]
-    },
-    {
-        id: 'barista',
-        name: '☕ Бариста',
-        icon: '☕',
-        basePrompt: 'barista, coffee maker, making coffee, with espresso machine, apron',
-        humor: [
-            'декаф: для слабаков',
-            'клиент: "погорячее" (кипяток)',
-            'латте-арт: 1% умения, 99% удачи',
-            'когда написал имя неправильно',
-            'кофе: вода для уставших',
-            'бариста: профессиональный молочник',
-            'утренняя толпа: режим хаос',
-            '"можно кофе" (50 видов, какой?)',
-            'мой эспрессо крепче чем я',
-            'кофемашина: единственная любовь',
-            'молоко: бывает разным (капризно)',
-            'кофеин - мой наркотик',
-            'когда клиент просит "покофеистее"',
-            'мой латте-арт: сердечко, листик, пятно',
-            'кофейня: мой второй дом',
-            'когда закончились зёрна',
-            'бариста: художник по кофе',
-            'мой день: эспрессо, капучино, латте',
-            'когда клиент вернул кофе',
-            'кофе: чёрный, как моя душа',
-            'мой стакан: всегда с логотипом',
-            'когда очередь до двери',
-            'бариста: спасатель утра',
-            'кофеин: бодрит, но не лечит'
-        ]
-    },
-    {
-        id: 'sailor',
-        name: '⚓ Моряк',
-        icon: '⚓',
-        basePrompt: 'sailor, seaman, captain, on ship, with telescope, steering wheel',
-        humor: [
-            'морская болезнь: 90% новичков',
-            'когда спросили "мы уже приплыли?"',
-            'моряк: профессиональный вязальщик узлов',
-            'когда увидел землю',
-            'море: вечно движется',
-            'чайки: летающие крысы',
-            'капитан: тот кто орёт',
-            'карты: врут всегда',
-            'шторм: бесплатные американские горки',
-            'рыба: всегда в меню',
-            'якорь: тяжело, но надо',
-            'берег: миф',
-            'мой компас: показывает куда хочу',
-            'волна: 10 метров, я: держусь',
-            'моряк: вечный странник',
-            'мой корабль: моя крепость',
-            'когда штиль (скучно)',
-            'морская соль: в волосах, в душе',
-            'мой бинокль: вижу всё',
-            'когда пираты (шутим)',
-            'моряк: дома только в порту',
-            'мой штурвал: кручу, кручу',
-            'океан: бескрайний, как моя тоска',
-            'когда приплыли (ура)'
-        ]
-    },
-    {
-        id: 'miner',
-        name: '⛏️ Шахтёр',
-        icon: '⛏️',
-        basePrompt: 'miner, underground worker, with pickaxe, hard hat, dirty face',
-        humor: [
-            'канарейка: мой детектор газа',
-            'когда погас свет',
-            'шахтёр: профессиональный копатель',
-            'нашёл уголь (не золото)',
-            'в шахте: темно, холодно, страшно',
-            'уголь: чёрное золото',
-            'техника безопасности? нет',
-            'обед: ем в темноте',
-            'поверхность: мифическое место',
-            'смена: 12 часов грязи',
-            'мой фонарь: свет в конце туннеля',
-            'кирка: моя подруга',
-            'когда нашёл алмаз (мечты)',
-            'шахта: второй дом',
-            'мой отбойник: дрель и музыка',
-            'когда обвал (страшно)',
-            'шахтёр: герой подземелья',
-            'мой день: темно, пыльно, тяжело',
-            'когда выбрался наверх (свет)',
-            'уголь: греет, но пачкает',
-            'моя каска: защита и свет',
-            'когда напарник шутит в темноте',
-            'шахтёр: добытчик тепла',
-            'мой инструмент: кирка, лопата, молитва'
-        ]
-    },
-    {
-        id: 'pilot',
-        name: '✈️ Пилот',
-        icon: '✈️',
-        basePrompt: 'pilot, aviator, flying, in cockpit, with headset, captain hat',
-        humor: [
-            'турбулентность: бесплатный аттракцион',
-            'когда спросили "мы уже прилетели?"',
-            'пилот: профессиональный водитель облаков',
-            'посадка при ветре: экстрим',
-            'второй пилот: тот кто всё делает',
-            'погода: хуже прогноза',
-            'пассажиры хлопают (зачем?)',
-            'задержка: наше любимое слово',
-            'полёт 2 часа, ждать 4',
-            'капитан выключил табло (ура)',
-            'взлёт: страшно, посадка: страшнее',
-            'мой самолёт - моя гордость',
-            'когда стюардесса принесла кофе',
-            'автопилот: друг или враг?',
-            'мой штурвал: кручу неба',
-            'облака: вата, но нельзя потрогать',
-            'пилот: небо, как дом',
-            'когда турбулентность и кофе пролился',
-            'мой эшелон: 10 км над землёй',
-            'посадка: касание, реверс, тормоз',
-            'пилот: спасатель снов',
-            'мой график: города, отели, взлёты',
-            'когда пассажир в туалете на взлёте',
-            'небо: бескрайнее, как моя любовь'
-        ]
-    },
-    {
-        id: 'builder',
-        name: '🏗️ Строитель',
-        icon: '🏗️',
-        basePrompt: 'construction worker, builder, with hard hat, hammer, blueprints',
-        humor: [
-            'отмерь один раз, отрежь два (или наоборот)',
-            'чертежи: всегда с ошибками',
-            'строитель: профессиональный молотобоец',
-            'когда стена кривая',
-            'леса: шаткая конструкция',
-            'цемент: то густо, то пусто',
-            'обед: всегда на земле',
-            'прораб: вечно смотрит',
-            'инструменты: вечно теряются',
-            'планёрка: 30 минут "будьте осторожны"',
-            'кирпич: мой конструктор',
-            'стройка: шум, пыль, ад',
-            'мой уровень: показывает правду',
-            'когда бетон застыл быстрее',
-            'строитель: создатель городов',
-            'мой молоток: стучу, стучу, стучу',
-            'когда кран сломался',
-            'стройка: 100 этажей, 100 проблем',
-            'мой чертёж: план и реальность',
-            'когда дождь и цемент мокнет',
-            'строитель: альпинист без страховки',
-            'мой день: кирпичи, блоки, панели',
-            'когда объект сдан (ура)',
-            'стройка: место где мечты становятся бетоном'
-        ]
-    },
-    {
-        id: 'farmer',
-        name: '🚜 Фермер',
-        icon: '🚜',
-        basePrompt: 'farmer, agricultural worker, with tractor, straw hat, harvesting',
-        humor: [
-            'петух: будильник 4 утра',
-            'когда курица снесла яйцо (ура)',
-            'фермер: профессиональный сажатель',
-            'урожай: то дождь, то засуха',
-            'трактор: моя любовь',
-            'коровы: мычат, я их дою',
-            'огород: 6 соток рая',
-            'колорадский жук: враг народа',
-            'навоз: удобрение и головная боль',
-            'рынок: продаю, торгуются',
-            'рассвет: я уже в поле',
-            'земля: кормит и мучает',
-            'мой трактор: железный конь',
-            'когда дождь пошёл (наконец-то)',
-            'фермер: раб земли',
-            'мой урожай: гордость и труд',
-            'когда куры разбежались',
-            'ферма: шум, гам, покой',
-            'мой огород: грядки, грядки, грядки',
-            'когда засуха (всё пропало)',
-            'фермер: кормилец народа',
-            'мой день: поле, двор, сарай',
-            'когда корова дала молока',
-            'ферма: жизнь в ритме природы'
-        ]
-    },
-    {
-        id: 'scientist',
-        name: '🔬 Ученый',
-        icon: '🔬',
-        basePrompt: 'scientist, researcher, in lab, with test tubes, microscope, lab coat',
-        humor: [
-            'наука: это как магия, но реально',
-            'когда эксперимент сработал в пятницу вечером',
-            'техника безопасности? нет',
-            'мой контрольный образец: хаос',
-            'когда нашёл статью, где твоя теория неправильная',
-            'рецензирование: голодные игры',
-            'аспирантура: просто большой долг',
-            'корреляция не равна причинности, но подозрительно',
-            'когда гипотеза неправильная (всегда)',
-            'научный метод: угадай, проверь, плачь, повтори',
-            'лаборатория: место где пахнет реактивами',
-            'мой микроскоп: вижу микробы',
-            'когда пробирка взорвалась',
-            'учёный: искатель истины',
-            'мой грант: денег нет, но вы держитесь',
-            'когда открытие сделал стажёр',
-            'наука: 5% вдохновения, 95% отчётов',
-            'лабораторный халат: моя броня',
-            'когда опыт не сошёлся',
-            'учёный: профессия для терпеливых',
-            'мой журнал: записи, графики, сны',
-            'когда коллега украл идею',
-            'научная степень: просто бумажка',
-            'лаборатория: храм науки и беспорядка'
-        ]
-    },
-    {
-        id: 'journalist',
-        name: '📰 Журналист',
-        icon: '📰',
-        basePrompt: 'journalist, reporter, with microphone, notebook, press badge',
-        humor: [
-            'дедлайн через 5 минут, а новостей нет',
-            'мой источник: "строго анонимно" (это я)',
-            'новость: "сенсация", текст: "ну такое"',
-            'редактор: "перепиши", я: "переписал" (то же самое)',
-            'в погоне за сенсацией уже 3 день',
-            'моя совесть чиста (я её продал)',
-            'интервью: 2 часа, в эфир: 30 секунд',
-            'правда где-то рядом (но не сегодня)',
-            'журналист: "я не вру, я художественно излагаю"',
-            'горячая новость: котик спасся из пожара',
-            'мой блокнот: всё, что нельзя говорить',
-            'пресс-карта: пропуск везде и никуда',
-            'когда редактор вырезал главное',
-            'журналист: охотник за сенсациями',
-            'мой диктофон: лучший друг',
-            'когда новость оказалась фейком',
-            'журналистика: искусство задавать вопросы',
-            'мой тираж: 1000 экземпляров',
-            'когда интервью сбежало',
-            'журналист: голос народа',
-            'мой день: новости, новости, новости',
-            'когда первоисточник врёт',
-            'журналист: профессия для смелых',
-            'моя статья: читают, обсуждают, забывают'
-        ]
-    },
-    {
-        id: 'athlete',
-        name: '🏃‍♂️ Спортсмен',
-        icon: '🏃‍♂️',
-        basePrompt: 'athlete, sportsman, fit person, training, with trophy, sportswear',
-        humor: [
-            'день ног: день 365 пропуска',
-            'мой протеин: вкус сожаления',
-            'абонемент в зал: 5000/мес, посещений: 3',
-            'когда рекорд наконец побит',
-            'тренер: "ещё один подход" уже 2 часа',
-            'спортивный напиток: дорогая цветная вода',
-            'до соревнований: загрузка углями = ем всё',
-            'после соревнований: почему всё болит',
-            'главная тренировка: дойти до зала',
-            'фитнес-блогеры: образец для подражания',
-            'мой тренер: мучитель и друг',
-            'когда мышцы болят после тренировки',
-            'спортсмен: раб своего тела',
-            'мой инвентарь: гантели, штанга, воля',
-            'когда пропустил тренировку (совесть мучит)',
-            'спорт: боль, пот, слёзы',
-            'мой протеин: дороже еды',
-            'когда результаты не растут',
-            'спортсмен: профессия для сильных',
-            'мой день: зал, зал, зал',
-            'когда соревнования проиграл',
-            'спорт: 10% таланта, 90% труда',
-            'мой тренер: знает всё о боли',
-            'когда наконец выходной'
-        ]
-    },
-    {
-        id: 'accountant',
-        name: '📊 Бухгалтер',
-        icon: '📊',
-        basePrompt: 'accountant, bookkeeper, with calculator, spreadsheets, glasses',
-        humor: [
-            'баланс: должен быть ноль (никогда)',
-            'отчётность: 100500 страниц',
-            'когда налоговая пришла',
-            'дедлайн сдачи отчётов: завтра',
-            'Excel - моя жизнь',
-            'цифры сходятся? значит я ошибся',
-            'зарплата: посчитай сам',
-            'когда нашли ошибку за прошлый год',
-            'первичка: вечно теряется',
-            'аудит: веселье с проверяющими',
-            'мой калькулятор: считает быстрее меня',
-            'бухгалтер: хранитель цифр',
-            'мой отчёт: 100 листов, 1000 цифр',
-            'когда баланс сошёлся (чудо)',
-            'бухгалтерия: наука точная и скучная',
-            'мой Excel: макросы, формулы, слёзы',
-            'когда главбух заболел',
-            'бухгалтер: страж бюджета',
-            'мой день: цифры, цифры, цифры',
-            'когда налоговая нашла ошибку',
-            'бухгалтер: профессия для терпеливых',
-            'мой отчёт: сдан (можно выдохнуть)',
-            'когда зарплата пришла',
-            'бухгалтерия: место где деньги считают'
-        ]
-    }
-];
+            'специальное блюдо: то
 
         // ========== 30 ЭМОЦИЙ ==========
         const EMOTIONS = [
@@ -2387,26 +2069,37 @@
         // ========== ФУНКЦИИ ИНТЕРФЕЙСА ==========
         function renderProfessions() {
             const grid = document.getElementById('professionsGrid');
+            if (!grid) return;
+            
             grid.innerHTML = '';
             PROFESSIONS.forEach(profession => {
                 const div = document.createElement('div');
                 div.className = 'profession-item';
-                div.onclick = () => selectProfession(profession.id);
+                div.onclick = (e) => {
+                    selectProfession(profession.id, e);
+                };
                 div.innerHTML = `<span class="profession-icon">${profession.icon}</span><span class="profession-name">${profession.name}</span>`;
                 grid.appendChild(div);
             });
         }
 
-        window.selectProfession = (professionId) => {
+        window.selectProfession = (professionId, event) => {
             selectedProfession = professionId;
             document.querySelectorAll('.profession-item').forEach(item => item.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('selected');
+            }
             const profession = PROFESSIONS.find(p => p.id === professionId);
-            document.getElementById('selectedProfessionCount').textContent = profession.name;
+            if (profession) {
+                const countEl = document.getElementById('selectedProfessionCount');
+                if (countEl) countEl.textContent = profession.name;
+            }
         };
 
         function renderEmotions() {
             const grid = document.getElementById('emotionsGrid');
+            if (!grid) return;
+            
             grid.innerHTML = '';
             EMOTIONS.forEach(emotion => {
                 const div = document.createElement('div');
@@ -2414,8 +2107,10 @@
                 div.onclick = (e) => {
                     if (e.target.type !== 'checkbox') {
                         const checkbox = div.querySelector('input');
-                        checkbox.checked = !checkbox.checked;
-                        toggleEmotion(emotion.id, checkbox.checked);
+                        if (checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                            toggleEmotion(emotion.id, checkbox.checked);
+                        }
                     }
                 };
                 div.innerHTML = `
@@ -2433,12 +2128,23 @@
             } else {
                 selectedEmotions = selectedEmotions.filter(id => id !== emotionId);
             }
+            
             document.querySelectorAll('.emotion-item').forEach(item => {
                 const checkbox = item.querySelector('input');
-                if (checkbox.checked) item.classList.add('selected');
-                else item.classList.remove('selected');
+                if (checkbox && checkbox.checked) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
             });
-            document.getElementById('selectedCount').textContent = selectedEmotions.length;
+            
+            const countEl = document.getElementById('selectedCount');
+            if (countEl) countEl.textContent = selectedEmotions.length;
+            
+            const generateBtn = document.getElementById('generateBtn');
+            if (generateBtn) {
+                generateBtn.disabled = selectedEmotions.length === 0 || !selectedProfession;
+            }
         };
 
         document.querySelectorAll('.style-tag').forEach(tag => {
@@ -2451,9 +2157,13 @@
 
         window.selectPack = (pack) => {
             selectedPack = pack;
-            document.getElementById('basicPack').classList.toggle('selected', pack === 'basic');
-            document.getElementById('premiumPack').classList.toggle('selected', pack === 'premium');
-            document.getElementById('generateBtn').classList.toggle('premium', pack === 'premium');
+            const basicPack = document.getElementById('basicPack');
+            const premiumPack = document.getElementById('premiumPack');
+            const generateBtn = document.getElementById('generateBtn');
+            
+            if (basicPack) basicPack.classList.toggle('selected', pack === 'basic');
+            if (premiumPack) premiumPack.classList.toggle('selected', pack === 'premium');
+            if (generateBtn) generateBtn.classList.toggle('premium', pack === 'premium');
         };
 
         // ========== ФУНКЦИИ ГЕНЕРАЦИИ ==========
@@ -2480,6 +2190,7 @@
                 }
                 return null;
             } catch (error) {
+                console.error('PNG generation error:', error);
                 return null;
             }
         }
@@ -2508,6 +2219,7 @@
                 }
                 return null;
             } catch (error) {
+                console.error('SVG generation error:', error);
                 return null;
             }
         }
@@ -2527,79 +2239,7 @@
             });
         }
 
-
-        // ТЕПЕРЬ ДОБАВЛЯЕМ ВАШУ 5-СЛОЙНУЮ АНИМАЦИЮ
-        if (poseData) {
-            const layer = tgsJson.layers[0];
-            
-            // Анимация головы (вращение)
-            if (poseData.hasFace) {
-                layer.ks.r = {
-                    "a": 1,
-                    "k": [
-                        { "t": 0, "s": [0] },
-                        { "t": 30, "s": [5] },
-                        { "t": 60, "s": [-3] },
-                        { "t": 90, "s": [0] }
-                    ]
-                };
-            }
-            
-            // Анимация рук (движение X)
-            if (poseData.hasArms) {
-                layer.ks.p = {
-                    "a": 1,
-                    "k": [
-                        { "t": 0, "s": [256, 256, 0] },
-                        { "t": 30, "s": [266, 256, 0] },
-                        { "t": 60, "s": [246, 256, 0] },
-                        { "t": 90, "s": [256, 256, 0] }
-                    ]
-                };
-            }
-            
-            // Анимация ног (движение Y)
-            if (poseData.hasLegs) {
-                layer.ks.p = {
-                    "a": 1,
-                    "k": [
-                        { "t": 0, "s": [256, 256, 0] },
-                        { "t": 30, "s": [256, 266, 0] },
-                        { "t": 60, "s": [256, 246, 0] },
-                        { "t": 90, "s": [256, 256, 0] }
-                    ]
-                };
-            }
-            
-            // Пульсация (масштаб)
-            layer.ks.s = {
-                "a": 1,
-                "k": [
-                    { "t": 0, "s": [100, 100, 100] },
-                    { "t": 30, "s": [105, 105, 100] },
-                    { "t": 60, "s": [98, 98, 100] },
-                    { "t": 90, "s": [100, 100, 100] }
-                ]
-            };
-        }
-
-        // Сжимаем с правильными параметрами
-        const jsonString = JSON.stringify(tgsJson);
-        const compressed = pako.gzip(jsonString, { level: 9 });
-        const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-        
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(blob);
-        });
-        
-    } catch (error) {
-        console.error('TGS error:', error);
-        return null;
-    }
-}
-
+        // ========== TGS ГЕНЕРАЦИЯ ==========
         async function compressToTGS(lottieJson) {
             lottieJson.tgs = 1;
             const compressed = pako.gzip(JSON.stringify(lottieJson));
@@ -2611,152 +2251,151 @@
                 reader.readAsDataURL(blob);
             });
         }
-		
 
-// Конвертация SVG в Lottie
-async function convertSvgToLottie(svgString) {
-    // Базовая структура Lottie
-    const lottieJson = {
-        v: "5.5.2",
-        fr: 30,
-        ip: 0,
-        op: 90,
-        w: 512,
-        h: 512,
-        layers: []
-    };
-    
-    try {
-        // Парсим SVG для извлечения слоёв
-        const parser = new DOMParser();
-        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-        const groups = svgDoc.querySelectorAll('g, svg > *');
-        
-        groups.forEach((group, index) => {
-            // Создаём слой для каждой группы
-            const layer = {
+        // Конвертация SVG в Lottie
+        async function convertSvgToLottie(svgString) {
+            // Базовая структура Lottie
+            const lottieJson = {
+                v: "5.5.2",
+                fr: 30,
+                ip: 0,
+                op: 90,
+                w: 512,
+                h: 512,
+                layers: []
+            };
+            
+            try {
+                // Парсим SVG для извлечения слоёв
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+                const groups = svgDoc.querySelectorAll('g, svg > *');
+                
+                groups.forEach((group, index) => {
+                    // Создаём слой для каждой группы
+                    const layer = {
+                        ddd: 0,
+                        ind: index + 1,
+                        ty: 4, // shape layer
+                        nm: group.getAttribute('id') || `layer_${index}`,
+                        sr: 1,
+                        ks: {
+                            o: { a: 0, k: 100 },
+                            r: { a: 0, k: 0 },
+                            p: { a: 0, k: [256, 256, 0] },
+                            a: { a: 0, k: [256, 256, 0] },
+                            s: { a: 0, k: [100, 100, 100] }
+                        },
+                        ao: 0,
+                        ip: 0,
+                        op: 90,
+                        st: 0,
+                        bm: 0
+                    };
+                    lottieJson.layers.push(layer);
+                });
+            } catch (e) {
+                console.error('SVG parse error:', e);
+            }
+            
+            return lottieJson;
+        }
+
+        // Применение 5-слойной анимации
+        function applyPoseAnimation(lottieJson, poseData) {
+            if (!poseData) return lottieJson;
+            
+            lottieJson.layers.forEach((layer, index) => {
+                // Анимация для первых слоёв (голова)
+                if (index === 0 && poseData.hasFace) {
+                    layer.ks.r = {
+                        a: 1,
+                        k: [
+                            { t: 0, s: [0] },
+                            { t: 30, s: [5] },
+                            { t: 60, s: [-3] },
+                            { t: 90, s: [0] }
+                        ]
+                    };
+                }
+                
+                // Анимация для средних слоёв (руки)
+                if (index === 1 && poseData.hasArms) {
+                    layer.ks.p = {
+                        a: 1,
+                        k: [
+                            { t: 0, s: [256, 256, 0] },
+                            { t: 30, s: [266, 256, 0] },
+                            { t: 60, s: [246, 256, 0] },
+                            { t: 90, s: [256, 256, 0] }
+                        ]
+                    };
+                }
+                
+                // Анимация для последних слоёв (ноги)
+                if (index === 2 && poseData.hasLegs) {
+                    layer.ks.p = {
+                        a: 1,
+                        k: [
+                            { t: 0, s: [256, 256, 0] },
+                            { t: 30, s: [256, 266, 0] },
+                            { t: 60, s: [256, 246, 0] },
+                            { t: 90, s: [256, 256, 0] }
+                        ]
+                    };
+                }
+                
+                // Пульсация для всех слоёв
+                layer.ks.s = {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100, 100, 100] },
+                        { t: 30, s: [105, 105, 100] },
+                        { t: 60, s: [95, 95, 100] },
+                        { t: 90, s: [100, 100, 100] }
+                    ]
+                };
+            });
+            
+            return lottieJson;
+        }
+
+        // Добавление текстового слоя
+        function addTextLayer(lottieJson, text) {
+            const textLayer = {
                 ddd: 0,
-                ind: index + 1,
-                ty: 4, // shape layer
-                nm: group.getAttribute('id') || `layer_${index}`,
+                ind: lottieJson.layers.length + 1,
+                ty: 5,
+                nm: "humor_text",
                 sr: 1,
                 ks: {
                     o: { a: 0, k: 100 },
                     r: { a: 0, k: 0 },
-                    p: { a: 0, k: [256, 256, 0] },
-                    a: { a: 0, k: [256, 256, 0] },
+                    p: { a: 0, k: [256, 400, 0] },
+                    a: { a: 0, k: [0, 0, 0] },
                     s: { a: 0, k: [100, 100, 100] }
                 },
-                ao: 0,
-                ip: 0,
-                op: 90,
-                st: 0,
-                bm: 0
-            };
-            lottieJson.layers.push(layer);
-        });
-    } catch (e) {
-        console.error('SVG parse error:', e);
-    }
-    
-    return lottieJson;
-}
-
-// Применение 5-слойной анимации
-function applyPoseAnimation(lottieJson, poseData) {
-    if (!poseData) return lottieJson;
-    
-    lottieJson.layers.forEach((layer, index) => {
-        // Анимация для первых слоёв (голова)
-        if (index === 0 && poseData.hasFace) {
-            layer.ks.r = {
-                a: 1,
-                k: [
-                    { t: 0, s: [0] },
-                    { t: 30, s: [5] },
-                    { t: 60, s: [-3] },
-                    { t: 90, s: [0] }
-                ]
-            };
-        }
-        
-        // Анимация для средних слоёв (руки)
-        if (index === 1 && poseData.hasArms) {
-            layer.ks.p = {
-                a: 1,
-                k: [
-                    { t: 0, s: [256, 256, 0] },
-                    { t: 30, s: [266, 256, 0] },
-                    { t: 60, s: [246, 256, 0] },
-                    { t: 90, s: [256, 256, 0] }
-                ]
-            };
-        }
-        
-        // Анимация для последних слоёв (ноги)
-        if (index === 2 && poseData.hasLegs) {
-            layer.ks.p = {
-                a: 1,
-                k: [
-                    { t: 0, s: [256, 256, 0] },
-                    { t: 30, s: [256, 266, 0] },
-                    { t: 60, s: [256, 246, 0] },
-                    { t: 90, s: [256, 256, 0] }
-                ]
-            };
-        }
-        
-        // Пульсация для всех слоёв
-        layer.ks.s = {
-            a: 1,
-            k: [
-                { t: 0, s: [100, 100, 100] },
-                { t: 30, s: [105, 105, 100] },
-                { t: 60, s: [95, 95, 100] },
-                { t: 90, s: [100, 100, 100] }
-            ]
-        };
-    });
-    
-    return lottieJson;
-}
-
-// Добавление текстового слоя
-function addTextLayer(lottieJson, text) {
-    const textLayer = {
-        ddd: 0,
-        ind: lottieJson.layers.length + 1,
-        ty: 5,
-        nm: "humor_text",
-        sr: 1,
-        ks: {
-            o: { a: 0, k: 100 },
-            r: { a: 0, k: 0 },
-            p: { a: 0, k: [256, 400, 0] },
-            a: { a: 0, k: [0, 0, 0] },
-            s: { a: 0, k: [100, 100, 100] }
-        },
-        t: {
-            d: {
-                k: [{
-                    t: 0,
-                    s: {
-                        t: text,
-                        s: 24,
-                        f: "Arial",
-                        fc: [0, 0, 0, 1],
-                        j: 2
+                t: {
+                    d: {
+                        k: [{
+                            t: 0,
+                            s: {
+                                t: text,
+                                s: 24,
+                                f: "Arial",
+                                fc: [0, 0, 0, 1],
+                                j: 2
+                            }
+                        }]
                     }
-                }]
-            }
-        },
-        ip: 0,
-        op: lottieJson.op || 90
-    };
-    
-    lottieJson.layers.push(textLayer);
-    return lottieJson;
-}
+                },
+                ip: 0,
+                op: lottieJson.op || 90
+            };
+            
+            lottieJson.layers.push(textLayer);
+            return lottieJson;
+        }
 
         // ========== MEDIAPIPE АНАЛИЗ ==========
         async function analyzeImageWithMediaPipe(imageElement) {
@@ -2782,119 +2421,120 @@ function addTextLayer(lottieJson, text) {
         }
 
         // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
-// ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
-window.generatePack = async () => {
-    const character = document.getElementById('characterPrompt').value.trim();
-    
-    if (!character || !selectedProfession || selectedEmotions.length === 0) {
-        alert('Пожалуйста, выберите персонажа, профессию и эмоции');
-        return;
-    }
-
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('generateBtn').disabled = true;
-    document.getElementById('results').innerHTML = '';
-
-    try {
-        generatedPNG = [];
-        generatedTGS = [];
-        
-        const profession = PROFESSIONS.find(p => p.id === selectedProfession);
-
-        for (let i = 0; i < selectedEmotions.length; i++) {
-            const emotionId = selectedEmotions[i];
-            const emotion = EMOTIONS.find(e => e.id === emotionId);
+        window.generatePack = async () => {
+            const character = document.getElementById('characterPrompt').value.trim();
             
-            document.getElementById('loadingProgress').textContent = 
-                `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name}`;
-            
-            const useHumor = Math.random() < 0.7;
-            const humorText = useHumor ? profession.humor[Math.floor(Math.random() * profession.humor.length)] : null;
-            
-            // ==== 1. ГЕНЕРАЦИЯ PNG (ДЛЯ БАЗОВОГО НАБОРА) ====
-            const pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
-            let pngImage = await generateRecraftPNG(pngPrompt);
-            
-            // ==== 2. MEDIAPIPE АНАЛИЗ ====
-            let poseData = null;
-            if (pngImage) {
-                const img = new Image();
-                await new Promise((resolve) => { img.onload = resolve; img.src = pngImage; });
-                poseData = await analyzeImageWithMediaPipe(img);
+            if (!character || !selectedProfession || selectedEmotions.length === 0) {
+                alert('Пожалуйста, выберите персонажа, профессию и эмоции');
+                return;
             }
-            
-            // ==== 3. СОХРАНЯЕМ PNG ====
-            if (pngImage) {
-                generatedPNG.push({
-                    emotion: emotion,
-                    profession: profession.name,
-                    humor: humorText,
-                    dataUrl: pngImage,
-                    filename: `${character}_${profession.id}_${emotion.id}_${i}.png`,
-                    hasHumor: useHumor
-                });
-            }
-            
-            // ==== 4. ГЕНЕРАЦИЯ TGS (ТОЛЬКО ДЛЯ ПРЕМИУМ) - ИСПОЛЬЗУЕМ SVG! ====
-            if (selectedPack === 'premium') {
-                try {
-                    // Формируем промпт для вектора (НЕ ИСПОЛЬЗУЕМ PNG)
-                    const vectorPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, flat design, clean lines, white background`;
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('results').innerHTML = '';
+
+            try {
+                generatedPNG = [];
+                generatedTGS = [];
+                
+                const profession = PROFESSIONS.find(p => p.id === selectedProfession);
+
+                for (let i = 0; i < selectedEmotions.length; i++) {
+                    const emotionId = selectedEmotions[i];
+                    const emotion = EMOTIONS.find(e => e.id === emotionId);
                     
-                    // ПОЛУЧАЕМ SVG ОТ RECRAFT
-                    const svgData = await generateRecraftSVG(vectorPrompt);
+                    document.getElementById('loadingProgress').textContent = 
+                        `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name}`;
                     
-                    if (svgData) {
-                        // Конвертируем SVG в Lottie с сохранением слоёв
-                        let lottieJson = await convertSvgToLottie(svgData);
-                        
-                        // Применяем вашу 5-слойную анимацию на основе позы
-                        if (lottieJson && lottieJson.layers) {
-                            lottieJson = applyPoseAnimation(lottieJson, poseData);
-                            
-                            // Добавляем текст с юмором
-                            if (humorText) {
-                                lottieJson = addTextLayer(lottieJson, humorText);
-                            }
-                            
-                            // Сжимаем в TGS
-                            const tgsData = await compressToTGS(lottieJson);
-                            
-                            generatedTGS.push({
-                                emotion: emotion,
-                                profession: profession.name,
-                                humor: humorText,
-                                dataUrl: tgsData,
-                                filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
-                            });
-                            
-                            addDebugLog('success', `✅ TGS создан из SVG для ${emotion.name}`);
-                        }
-                    } else {
-                        addDebugLog('error', `❌ Не удалось получить SVG для ${emotion.name}`);
+                    const useHumor = Math.random() < 0.7;
+                    const humorText = useHumor ? profession.humor[Math.floor(Math.random() * profession.humor.length)] : null;
+                    
+                    // ==== 1. ГЕНЕРАЦИЯ PNG (ДЛЯ БАЗОВОГО НАБОРА) ====
+                    const pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
+                    let pngImage = await generateRecraftPNG(pngPrompt);
+                    
+                    // ==== 2. MEDIAPIPE АНАЛИЗ ====
+                    let poseData = null;
+                    if (pngImage) {
+                        const img = new Image();
+                        await new Promise((resolve) => { img.onload = resolve; img.src = pngImage; });
+                        poseData = await analyzeImageWithMediaPipe(img);
                     }
                     
-                } catch (e) {
-                    addDebugLog('error', `❌ TGS generation error: ${e.message}`);
-                    console.error('TGS error:', e);
+                    // ==== 3. СОХРАНЯЕМ PNG ====
+                    if (pngImage) {
+                        generatedPNG.push({
+                            emotion: emotion,
+                            profession: profession.name,
+                            humor: humorText,
+                            dataUrl: pngImage,
+                            filename: `${character}_${profession.id}_${emotion.id}_${i}.png`,
+                            hasHumor: useHumor
+                        });
+                    }
+                    
+                    // ==== 4. ГЕНЕРАЦИЯ TGS (ТОЛЬКО ДЛЯ ПРЕМИУМ) - ИСПОЛЬЗУЕМ SVG! ====
+                    if (selectedPack === 'premium') {
+                        try {
+                            // Формируем промпт для вектора (НЕ ИСПОЛЬЗУЕМ PNG)
+                            const vectorPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, flat design, clean lines, white background`;
+                            
+                            // ПОЛУЧАЕМ SVG ОТ RECRAFT
+                            const svgData = await generateRecraftSVG(vectorPrompt);
+                            
+                            if (svgData) {
+                                // Конвертируем SVG в Lottie с сохранением слоёв
+                                let lottieJson = await convertSvgToLottie(svgData);
+                                
+                                // Применяем вашу 5-слойную анимацию на основе позы
+                                if (lottieJson && lottieJson.layers) {
+                                    lottieJson = applyPoseAnimation(lottieJson, poseData);
+                                    
+                                    // Добавляем текст с юмором
+                                    if (humorText) {
+                                        lottieJson = addTextLayer(lottieJson, humorText);
+                                    }
+                                    
+                                    // Сжимаем в TGS
+                                    const tgsData = await compressToTGS(lottieJson);
+                                    
+                                    generatedTGS.push({
+                                        emotion: emotion,
+                                        profession: profession.name,
+                                        humor: humorText,
+                                        dataUrl: tgsData,
+                                        filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
+                                    });
+                                    
+                                    if (typeof addDebugLog === 'function') addDebugLog('success', `✅ TGS создан из SVG для ${emotion.name}`);
+                                }
+                            } else {
+                                if (typeof addDebugLog === 'function') addDebugLog('error', `❌ Не удалось получить SVG для ${emotion.name}`);
+                            }
+                            
+                        } catch (e) {
+                            if (typeof addDebugLog === 'function') addDebugLog('error', `❌ TGS generation error: ${e.message}`);
+                            console.error('TGS error:', e);
+                        }
+                    }
                 }
-            }
-        }
 
-        displayResults(generatedPNG, generatedTGS, profession);
-        addToHistory(character, profession, currentStyle, selectedEmotions.length, generatedPNG, generatedTGS, selectedPack);
-        
-    } catch (error) {
-        alert('Ошибка: ' + error.message);
-    } finally {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('generateBtn').disabled = false;
-    }
-};
+                displayResults(generatedPNG, generatedTGS, profession);
+                addToHistory(character, profession, currentStyle, selectedEmotions.length, generatedPNG, generatedTGS, selectedPack);
+                
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('generateBtn').disabled = false;
+            }
+        };
 
         // ========== ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ==========
         function displayResults(pngStickers, tgsStickers, profession) {
             const resultsDiv = document.getElementById('results');
+            if (!resultsDiv) return;
+            
             resultsDiv.innerHTML = '';
 
             const humorCount = pngStickers.filter(s => s.hasHumor).length;
@@ -2944,40 +2584,45 @@ window.generatePack = async () => {
 
             // Заполняем PNG сетку
             const pngGrid = document.getElementById('pngGrid');
-            pngStickers.forEach(s => {
-                const card = document.createElement('div');
-                card.className = 'sticker-card';
-                card.innerHTML = `
-                    <div class="sticker-preview">
-                        <img src="${s.dataUrl}" alt="${s.emotion.name}">
-                    </div>
-                    <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                    ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
-                    <span class="sticker-badge png">PNG</span>
-                `;
-                pngGrid.appendChild(card);
-            });
+            if (pngGrid) {
+                pngStickers.forEach(s => {
+                    const card = document.createElement('div');
+                    card.className = 'sticker-card';
+                    card.innerHTML = `
+                        <div class="sticker-preview">
+                            <img src="${s.dataUrl}" alt="${s.emotion.name}">
+                        </div>
+                        <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
+                        ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
+                        <span class="sticker-badge png">PNG</span>
+                    `;
+                    pngGrid.appendChild(card);
+                });
+            }
 
             // Заполняем TGS сетку
             if (selectedPack === 'premium' && tgsStickers.length > 0) {
                 const tgsGrid = document.getElementById('tgsGrid');
-                tgsStickers.forEach(s => {
-                    const card = document.createElement('div');
-                    card.className = 'sticker-card premium';
-                    card.innerHTML = `
-                        <div class="sticker-preview">
-                            <div style="font-size: 3em;">${s.emotion.icon}</div>
-                        </div>
-                        <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                        ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
-                        <span class="sticker-badge tgs">TGS</span>
-                        <span class="sticker-badge fallback">Анимировано</span>
-                    `;
-                    tgsGrid.appendChild(card);
-                });
+                if (tgsGrid) {
+                    tgsStickers.forEach(s => {
+                        const card = document.createElement('div');
+                        card.className = 'sticker-card premium';
+                        card.innerHTML = `
+                            <div class="sticker-preview">
+                                <div style="font-size: 3em;">${s.emotion.icon}</div>
+                            </div>
+                            <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
+                            ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
+                            <span class="sticker-badge tgs">TGS</span>
+                            <span class="sticker-badge lottie">Lottie</span>
+                        `;
+                        tgsGrid.appendChild(card);
+                    });
+                }
             }
 
-            document.getElementById('telegramGuide').style.display = 'block';
+            const telegramGuide = document.getElementById('telegramGuide');
+            if (telegramGuide) telegramGuide.style.display = 'block';
         }
 
         // ========== СКАЧИВАНИЕ ==========
@@ -2992,7 +2637,7 @@ window.generatePack = async () => {
             alert(`Скачивание ${stickers.length} файлов начато!`);
         };
 
-        // ========== ИСТОРИЯ С ОЧИСТКОЙ ==========
+        // ========== ИСТОРИЯ ==========
         function loadHistory() {
             try {
                 const saved = localStorage.getItem('stickerHistory');
@@ -3101,13 +2746,22 @@ window.generatePack = async () => {
         function regenerateFromHistory(entry) {
             document.getElementById('characterPrompt').value = entry.character;
             const profession = PROFESSIONS.find(p => p.name === entry.profession);
-            if (profession) selectProfession(profession.id);
+            if (profession) {
+                // Симулируем клик по профессии
+                const items = document.querySelectorAll('.profession-item');
+                items.forEach(item => {
+                    if (item.textContent.includes(profession.name)) {
+                        item.click();
+                    }
+                });
+            }
             switchTab('generator');
         }
 
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
             if (tab === 'generator') {
                 document.querySelector('.tab').classList.add('active');
                 document.getElementById('generator-tab').classList.add('active');
@@ -3121,6 +2775,8 @@ window.generatePack = async () => {
         // ========== ПРОВЕРКА API ==========
         async function checkRecraftAPI() {
             const statusDiv = document.getElementById('recraftStatus');
+            if (!statusDiv) return;
+            
             try {
                 const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
                     method: 'POST',
@@ -3128,38 +2784,52 @@ window.generatePack = async () => {
                         'Authorization': `Bearer ${RECRAFT_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ prompt: 'test', n: 1, size: '1024x1024' })
+                    body: JSON.stringify({ 
+                        prompt: 'test', 
+                        n: 1, 
+                        size: '1024x1024' 
+                    })
                 });
+                
                 if (response.ok) {
                     statusDiv.className = 'api-status recraft';
                     statusDiv.innerHTML = '<span class="status-icon">✅</span><span>Recraft AI: Подключен</span>';
                 } else {
                     statusDiv.className = 'api-status recraft error';
-                    statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Recraft AI: Демо режим</span>';
+                    statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Recraft AI: Ошибка подключения</span>';
                 }
             } catch (error) {
                 statusDiv.className = 'api-status recraft error';
-                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Recraft AI: Демо режим</span>';
+                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Recraft AI: Ошибка сети</span>';
             }
         }
 
         // ========== ИНИЦИАЛИЗАЦИЯ ==========
-        renderProfessions();
-        renderEmotions();
-        checkRecraftAPI();
-        initMediaPipe();
-        loadHistory();
+        // Ждём загрузки DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProfessions();
+            renderEmotions();
+            checkRecraftAPI();
+            initMediaPipe();
+            loadHistory();
 
-        setTimeout(() => {
-            EMOTIONS.slice(0, 5).forEach(emotion => {
-                const checkbox = document.querySelector(`input[value="${emotion.id}"]`);
-                if (checkbox) {
-                    checkbox.checked = true;
-                    toggleEmotion(emotion.id, true);
+            // Выбираем первые 5 эмоций по умолчанию
+            setTimeout(() => {
+                EMOTIONS.slice(0, 5).forEach(emotion => {
+                    const checkbox = document.querySelector(`input[value="${emotion.id}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        toggleEmotion(emotion.id, true);
+                    }
+                });
+                
+                // Выбираем зумера по умолчанию
+                const zoomerItem = document.querySelector('.profession-item');
+                if (zoomerItem) {
+                    zoomerItem.click();
                 }
-            });
-            selectProfession('zoomer');
-        }, 100);
+            }, 100);
+        });
     </script>
 </body>
 </html>
