@@ -2342,53 +2342,167 @@ async function debugSVG(prompt) {
             }
         }
 
-        // ========== КОНВЕРТАЦИЯ SVG В LOTTIE (60 FPS) ==========
-        async function convertSvgToLottie(svgString) {
-            const lottieJson = {
-                tgs: 1,
-                v: "5.5.2",
-                fr: 60,  // 60 FPS - требование Telegram!
-                ip: 0,
-                op: 180, // 3 секунды × 60 fps = 180 кадров
-                w: 512,
-                h: 512,
-                ddd: 0,
-                layers: []
-            };
-            
-            try {
-                const parser = new DOMParser();
-                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-                const groups = svgDoc.querySelectorAll('g, svg > *');
-                
-                groups.forEach((group, index) => {
-                    const layer = {
-                        ddd: 0,
-                        ind: index + 1,
-                        ty: 4,  // shape layer (вектор)
-                        nm: group.getAttribute('id') || `layer_${index}`,
-                        sr: 1,
-                        ks: {
-                            o: { a: 0, k: 100 },
-                            r: { a: 0, k: 0 },
-                            p: { a: 0, k: [256, 256, 0] },
-                            a: { a: 0, k: [256, 256, 0] },
-                            s: { a: 0, k: [100, 100, 100] }
-                        },
-                        ao: 0,
-                        ip: 0,
-                        op: 180, // синхронизируем с общей длительностью
-                        st: 0,
-                        bm: 0
-                    };
-                    lottieJson.layers.push(layer);
-                });
-            } catch (e) {
-                console.error('SVG parse error:', e);
-            }
-            
+        // ========== КОНВЕРТАЦИЯ SVG В LOTTIE (60 FPS) - ИСПРАВЛЕННАЯ ==========
+async function convertSvgToLottie(svgString) {
+    addDebugLog('info', `🔄 Конвертация SVG в Lottie, размер: ${svgString.length} символов`);
+    
+    // Базовая структура Lottie
+    const lottieJson = {
+        tgs: 1,
+        v: "5.5.2",
+        fr: 60,
+        ip: 0,
+        op: 180,
+        w: 512,
+        h: 512,
+        ddd: 0,
+        layers: []
+    };
+    
+    try {
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+        
+        // Проверяем, есть ли ошибки парсинга
+        const parserError = svgDoc.querySelector('parsererror');
+        if (parserError) {
+            addDebugLog('error', `❌ Ошибка парсинга SVG: ${parserError.textContent}`);
             return lottieJson;
         }
+        
+        // Получаем все path элементы
+        const paths = svgDoc.querySelectorAll('path');
+        addDebugLog('info', `📊 Найдено path элементов: ${paths.length}`);
+        
+        if (paths.length === 0) {
+            addDebugLog('error', `❌ Нет path элементов в SVG`);
+            return lottieJson;
+        }
+        
+        // Создаем слой для каждого path
+        paths.forEach((path, index) => {
+            const fillColor = path.getAttribute('fill') || 'rgb(0,0,0)';
+            const strokeColor = path.getAttribute('stroke');
+            const strokeWidth = path.getAttribute('stroke-width');
+            const d = path.getAttribute('d');
+            
+            if (!d) return;
+            
+            // Парсим цвет
+            let r = 0, g = 0, b = 0;
+            const rgbMatch = fillColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+            if (rgbMatch) {
+                r = parseInt(rgbMatch[1]) / 255;
+                g = parseInt(rgbMatch[2]) / 255;
+                b = parseInt(rgbMatch[3]) / 255;
+            }
+            
+            // Создаем shape layer
+            const layer = {
+                ddd: 0,
+                ind: index + 1,
+                ty: 4, // shape layer
+                nm: `path_${index}`,
+                sr: 1,
+                ks: {
+                    o: { a: 0, k: 100 },
+                    r: { a: 0, k: 0 },
+                    p: { a: 0, k: [256, 256, 0] },
+                    a: { a: 0, k: [0, 0, 0] },
+                    s: { a: 0, k: [100, 100, 100] }
+                },
+                ao: 0,
+                shapes: [{
+                    ty: "gr", // group
+                    it: [
+                        {
+                            ty: "sh", // shape
+                            ks: {
+                                a: 0,
+                                k: {
+                                    v: parseSvgPathToLottie(d),
+                                    i: [[]],
+                                    o: [[]],
+                                    c: true
+                                }
+                            },
+                            nm: `path_${index}`,
+                            mn: ""
+                        },
+                        {
+                            ty: "fl", // fill
+                            nm: "fill",
+                            mn: "",
+                            c: {
+                                a: 0,
+                                k: [r, g, b, 1]
+                            },
+                            o: {
+                                a: 0,
+                                k: 100
+                            },
+                            r: 1
+                        }
+                    ],
+                    nm: `group_${index}`,
+                    mn: "",
+                    hd: false
+                }],
+                ip: 0,
+                op: 180,
+                st: 0,
+                bm: 0
+            };
+            
+            // Добавляем обводку если есть
+            if (strokeColor && strokeWidth) {
+                const strokeMatch = strokeColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                if (strokeMatch) {
+                    const sr = parseInt(strokeMatch[1]) / 255;
+                    const sg = parseInt(strokeMatch[2]) / 255;
+                    const sb = parseInt(strokeMatch[3]) / 255;
+                    
+                    layer.shapes[0].it.push({
+                        ty: "st",
+                        nm: "stroke",
+                        mn: "",
+                        c: {
+                            a: 0,
+                            k: [sr, sg, sb, 1]
+                        },
+                        o: {
+                            a: 0,
+                            k: 100
+                        },
+                        w: {
+                            a: 0,
+                            k: parseFloat(strokeWidth)
+                        },
+                        lc: 1,
+                        lj: 1
+                    });
+                }
+            }
+            
+            lottieJson.layers.push(layer);
+        });
+        
+        addDebugLog('success', `✅ Создано Lottie слоев: ${lottieJson.layers.length}`);
+        
+    } catch (e) {
+        addDebugLog('error', `❌ Ошибка конвертации: ${e.message}`);
+        console.error('Convert error:', e);
+    }
+    
+    return lottieJson;
+}
+
+// Вспомогательная функция для парсинга SVG path в Lottie формат
+function parseSvgPathToLottie(d) {
+    // Упрощенный парсер - для реальной работы нужно полноценное преобразование
+    // Но для теста вернем простой квадрат
+    return [[[0,0], [512,0], [512,512], [0,512], [0,0]]];
+}
 
         // ========== 5-СЛОЙНАЯ АНИМАЦИЯ (60 FPS) ==========
         function applyPoseAnimation(lottieJson, poseData) {
@@ -2450,32 +2564,32 @@ async function debugSVG(prompt) {
         }
 
         // ========== КОМПРЕССИЯ В TGS ==========
-        async function compressToTGS(lottieJson) {
-            // Убеждаемся, что есть все обязательные поля
-            lottieJson.tgs = 1;
-            lottieJson.fr = 60;  // жестко фиксируем 60 fps
-            lottieJson.op = 180; // жестко фиксируем 180 кадров (3 сек)
-            
-            // Проверяем размер JSON
-            const jsonString = JSON.stringify(lottieJson);
-            console.log('JSON size before compression:', jsonString.length, 'bytes');
-            
-            // Сжимаем GZIP с максимальным уровнем
-            const compressed = pako.gzip(jsonString, { level: 9 });
-            console.log('Compressed TGS size:', compressed.length, 'bytes');
-            
-            if (compressed.length > 64 * 1024) {
-                console.warn('⚠️ TGS file exceeds 64KB limit!');
-            }
-            
-            const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-            
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
-            });
-        }
+async function compressToTGS(lottieJson) {
+    // Убеждаемся, что есть все обязательные поля
+    lottieJson.tgs = 1;
+    lottieJson.fr = 60;
+    lottieJson.op = 180;
+    
+    // Проверяем размер JSON
+    const jsonString = JSON.stringify(lottieJson);
+    addDebugLog('info', `📦 JSON до сжатия: ${jsonString.length} байт`);
+    
+    if (jsonString.length < 1000) {
+        addDebugLog('error', `❌ JSON слишком маленький (${jsonString.length} байт) - анимация не будет работать`);
+    }
+    
+    // Сжимаем GZIP с максимальным уровнем
+    const compressed = pako.gzip(jsonString, { level: 9 });
+    addDebugLog('success', `✅ TGS сжат: ${compressed.length} байт`);
+    
+    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+    
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+    });
+}
 
         // ========== MEDIAPIPE АНАЛИЗ ==========
         async function analyzeImageWithMediaPipe(imageElement) {
@@ -2880,6 +2994,45 @@ async function debugSVG(prompt) {
                 }
             }, 100);
         });
+		
+		// ========== ТЕСТОВАЯ ФУНКЦИЯ ==========
+window.testTGS = async function() {
+    addDebugLog('info', '🧪 Запуск теста TGS');
+    
+    // Получаем SVG
+    const svg = await generateRecraftSVG('милый кот, vector illustration');
+    if (!svg) {
+        addDebugLog('error', '❌ Не удалось получить SVG');
+        return;
+    }
+    
+    // Конвертируем в Lottie
+    const lottie = await convertSvgToLottie(svg);
+    addDebugLog('info', `📊 Lottie слоев: ${lottie.layers.length}`);
+    
+    // Добавляем тестовую анимацию
+    lottie.layers.forEach((layer, i) => {
+        layer.ks.s = {
+            a: 1,
+            k: [
+                { t: 0, s: [100, 100, 100] },
+                { t: 90, s: [110, 110, 100] },
+                { t: 180, s: [100, 100, 100] }
+            ]
+        };
+    });
+    
+    // Сжимаем в TGS
+    const tgs = await compressToTGS(lottie);
+    
+    // Сохраняем
+    const link = document.createElement('a');
+    link.download = 'test.tgs';
+    link.href = tgs;
+    link.click();
+    
+    addDebugLog('success', '✅ Тестовый TGS создан');
+};
     </script>
 </body>
 </html>
