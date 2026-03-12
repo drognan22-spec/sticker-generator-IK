@@ -3,18 +3,1244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator ULTRA - Профессиональный юмор</title>
+    <title>Sticker Generator ULTRA - Профессиональный юмор на стикерах</title>
     <style>
-        /* Все стили такие же, как в предыдущей версии */
-        /* ... (сохраняем все стили) ... */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #0B1120 0%, #192132 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            background: linear-gradient(145deg, #fff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header h1 span {
+            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 0.4em;
+            vertical-align: middle;
+        }
+
+        .subtitle {
+            color: #a0aec0;
+            font-size: 1.1em;
+        }
+
+        .project-info-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .project-info-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 48px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #4a5568;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+        }
+
+        .modal h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #1a1f2e;
+        }
+
+        .modal h3 {
+            font-size: 1.3em;
+            margin: 25px 0 15px;
+            color: #2d3a5e;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-item {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 24px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #1a1f2e;
+        }
+
+        .feature-desc {
+            font-size: 0.9em;
+            color: #4a5568;
+        }
+
+        .diagram-container {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 30px;
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+
+        .sequence-diagram {
+            min-width: 800px;
+        }
+
+        .diagram-step {
+            display: flex;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 700;
+            color: #1a1f2e;
+            margin-bottom: 5px;
+        }
+
+        .step-desc {
+            color: #4a5568;
+            font-size: 0.95em;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .stat-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .stat-badge span {
+            color: #fbbf24;
+            font-weight: 800;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 15px 40px;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            border: 2px solid transparent;
+        }
+
+        .tab:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .tab.active {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            border-color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .creator-card {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .api-status-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .api-status {
+            padding: 15px;
+            border-radius: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .api-status.recraft {
+            background: #f0f9ff;
+            border: 2px solid #38bdf8;
+            color: #0369a1;
+        }
+
+        .api-status.roboflow {
+            background: #f0fdf4;
+            border: 2px solid #4ade80;
+            color: #166534;
+        }
+
+        .api-status.error {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .api-status.checking {
+            background: #fef9c3;
+            border-color: #facc15;
+            color: #854d0e;
+        }
+
+        .debug-panel {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #e2e8f0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .debug-panel .timestamp {
+            color: #fbbf24;
+            margin-right: 10px;
+        }
+
+        .debug-panel .error {
+            color: #ef4444;
+        }
+
+        .debug-panel .success {
+            color: #4ade80;
+        }
+
+        .debug-panel .info {
+            color: #38bdf8;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #1a1f2e;
+            font-size: 1.1em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 20px 25px;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .professions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 20px 0 30px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 24px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .profession-item {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profession-item:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .profession-item.selected {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            border-color: transparent;
+            color: white;
+        }
+
+        .profession-icon {
+            font-size: 1.3em;
+        }
+
+        .profession-name {
+            font-weight: 600;
+            flex: 1;
+            font-size: 0.9em;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #1a1f2e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .count {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.8em;
+        }
+
+        .section-title .premium-badge {
+            background: #fbbf24;
+            color: #1a1f2e;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.8em;
+            font-weight: 800;
+        }
+
+        .emotions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            margin: 20px 0 30px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 24px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .emotion-item {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .emotion-item:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .emotion-item.selected {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            border-color: transparent;
+            color: white;
+        }
+
+        .emotion-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .emotion-icon {
+            font-size: 1.3em;
+        }
+
+        .emotion-name {
+            font-weight: 600;
+            flex: 1;
+            font-size: 0.9em;
+        }
+
+        .styles-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 24px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .style-tag {
+            background: white;
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: 2px solid #e2e8f0;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 0.85em;
+            flex: 0 0 auto;
+        }
+
+        .style-tag:hover {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .style-tag.selected {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .pack-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .pack {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pack:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .pack.selected {
+            border-color: #fbbf24;
+            background: #fffbeb;
+        }
+
+        .pack .pack-title {
+            font-size: 1.5em;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .pack .pack-price {
+            font-size: 2em;
+            font-weight: 800;
+            color: #fbbf24;
+            margin: 15px 0;
+        }
+
+        .pack .features {
+            list-style: none;
+        }
+
+        .pack .features li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4a5568;
+            font-size: 0.9em;
+        }
+
+        .pack .features li:before {
+            content: "✅";
+        }
+
+        .pack.premium .features li:before {
+            content: "✨";
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 22px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn.premium {
+            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            color: #1a1f2e;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 30px 50px rgba(102, 126, 234, 0.6);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            background: white;
+            border-radius: 32px;
+            margin: 30px 0;
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 40px;
+        }
+
+        .packages {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .package {
+            background: white;
+            border-radius: 32px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e2e8f0;
+        }
+
+        .package.basic {
+            border-top: 6px solid #667eea;
+        }
+
+        .package.premium {
+            border-top: 6px solid #fbbf24;
+            background: linear-gradient(145deg, #ffffff, #fffbeb);
+        }
+
+        .package-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .package-title {
+            font-size: 1.8em;
+            font-weight: 800;
+        }
+
+        .package-price {
+            background: #1a1f2e;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        .package.premium .package-price {
+            background: #fbbf24;
+            color: #1a1f2e;
+        }
+
+        .stickers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .sticker-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .sticker-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .sticker-card.premium {
+            border-color: #fbbf24;
+            background: #fffbeb;
+        }
+
+        .sticker-preview {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 10px;
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+        }
+
+        .sticker-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .sticker-humor {
+            font-size: 0.7em;
+            color: #fbbf24;
+            margin-top: 5px;
+            padding: 2px 5px;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .sticker-info {
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .sticker-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 30px;
+            font-size: 0.6em;
+            font-weight: 700;
+            margin: 2px;
+        }
+
+        .sticker-badge.png {
+            background: #667eea;
+            color: white;
+        }
+
+        .sticker-badge.tgs {
+            background: #fbbf24;
+            color: #1a1f2e;
+        }
+
+        .sticker-badge.api {
+            background: #48bb78;
+            color: white;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .download-btn.premium {
+            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            color: #1a1f2e;
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .history-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
+        }
+
+        .history-date {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .history-prompt {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 12px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .history-previews {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
+        .history-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+        }
+
+        .history-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .history-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .history-btn.edit {
+            background: #667eea;
+            color: white;
+        }
+
+        .history-btn.download {
+            background: #48bb78;
+            color: white;
+        }
+
+        .history-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .clear-history {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .telegram-guide {
+            background: #1a1f2e;
+            border-radius: 32px;
+            padding: 30px;
+            margin-top: 40px;
+            color: white;
+        }
+
+        .guide-title {
+            font-size: 1.5em;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .guide-steps {
+            list-style: none;
+        }
+
+        .guide-steps li {
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .step-num {
+            width: 35px;
+            height: 35px;
+            background: #667eea;
+            border-radius: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+
+        .bot-link {
+            background: #2d3a5e;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.3em;
+        }
+
+        .bot-link code {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: #fbbf24;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255,255,255,0.5);
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
-    <!-- Весь HTML такой же, как в предыдущей версии -->
-    <!-- ... (сохраняем весь HTML) ... -->
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Sticker Generator <span>MEME PRO</span></h1>
+            <div class="subtitle">30 профессий • Русский юмор • Мемы в каждом стикере</div>
+            <div class="stats">
+                <div class="stat-badge"><span>30</span> профессий</div>
+                <div class="stat-badge"><span>30</span> эмоций</div>
+                <div class="stat-badge"><span>15</span> стилей</div>
+            </div>
+            <button class="project-info-btn" onclick="openProjectInfo()">
+                ℹ️ О проекте
+            </button>
+        </div>
+
+        <!-- Модальное окно с информацией о проекте -->
+        <div id="projectModal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeProjectInfo()">×</button>
+                
+                <h2>🎯 О проекте Sticker Generator MEME PRO</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">🎨</div>
+                        <div class="feature-title">Recraft AI</div>
+                        <div class="feature-desc">Генерация PNG по текстовому описанию</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔍</div>
+                        <div class="feature-title">Roboflow YOLOv8</div>
+                        <div class="feature-desc">Умная детекция для анимации</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">💼</div>
+                        <div class="feature-title">30 профессий</div>
+                        <div class="feature-desc">От доктора до зумера, с уникальным юмором</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">😂</div>
+                        <div class="feature-title">Русский юмор</div>
+                        <div class="feature-desc">Профессиональные шутки прямо на стикерах</div>
+                    </div>
+                </div>
+
+                <h3>📊 Диаграмма последовательности</h3>
+                <div class="diagram-container">
+                    <div class="sequence-diagram">
+                        <div class="diagram-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Пользователь → Генератор</div>
+                                <div class="step-desc">Выбирает персонажа, профессию, эмоции, стиль</div>
+                            </div>
+                        </div>
+                        <div class="diagram-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Генератор → Recraft API</div>
+                                <div class="step-desc">Отправляет промпт + атрибуты профессии + юмор (англ)</div>
+                            </div>
+                        </div>
+                        <div class="diagram-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Recraft API → Генератор</div>
+                                <div class="step-desc">Возвращает PNG с русским текстом на картинке</div>
+                            </div>
+                        </div>
+                        <div class="diagram-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-title">Roboflow анализ</div>
+                                <div class="step-desc">Определяет тип объекта для анимации</div>
+                            </div>
+                        </div>
+                        <div class="diagram-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <div class="step-title">Генератор → Пользователь</div>
+                                <div class="step-desc">30 уникальных стикеров с русскими мемами</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🔥 Примеры русского юмора</h3>
+                <div style="background: #fffbeb; padding: 20px; border-radius: 16px; margin: 20px 0;">
+                    <p><strong>Программист:</strong> "на моей машине работает", "прод упал, чините быстро"</p>
+                    <p><strong>Зумер:</strong> "когда эйрдроп на 50 центов", "мой брейнрот достиг максимума"</p>
+                    <p><strong>Доктор:</strong> "пациент: я погуглил симптомы", "24-часовая смена - наша норма"</p>
+                    <p><strong>Учитель:</strong> "домашка: сдать вчера", "30 тетрадей за вечер - норма жизни"</p>
+                </div>
+
+                <h3>🚀 Монетизация</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 16px;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">📷</div>
+                        <div style="font-weight: 700;">Базовый набор (299 ₽)</div>
+                        <ul style="margin-top: 10px; color: #4a5568;">
+                            <li>30 PNG стикеров</li>
+                            <li>Русский юмор в картинках</li>
+                            <li>Уникальные для каждой профессии</li>
+                        </ul>
+                    </div>
+                    <div style="background: #fffbeb; padding: 20px; border-radius: 16px; border: 2px solid #fbbf24;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">✨</div>
+                        <div style="font-weight: 700;">Премиум набор (499 ₽)</div>
+                        <ul style="margin-top: 10px; color: #4a5568;">
+                            <li>PNG + TGS анимация</li>
+                            <li>Умная детекция объектов</li>
+                            <li>5-слойная анимация</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('generator')">🎨 Генератор</div>
+            <div class="tab" onclick="switchTab('history')">📜 История</div>
+        </div>
+
+        <!-- Вкладка Генератор -->
+        <div id="generator-tab" class="tab-content active">
+            <div class="creator-card">
+                <div class="api-status-container">
+                    <div id="recraftStatus" class="api-status recraft checking">
+                        <span class="status-icon">🔄</span>
+                        <span>Recraft AI: Проверка...</span>
+                    </div>
+                    <div id="roboflowStatus" class="api-status roboflow checking">
+                        <span class="status-icon">🔄</span>
+                        <span>Roboflow API: Проверка...</span>
+                    </div>
+                </div>
+
+                <button onclick="toggleDebug()" style="margin-bottom: 20px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 40px; cursor: pointer;">
+                    🐛 Показать логи API
+                </button>
+
+                <div id="debugPanel" class="debug-panel">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <strong>📋 Логи Roboflow API</strong>
+                        <button onclick="clearDebug()" style="background: none; border: none; color: #fbbf24; cursor: pointer;">Очистить</button>
+                    </div>
+                    <div id="debugLogs"></div>
+                </div>
+
+                <div class="input-group">
+                    <label>📝 Персонаж (кто будет на стикерах)</label>
+                    <input type="text" id="characterPrompt" placeholder="например: милый кот, программист, панда..." value="милый кот">
+                </div>
+
+                <div class="section-title">
+                    💼 Выберите профессию (30 вариантов) <span class="count" id="selectedProfessionCount">не выбрано</span>
+                </div>
+                <div class="professions-grid" id="professionsGrid"></div>
+
+                <div class="section-title">
+                    😊 Выберите эмоции (30 доступно) <span class="count" id="selectedCount">0</span>
+                </div>
+                <div class="emotions-grid" id="emotionsGrid"></div>
+
+                <div class="section-title">
+                    🎨 Выберите стиль (15 вариантов)
+                </div>
+                <div class="styles-grid" id="styleTags">
+                    <div class="style-tag selected" data-style="3d render, pixar style, volumetric, disney, cartoon">✨ 3D мультяшный</div>
+                    <div class="style-tag" data-style="flat vector, minimalism, bright colors, modern, clean lines">🎯 Плоский (Flat)</div>
+                    <div class="style-tag" data-style="kawaii, chibi, big eyes, japanese style, cute, anime">🌸 Кавайный (аниме)</div>
+                    <div class="style-tag" data-style="pixel art, 8bit, retro games, pixelated, old school">👾 Пиксельный (8-bit)</div>
+                    <div class="style-tag" data-style="watercolor, hand painted, artistic, soft, blurred edges">🎨 Акварельный</div>
+                    <div class="style-tag" data-style="sketch, pencil drawing, black and white, graphite">✏️ Скетч (карандаш)</div>
+                    <div class="style-tag" data-style="oil painting, artistic, textured, impasto">🖌️ Масляная живопись</div>
+                    <div class="style-tag" data-style="cyberpunk, neon, futuristic, bright colors, dark background">🌃 Киберпанк</div>
+                    <div class="style-tag" data-style="retro, vintage, 50s, old cartoon">📺 Ретро (50-е)</div>
+                    <div class="style-tag" data-style="gothic, dark, mystical, gloomy, horror">🦇 Готический</div>
+                    <div class="style-tag" data-style="steampunk, mechanical, gears, brass, victorian">⚙️ Стимпанк</div>
+                    <div class="style-tag" data-style="fantasy, magical, fairytale, elves, magic">🧝 Фэнтези</div>
+                    <div class="style-tag" data-style="comic book style, bold outlines, bright colors, dots">💥 Стиль комиксов</div>
+                    <div class="style-tag" data-style="cubism, geometric, abstract, picasso">🔷 Кубизм</div>
+                    <div class="style-tag" data-style="pop art, warhol, bright, contrast, comic">🍅 Поп-арт</div>
+                </div>
+
+                <div class="pack-selector">
+                    <div class="pack selected" id="basicPack" onclick="selectPack('basic')">
+                        <div class="pack-title">📷 Только PNG</div>
+                        <div class="pack-price">299 ₽</div>
+                        <ul class="features">
+                            <li>30 PNG стикеров</li>
+                            <li>Русский юмор в картинках</li>
+                            <li>Уникальные для профессии</li>
+                        </ul>
+                    </div>
+                    <div class="pack premium" id="premiumPack" onclick="selectPack('premium')">
+                        <div class="pack-title">✨ Премиум с анимацией</div>
+                        <div class="pack-price">499 ₽</div>
+                        <ul class="features">
+                            <li>Умная детекция объектов</li>
+                            <li>5-слойная анимация</li>
+                            <li>PNG + TGS в комплекте</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="generate-btn" onclick="generatePack()" id="generateBtn">
+                    🚀 Создать набор мемных стикеров
+                </button>
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="loading-spinner"></div>
+                <p id="loadingProgress" style="font-size: 1.2em;">Генерация 30 мемов с русским юмором...</p>
+            </div>
+
+            <div id="results" class="results"></div>
+
+            <div class="telegram-guide" id="telegramGuide" style="display: none;">
+                <div class="guide-title">📤 Как продавать в Telegram</div>
+                <div class="bot-link">
+                    <code>@Stickers</code> — бот для стикеров
+                </div>
+                <ul class="guide-steps">
+                    <li><span class="step-num">1</span> Создайте приватный канал "Мемные стикеры"</li>
+                    <li><span class="step-num">2</span> Загрузите PNG/TGS через @Stickers</li>
+                    <li><span class="step-num">3</span> Установите цену: 299₽ (PNG) / 499₽ (TGS)</li>
+                    <li><span class="step-num">4</span> Добавьте бота для платежей @donate</li>
+                    <li><span class="step-num">5</span> После оплаты выдавайте доступ</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Вкладка История -->
+        <div id="history-tab" class="tab-content">
+            <div class="creator-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #1a1f2e;">📜 История мемных генераций</h2>
+                    <button class="clear-history" onclick="clearHistory()">Очистить историю</button>
+                </div>
+                <div id="historyGrid" class="history-grid">
+                    <!-- История будет загружаться сюда -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>30 профессий • Русский юмор • Мемы в каждом стикере</p>
+    </footer>
 
     <script>
+        // ========== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА ==========
+        function openProjectInfo() {
+            document.getElementById('projectModal').classList.add('active');
+        }
+
+        function closeProjectInfo() {
+            document.getElementById('projectModal').classList.remove('active');
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('projectModal');
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('projectModal').classList.remove('active');
+            }
+        });
+
         // ========== API КЛЮЧИ ==========
         const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
         const ROBOFLOW_API_KEY = 'rf_KLBpuPIa1CVLhJiUj27P9fOBWjt2';
@@ -22,1242 +1248,546 @@
         // ========== КОНСТАНТЫ ROBOFLOW ==========
         const ROBOFLOW_MODEL = 'yolov8n-seg/1';
         
-        // ========== 31 ПРОФЕССИЯ С ПРОФЕССИОНАЛЬНЫМ ЮМОРОМ ==========
+        // ========== 30 ПРОФЕССИЙ С РУССКИМ ЮМОРОМ ==========
         const PROFESSIONS = [
             {
                 id: 'zoomer',
                 name: '📱 Зумер',
                 icon: '📱',
-                basePrompt: 'Gen Z teenager, zoomer, young person',
-                attributes: [
-                    'glued to smartphone',
-                    'making TikTok dance',
-                    'holding energy drink',
-                    'wearing oversized hoodie',
-                    'airpods in ears',
-                    'crying over Hamster Kombat',
-                    'checking crypto portfolio',
-                    'saying "no cap" and "fr fr"',
-                    'skibidi toilet reference',
-                    'watching TikTok',
-                    'playing Telegram mini app',
-                    'taking selfie',
-                    'mewing pose',
-                    'looking sigma',
-                    'grinding for Notcoin',
-                    'waiting for airdrop',
-                    'doomscrolling',
-                    'ironic t-shirt',
-                    'bucket hat',
-                    'pixelated sunglasses',
-                    'finger heart pose',
-                    'brainrot expression'
-                ],
-                scenes: [
-                    'scrolling TikTok for hours',
-                    'playing Hamster Kombat at 3am',
-                    'checking crypto prices, green candle happy',
-                    'checking crypto prices, red candle crying',
-                    'recording TikTok dance',
-                    'saying "it\'s giving..." about something',
-                    'explaining "skibidi" to confused boomer',
-                    'grinding Telegram apps for drops',
-                    'taking selfie with aesthetic filter',
-                    'doomscrolling before bed',
-                    'waking up to check airdrop',
-                    'trading meme coins',
-                    'sending memes in group chat',
-                    'reacting with "based" and "cringe"',
-                    'staring at screen with brainrot',
-                    'vibe checking',
-                    'gatekeeping secret airdrop',
-                    'flexing new crypto gains',
-                    'crying over liquidations'
-                ],
+                basePrompt: 'Gen Z teenager, zoomer, young person, holding smartphone, making TikTok dance, wearing hoodie, with energy drink, crypto trader, meme lover',
                 humor: [
-                    'when the airdrop is $0.50',
-                    'me explaining to boomers what "skibidi" means',
-                    'that feeling when Hamster Kombat crashes',
-                    'my brain after 8 hours of TikTok',
-                    'trying to explain crypto to parents',
-                    'the sigma grindset mindset',
-                    'no cap, fr fr moment',
-                    'when the meme is too based',
-                    'brainrot level: 100',
-                    'waiting for notcoin to moon'
+                    'когда эйрдроп на 50 центов',
+                    'мой брейнрот достиг максимума',
+                    'жду когда хомяк комбат загрузится',
+                    'объясняю бумеру что такое скибиди',
+                    'сигма гриндет каждый день',
+                    'мой портфель крипты: всё в красном',
+                    'когда скачал 100 тапов а дропа нет',
+                    'зумеры пытаются объяснить интернет',
+                    'хамстер комбат в 3 часа ночи',
+                    'когда тикток сказал что это тренд'
                 ]
             },
             {
                 id: 'programmer',
                 name: '👨‍💻 Программист',
                 icon: '👨‍💻',
-                basePrompt: 'programmer, software developer, coder',
-                attributes: [
-                    'working on laptop',
-                    'multiple monitors setup',
-                    'wearing headphones',
-                    'drinking coffee',
-                    'code on screen',
-                    'energy drink can',
-                    'glasses, tired eyes',
-                    'hoodie',
-                    'mechanical keyboard',
-                    'staring at stackoverflow',
-                    'copy-pasting from stackoverflow',
-                    'saying "it works on my machine"'
-                ],
-                scenes: [
-                    'debugging code',
-                    'facing deadline',
-                    'fixing bug',
-                    'deploying to production',
-                    'googling error message',
-                    'coffee break',
-                    'pulling all-nighter',
-                    'git commit'
-                ],
+                basePrompt: 'programmer, software developer, coder, working on laptop, drinking coffee, tired eyes, at computer, with code on screen',
                 humor: [
-                    'it works on my machine',
-                    'have you tried turning it off and on again?',
-                    'works locally, fails in production',
-                    'when the bug fixes itself',
-                    'reading error messages like',
-                    'tabs vs spaces argument',
-                    'legacy code be like',
-                    'when PM adds new feature during freeze',
-                    'that feeling when you delete production DB',
-                    '404: sleep not found',
-                    'real programmers use vim',
-                    'javascript: the good parts (empty book)'
+                    'на моей машине работает',
+                    'прод упал, чините быстро',
+                    'а у тебя точно гит пул сделан?',
+                    'это не баг, это фича',
+                    'код написан 5 лет назад, никто не трогай',
+                    'перезагрузи комп, должно помочь',
+                    'я вчера весь день дебажил, а это пробел лишний',
+                    'джуниор: я всё починил, сеньор: ты всё сломал',
+                    'пятница вечер, деплой в прод',
+                    'документация? не слышали'
                 ]
             },
             {
                 id: 'doctor',
                 name: '👨‍⚕️ Доктор',
                 icon: '👨‍⚕️',
-                basePrompt: 'doctor, medical professional',
-                attributes: [
-                    'wearing white coat',
-                    'holding stethoscope',
-                    'with medical cross symbol',
-                    'holding syringe',
-                    'wearing medical mask',
-                    'with clipboard',
-                    'with bandage',
-                    'holding thermometer',
-                    'illegible handwriting',
-                    'tired after 24h shift'
-                ],
-                scenes: [
-                    'listening to heartbeat with stethoscope',
-                    'giving injection',
-                    'checking temperature',
-                    'writing prescription',
-                    'examining patient'
-                ],
+                basePrompt: 'doctor, medical professional, wearing white coat, holding stethoscope, with medical mask, tired doctor, in hospital',
                 humor: [
-                    'my handwriting: completely normal',
-                    'patient: "I googled my symptoms"',
-                    'WebMD said I have cancer',
-                    'when patient comes right before closing',
-                    '24h shift be like',
-                    'explaining why antibiotics wont help',
-                    'doctor: "drink water and rest"',
-                    'when med student asks "interesting case?"',
-                    'reading other doctors handwriting',
-                    'pager going off at 3am'
+                    'пациент: я погуглил симптомы',
+                    'доктор: пейте воду и отдыхайте',
+                    'мой почерк: разбирайте сами',
+                    '24-часовая смена - наша норма',
+                    'когда пациент приходит за 5 минут до закрытия',
+                    'WebMD сказал у меня рак, а это насморк',
+                    'медсестра: доктор, у нас ещё 20 пациентов',
+                    'рецепт: читайте как хотите',
+                    'когда просят выписать справку за вчера',
+                    'в очереди 50 человек, а я хочу есть'
                 ]
             },
             {
                 id: 'teacher',
                 name: '👩‍🏫 Учитель',
                 icon: '👩‍🏫',
-                basePrompt: 'teacher, educator, professor',
-                attributes: [
-                    'holding pointer stick',
-                    'at chalkboard',
-                    'wearing glasses',
-                    'with books',
-                    'stack of papers to grade',
-                    'apple on desk',
-                    'pointer',
-                    'globe',
-                    'coffee mug',
-                    'red pen for grading'
-                ],
-                scenes: [
-                    'writing on board',
-                    'explaining lesson',
-                    'grading papers',
-                    'pointing at map',
-                    'tired after class',
-                    'angry at misbehaving student',
-                    'proud of class'
-                ],
+                basePrompt: 'teacher, educator, professor, at chalkboard, holding pointer, with books, wearing glasses, tired teacher',
                 humor: [
-                    'homework: due yesterday',
-                    'when student asks "will this be on the test?"',
-                    'grading papers be like',
-                    'that one kid who never stops talking',
-                    'professional PowerPoint maker',
-                    'summer vacation goals',
-                    'when they say "we didnt have homework"',
-                    'attendance: 50% on monday',
-                    'explaining same thing for 10th time',
-                    'coffee is my teaching assistant'
+                    'домашка: сдать вчера',
+                    'когда ученик спрашивает "это будет на экзамене?"',
+                    'профессиональный создатель презентаций',
+                    '30 тетрадей за вечер - норма жизни',
+                    'звонок для учителя: ещё 5 минут',
+                    'класс: 30 человек, тишина: 0 минут',
+                    'зарплата: маленькая, нервов: много',
+                    'родители: почему у моего ребёнка тройка?',
+                    'отпуск летом - единственная радость',
+                    'мой любимый ученик: тот, кто молчит'
                 ]
             },
             {
                 id: 'chef',
                 name: '👨‍🍳 Шеф-повар',
                 icon: '👨‍🍳',
-                basePrompt: 'chef, cook, culinary expert',
-                attributes: [
-                    'wearing chef hat',
-                    'white apron',
-                    'holding ladle',
-                    'with kitchen knife',
-                    'surrounded by vegetables',
-                    'frying pan',
-                    'whisk',
-                    'pot with boiling water',
-                    'tasting spoon',
-                    'yelling in kitchen'
-                ],
-                scenes: [
-                    'cooking at stove',
-                    'chopping vegetables',
-                    'tasting sauce',
-                    'plating dish',
-                    'yelling at sous-chef',
-                    'presenting masterpiece',
-                    'kitchen chaos'
-                ],
+                basePrompt: 'chef, cook, culinary expert, wearing chef hat, holding ladle, in kitchen, cooking',
                 humor: [
-                    'when customer asks for well done steak',
-                    'we are not microwave',
-                    'yes chef, sorry chef',
-                    'Friday night rush be like',
-                    'when they send back the steak',
-                    'how many cooks does it take?',
-                    'special sauce: stress and tears',
-                    'behind every great meal is a screaming chef',
-                    'we dont make mistakes, we make "special editions"',
-                    'the secret ingredient is anger'
+                    'гость: сделайте пожарче',
+                    'повар: у нас всё свежее (вчерашнее)',
+                    'когда вернули стейк в пятницу вечером',
+                    'шеф: где соус? я: сгорел',
+                    'моя духовка работает как сауна',
+                    'ресторан: 100 мест, кухня: 2 квадрата',
+                    'посудомойка не работает? иду мыть сам',
+                    'официант: клиент жалуется, я: всегда',
+                    'секретный ингредиент - стресс',
+                    'мой нож острее чем мои шутки'
                 ]
             },
             {
                 id: 'artist',
                 name: '🎨 Художник',
                 icon: '🎨',
-                basePrompt: 'artist, painter, creative',
-                attributes: [
-                    'holding paintbrush',
-                    'paint palette',
-                    'beret',
-                    'smock with paint stains',
-                    'easel with canvas',
-                    'paint tubes',
-                    'sketchbook',
-                    'charcoal pencil',
-                    'messy studio',
-                    'staring at blank canvas'
-                ],
-                scenes: [
-                    'painting masterpiece',
-                    'mixing colors',
-                    'stepping back to admire',
-                    'frustrated with art block',
-                    'sketching outdoors',
-                    'art exhibition',
-                    'covered in paint'
-                ],
+                basePrompt: 'artist, painter, creative, holding paintbrush, paint palette, beret, in studio',
                 humor: [
-                    'its not a mistake, its an artistic choice',
-                    'art block for 3 months',
-                    'when client says "make it pop"',
-                    'starving artist diet: ramen and dreams',
-                    'my art supplies cost more than my rent',
-                    'that feeling when you finish and hate it',
-                    'art school: where creativity goes to die',
-                    'explaining modern art to normies',
-                    'my favorite color: expensive',
-                    'when they ask "can you do it for exposure?"'
+                    'это не ошибка, это художественный замысел',
+                    'творческий кризис: 3 месяца',
+                    'клиент: сделайте ярче',
+                    'художник голодный? значит настоящий',
+                    'мои краски дороже моей одежды',
+                    'когда закончил и ненавидишь результат',
+                    'художественная школа: где талант умирает',
+                    'объясняю маме что это абстракционизм',
+                    'мой любимый цвет - "дорогой"',
+                    'когда просят нарисовать за "спасибо"'
                 ]
             },
             {
                 id: 'musician',
                 name: '🎸 Музыкант',
                 icon: '🎸',
-                basePrompt: 'musician, singer, performer',
-                attributes: [
-                    'holding guitar',
-                    'singing with microphone',
-                    'drumsticks',
-                    'wearing cool outfit',
-                    'musical notes around',
-                    'headphones',
-                    'piano keyboard',
-                    'on stage',
-                    'bandana',
-                    'earplugs'
-                ],
-                scenes: [
-                    'playing guitar solo',
-                    'singing passionately',
-                    'drumming',
-                    'recording in studio',
-                    'rock concert',
-                    'writing lyrics',
-                    'band practice'
-                ],
+                basePrompt: 'musician, singer, performer, holding guitar, on stage, with microphone',
                 humor: [
-                    'our band has 5 members and 3 fans',
-                    'van life: touring edition',
-                    'when the bass player shows up',
-                    'drummers are not musicians, change my mind',
-                    'playing wonderwall for the 1000th time',
-                    'that feeling when you forget lyrics',
-                    'band practice: 10% playing, 90% arguing',
-                    'gig payment: exposure and free beer',
-                    'when the crowd finally claps',
-                    'musician math: $1000 gear for $50 gigs'
-                ]
-            },
-            {
-                id: 'athlete',
-                name: '🏃‍♂️ Спортсмен',
-                icon: '🏃‍♂️',
-                basePrompt: 'athlete, sportsman, fit person',
-                attributes: [
-                    'wearing sportswear',
-                    'sweating',
-                    'holding trophy',
-                    'running shoes',
-                    'stopwatch',
-                    'water bottle',
-                    'gym bag',
-                    'medal',
-                    'headband',
-                    'protein shake'
-                ],
-                scenes: [
-                    'winning race',
-                    'training hard',
-                    'celebrating victory',
-                    'exhausted after workout',
-                    'stretching',
-                    'on podium',
-                    'drinking water'
-                ],
-                humor: [
-                    'leg day: day 365 of skipping',
-                    'my protein shake tastes like regret',
-                    'gym membership: $50/month, usage: 3 times',
-                    'that feeling when PR finally happens',
-                    'coach says "one more rep" for 2 hours',
-                    'sports drink: expensive colored water',
-                    'before competition: carb loading = eating everything',
-                    'after competition: why does everything hurt',
-                    'the real workout is getting to the gym',
-                    'fitness influencers be like'
-                ]
-            },
-            {
-                id: 'scientist',
-                name: '🔬 Ученый',
-                icon: '🔬',
-                basePrompt: 'scientist, researcher, in lab',
-                attributes: [
-                    'lab coat',
-                    'safety goggles',
-                    'holding test tube',
-                    'microscope',
-                    'beakers with colorful liquids',
-                    'clipboard',
-                    'gloves',
-                    'fume hood',
-                    'petri dish',
-                    'burning stuff'
-                ],
-                scenes: [
-                    'looking through microscope',
-                    'mixing chemicals',
-                    'discovering something',
-                    'taking notes',
-                    'experiment gone wrong',
-                    'lab explosion (mild)',
-                    'eureka moment'
-                ],
-                humor: [
-                    'science: its like magic but real',
-                    'when the experiment works on friday at 5pm',
-                    'lab safety: whats that?',
-                    'my control group: chaos',
-                    'that feeling when you find a paper that proves your theory wrong',
-                    'peer review: the hunger games',
-                    'PhD: pretty huge debt',
-                    'correlation does not equal causation, but it is suspicious',
-                    'when your hypothesis is wrong (every time)',
-                    'the scientific method: guess, check, cry, repeat'
+                    'у группы 5 человек и 3 фаната',
+                    'жизнь в автобусе: тур-издание',
+                    'когда басист наконец пришёл',
+                    'барабанщик - тоже музыкант?',
+                    'играю "в лесу родилась ёлочка" в 1000й раз',
+                    'забыл слова на сцене (опять)',
+                    'репетиция: 10% музыки, 90% споров',
+                    'гонорар: пиво и аплодисменты',
+                    'когда зрители наконец зааплодировали',
+                    'купил гитару за 100к, играю в метро'
                 ]
             },
             {
                 id: 'lawyer',
                 name: '👔 Юрист',
                 icon: '👔',
-                basePrompt: 'lawyer, attorney, legal counsel',
-                attributes: [
-                    'business suit',
-                    'holding briefcase',
-                    'law books',
-                    'documents',
-                    'gavel',
-                    'glasses',
-                    'confident smile',
-                    'courtroom',
-                    'expensive watch',
-                    'gray hair from stress'
-                ],
-                scenes: [
-                    'arguing in court',
-                    'shaking hands deal',
-                    'reading contract',
-                    'pointing at evidence',
-                    'objection!',
-                    'meeting client',
-                    'winning case'
-                ],
+                basePrompt: 'lawyer, attorney, legal counsel, in suit, holding documents, in courtroom',
                 humor: [
-                    'objection! (i have no idea what im doing)',
-                    'billable hours: 24/7',
-                    'that feeling when you find a loophole',
-                    'legal advice: yes, you can sue anyone',
-                    'contract: 100 pages of things you cant do',
-                    'when client says "but i saw it on tiktok"',
-                    'court: the ultimate roast session',
-                    'lawyer math: $1000/hour for reading',
-                    'the only thing worse than losing is winning with this client',
-                    'objection sustained (i have no idea what that means)'
+                    'протестую (хотя не уверен)',
+                    'почасовка: 10 000/час, чтение документов',
+                    'когда нашёл лазейку в законе',
+                    'клиент: а вот в интернете написано',
+                    'суд: место где проигрывают все',
+                    'юрист математик: 1 час = 6 часов',
+                    'кодекс: 1000 страниц сна',
+                    'договор: 50 страниц мелким шрифтом',
+                    'мой костюм дороже твоей машины',
+                    'оправдан? значит плохо работал'
                 ]
             },
             {
-                id: 'barista',
-                name: '☕ Бариста',
-                icon: '☕',
-                basePrompt: 'barista, coffee maker',
-                attributes: [
-                    'apron',
-                    'making coffee',
-                    'espresso machine',
-                    'coffee beans',
-                    'milk frother',
-                    'coffee cups',
-                    'coffee art',
-                    'cafe',
-                    'grinder',
-                    'tired eyes'
-                ],
-                scenes: [
-                    'pouring latte art',
-                    'grinding beans',
-                    'serving coffee',
-                    'cleaning machine',
-                    'busy cafe',
-                    'tasting coffee',
-                    'smelling beans'
-                ],
+                id: 'psychologist',
+                name: '🧠 Психолог',
+                icon: '🧠',
+                basePrompt: 'psychologist, therapist, counselor, in office, with notepad, nodding',
                 humor: [
-                    'decaf: what weak people drink',
-                    'when customer asks for "extra hot" (its boiling)',
-                    'latte art: 1% skill, 99% luck',
-                    'that feeling when you spell name wrong',
-                    'coffee: bean water for tired people',
-                    'barista: professional milk steamer',
-                    'morning rush: chaos mode',
-                    "when they say 'can i get a coffee' (there are 50 kinds)",
-                    'tips: 0, attitude: 100',
-                    'espresso: tiny coffee for big problems'
+                    'и как вы себя чувствуете? (я знаю что плохо)',
+                    'мой диплом: просто картинка',
+                    'сессия: 50 минут, молчание: 45',
+                    'пациент платит за то, чтобы поплакать',
+                    'я сам хожу к психологу (к себе)',
+                    '"расскажите о детстве" (там всё сломано)',
+                    'моя кушетка удобнее чем моя зарплата',
+                    'киваю, хотя не слушаю (профессиональное)',
+                    'выпишу рецепт на успокоительное (себе)',
+                    'пациент: вы меня понимаете? я: нет'
                 ]
             },
             {
-                id: 'photographer',
-                name: '📸 Фотограф',
-                icon: '📸',
-                basePrompt: 'photographer, taking photos',
-                attributes: [
-                    'holding camera',
-                    'big lens',
-                    'camera bag',
-                    'tripod',
-                    'studio lights',
-                    'wearing vest',
-                    'memory cards',
-                    'viewfinder',
-                    'flashing',
-                    'crouching weirdly'
-                ],
-                scenes: [
-                    'taking photo',
-                    'posing subject',
-                    'changing lens',
-                    'reviewing shots',
-                    'wedding shoot',
-                    'wildlife photography',
-                    'editing photos'
-                ],
+                id: 'cosmonaut',
+                name: '👨‍🚀 Космонавт',
+                icon: '👨‍🚀',
+                basePrompt: 'cosmonaut, astronaut, space explorer, in space suit, floating in zero-g, earth background',
                 humor: [
-                    'i can fix it in photoshop',
-                    'when client says "make me look thinner"',
-                    'photographer: professional croucher',
-                    'gear cost: 1 kidney, 2 arms',
-                    'that feeling when battery dies mid-shoot',
-                    'wedding photography: stress in 4K',
-                    'the best lens is the one you forgot',
-                    'editing: 1 hour shoot, 8 hours fixing',
-                    'when they ask "can you make it black and white"',
-                    'natural light: free, unnatural light: $2000'
-                ]
-            },
-            {
-                id: 'veterinarian',
-                name: '🐾 Ветеринар',
-                icon: '🐾',
-                basePrompt: 'veterinarian, animal doctor',
-                attributes: [
-                    'vet coat',
-                    'stethoscope',
-                    'with animals',
-                    'syringe',
-                    'bandage',
-                    'clipboard',
-                    'pet carrier',
-                    'animal clinic',
-                    'x-ray',
-                    'bite marks'
-                ],
-                scenes: [
-                    'examining cat',
-                    'treating dog',
-                    'holding bunny',
-                    'giving vaccine',
-                    'surgery with animals',
-                    'comforting pet',
-                    'checking heartbeat'
-                ],
-                humor: [
-                    'patient: bites me, owner: "they never do that"',
-                    'cats: 99% sass, 1% patient',
-                    'that feeling when dog licks your face',
-                    'vet math: 1 dog = 5 cats in stress',
-                    'when owner says "he only eats organic chicken"',
-                    'animals: scared, owners: crying, me: stressed',
-                    'the real patients are the owners',
-                    'cats have 9 lives, i have 0 patience',
-                    'emergency: cat in tree (again)',
-                    'vet: professional poop analyzer'
-                ]
-            },
-            {
-                id: 'dentist',
-                name: '🦷 Стоматолог',
-                icon: '🦷',
-                basePrompt: 'dentist, dental professional',
-                attributes: [
-                    'dental mask',
-                    'dental mirror',
-                    'drill',
-                    'dental chair',
-                    'gloves',
-                    'goggles',
-                    'patient with mouth open',
-                    'tooth model',
-                    'x-ray viewer',
-                    'tiny instruments'
-                ],
-                scenes: [
-                    'examining teeth',
-                    'drilling',
-                    'showing x-ray',
-                    'patient scared',
-                    'cleaning teeth',
-                    'holding tooth',
-                    'explaining procedure'
-                ],
-                humor: [
-                    'patient: "does it hurt?" me: "only your wallet"',
-                    'that feeling when they say "i havent flossed in years"',
-                    'dentist: professional drill operator',
-                    'when patient falls asleep during procedure',
-                    'the sound of drill: horror movie soundtrack',
-                    'you only need 6 months of braces (its 2 years)',
-                    'floss: what everyone lies about',
-                    'wisdom teeth: not very wise',
-                    'insurance: covers 10%, bills: 100%',
-                    'mouth open wider... wider... wider...'
-                ]
-            },
-            {
-                id: 'librarian',
-                name: '📚 Библиотекарь',
-                icon: '📚',
-                basePrompt: 'librarian, library worker',
-                attributes: [
-                    'glasses',
-                    'holding book',
-                    'cardigan',
-                    'bookshelves',
-                    'shushing',
-                    'library cart',
-                    'reading glasses',
-                    'book stamp',
-                    'quiet sign',
-                    'bookmarks'
-                ],
-                scenes: [
-                    'organizing books',
-                    'shushing loud person',
-                    'checking out book',
-                    'reading',
-                    'climbing ladder',
-                    'recommending book',
-                    'dusting shelves'
-                ],
-                humor: [
-                    'shh: my catchphrase',
-                    'when they ask "do you have that book" (i have 10,000)',
-                    'librarian: professional shelf organizer',
-                    'late fees: my retirement plan',
-                    'that feeling when someone returns a book late',
-                    'the dewey decimal system: ancient magic',
-                    'quiet in here? no, this is library',
-                    'when they eat in library (chaos mode)',
-                    'books: silent until overdue',
-                    'story time: 30 mins of chaos with children'
-                ]
-            },
-            {
-                id: 'archaeologist',
-                name: '🔦 Археолог',
-                icon: '🔦',
-                basePrompt: 'archaeologist, digging fossils',
-                attributes: [
-                    'pith helmet',
-                    'brush',
-                    'trowel',
-                    'dinosaur bone',
-                    'sand',
-                    'map',
-                    'magnifying glass',
-                    'fossil',
-                    'whip (Indiana style)',
-                    'khaki clothes'
-                ],
-                scenes: [
-                    'digging fossil',
-                    'brushing sand',
-                    'discovering treasure',
-                    'examining artifact',
-                    'in desert',
-                    'holding ancient pot',
-                    'excavation site'
-                ],
-                humor: [
-                    'its just a rock (its a dinosaur bone)',
-                    'indiana jones: 1% real, 99% lies',
-                    'that feeling when you find pottery',
-                    'archaeologist: professional hole digger',
-                    'mummy: ancient stress ball',
-                    'when undergrads break something',
-                    'dig site: 100 degrees, 0 shade',
-                    'brush: my most used tool',
-                    'ancient curse: paperwork',
-                    'finding nothing for weeks is normal'
-                ]
-            },
-            {
-                id: 'mechanic',
-                name: '🔧 Механик',
-                icon: '🔧',
-                basePrompt: 'mechanic, car repair',
-                attributes: [
-                    'overalls',
-                    'holding wrench',
-                    'greasy hands',
-                    'car jack',
-                    'toolbox',
-                    'car parts',
-                    'garage',
-                    'oil stains',
-                    'screwdriver',
-                    'flashlight in mouth'
-                ],
-                scenes: [
-                    'fixing car',
-                    'under hood',
-                    'changing tire',
-                    'holding wrench triumphantly',
-                    'greasy smile',
-                    'checking engine',
-                    'test driving'
-                ],
-                humor: [
-                    'car: makes noise, me: "thats normal"',
-                    'when they ask "how much?" (everything)',
-                    'mechanic: professional parts replacer',
-                    'that feeling when you have one bolt left',
-                    'check engine light: the christmas tree',
-                    'oily hands, clean heart',
-                    'customer: "it just stopped working"',
-                    'tools: never where i left them',
-                    'car: 200k miles, owner: "like new"',
-                    'the real problem is always electrical'
-                ]
-            },
-            {
-                id: 'electrician',
-                name: '⚡ Электрик',
-                icon: '⚡',
-                basePrompt: 'electrician, electrical worker',
-                attributes: [
-                    'tool belt',
-                    'wires',
-                    'screwdriver',
-                    'voltage tester',
-                    'hard hat',
-                    'wire cutters',
-                    'electrical panel',
-                    'flashlight',
-                    'sparks',
-                    'insulated gloves'
-                ],
-                scenes: [
-                    'fixing wiring',
-                    'checking panel',
-                    'holding pliers',
-                    'changing lightbulb',
-                    'testing voltage',
-                    'sparks flying',
-                    'thumbs up'
-                ],
-                humor: [
-                    'wire: black means not black',
-                    'when they say "its just a wire" (its 50 wires)',
-                    'electrician: professional color blind',
-                    'that feeling when you turn off wrong breaker',
-                    'sparks: excitement or danger?',
-                    'ground: optional',
-                    'voltage: enough to make you dance',
-                    'panel: organized chaos',
-                    'customer: "can you fix it live?" (no)',
-                    'the lights: off, me: working'
-                ]
-            },
-            {
-                id: 'plumber',
-                name: '🪠 Сантехник',
-                icon: '🪠',
-                basePrompt: 'plumber, pipe repair',
-                attributes: [
-                    'plunger',
-                    'pipe wrench',
-                    'toolbox',
-                    'overalls',
-                    'pipes',
-                    'sink',
-                    'dirty',
-                    'flashlight',
-                    'PVC pipe',
-                    'wet boots'
-                ],
-                scenes: [
-                    'fixing pipe',
-                    'using plunger',
-                    'under sink',
-                    'holding wrench',
-                    'water spraying',
-                    'emergency call',
-                    'thumbs up fixed'
-                ],
-                humor: [
-                    'water: finds every crack',
-                    'when they flush things that shouldnt be flushed',
-                    'plumber: professional poop handler',
-                    'that feeling when pipe bursts',
-                    'my paycheck: goes down the drain',
-                    'customer: "it was fine yesterday"',
-                    'snake: not the animal',
-                    'water pressure: too high or too low',
-                    'emergency call at 2am: always',
-                    'the toilet: not a trash can'
-                ]
-            },
-            {
-                id: 'mailman',
-                name: '📮 Почтальон',
-                icon: '📮',
-                basePrompt: 'mailman, post worker',
-                attributes: [
-                    'uniform',
-                    'mail bag',
-                    'letters',
-                    'postal truck',
-                    'satchel',
-                    'cap',
-                    'packages',
-                    'mailbox',
-                    'waving',
-                    'dog treats'
-                ],
-                scenes: [
-                    'delivering mail',
-                    'stuffing mailbox',
-                    'holding package',
-                    'dog chasing',
-                    'sorting letters',
-                    'waving hello',
-                    'rain or shine'
-                ],
-                humor: [
-                    'dogs: my natural enemy',
-                    'rain: my daily shower',
-                    'that feeling when package is too big',
-                    'mailman: professional letter folder',
-                    'customer: "did i get mail?" (no)',
-                    'the mailbox: always full of junk',
-                    'walking: 10 miles, pay: 0',
-                    'when they order something heavy',
-                    'signature required: nobody home',
-                    'the truck: always breaking down'
-                ]
-            },
-            {
-                id: 'waiter',
-                name: '🍽️ Официант',
-                icon: '🍽️',
-                basePrompt: 'waiter, server, restaurant',
-                attributes: [
-                    'holding tray',
-                    'bow tie',
-                    'apron',
-                    'notepad',
-                    'wine glass',
-                    'plates',
-                    'uniform',
-                    'restaurant',
-                    'water jug',
-                    'tired feet'
-                ],
-                scenes: [
-                    'serving food',
-                    'taking order',
-                    'balancing tray',
-                    'recommending dish',
-                    'busy restaurant',
-                    'spilling drink (oops)',
-                    'receiving tip'
-                ],
-                humor: [
-                    'table 4: wants everything',
-                    'when they say "im ready" (they arent)',
-                    'waiter: professional tray balancer',
-                    'that feeling when you drop the plates',
-                    'tips: 0%, attitude: 100%',
-                    'customer: "can i have water?" (free)',
-                    'the kitchen: always on fire',
-                    'special: what we need to get rid of',
-                    'split check: 8 ways',
-                    'the last table: never leaves'
-                ]
-            },
-            {
-                id: 'fisherman',
-                name: '🎣 Рыбак',
-                icon: '🎣',
-                basePrompt: 'fisherman, fishing',
-                attributes: [
-                    'fishing rod',
-                    'fishing hat',
-                    'tackle box',
-                    'bucket of fish',
-                    'life vest',
-                    'boat',
-                    'worms',
-                    'net',
-                    'sunset',
-                    'beer'
-                ],
-                scenes: [
-                    'catching fish',
-                    'reeling in',
-                    'holding big fish',
-                    'waiting patiently',
-                    'falling in water',
-                    'fishing with friends',
-                    'sunset fishing'
-                ],
-                humor: [
-                    'fish: 1, stories: 100',
-                    'when they ask "any bites?" (no)',
-                    'fisherman: professional liar',
-                    'that feeling when the big one gets away',
-                    'worms: my friends',
-                    'boat: hole in water you throw money into',
-                    'early morning: 4am, fish: asleep',
-                    'the one that got away: 100 pounds',
-                    'fishing: 90% waiting, 10% lying',
-                    'beer: essential equipment'
-                ]
-            },
-            {
-                id: 'pilot',
-                name: '✈️ Пилот',
-                icon: '✈️',
-                basePrompt: 'pilot, aviator, flying',
-                attributes: [
-                    'pilot uniform',
-                    'aviator sunglasses',
-                    'captain hat',
-                    'holding flight yoke',
-                    'wings badge',
-                    'headset',
-                    'flight map',
-                    'in cockpit',
-                    'clouds outside',
-                    'coffee'
-                ],
-                scenes: [
-                    'in cockpit flying',
-                    'pre-flight check',
-                    'greeting passengers',
-                    'landing plane',
-                    'looking at instruments',
-                    'saluting',
-                    'with co-pilot'
-                ],
-                humor: [
-                    'turbulence: free roller coaster',
-                    'when they ask "are we there yet?"',
-                    'pilot: professional sky driver',
-                    'that feeling when landing in wind',
-                    'co-pilot: the one who does everything',
-                    'weather: always worse than forecast',
-                    'passengers: clap when landing (why)',
-                    'delayed: our favorite word',
-                    'flight: 2 hours, waiting: 4 hours',
-                    'the captain has turned off the seatbelt sign (finally)'
+                    'космос: холодно, страшно, красиво',
+                    'когда спросили "а вайфай есть?"',
+                    'космонавт: профессиональный летун',
+                    'отвязался от станции (ой)',
+                    'лунный грунт: просто песок',
+                    'невесомость: круто, но тошнит',
+                    'космическая еда: сухой паёк',
+                    'земля: маленький голубой шарик',
+                    'выход в открытый космос: 2 часа страха',
+                    'возвращение: самая страшная поездка'
                 ]
             },
             {
                 id: 'firefighter',
                 name: '🚒 Пожарный',
                 icon: '🚒',
-                basePrompt: 'firefighter, rescue worker',
-                attributes: [
-                    'fire helmet',
-                    'protective gear',
-                    'holding hose',
-                    'axe',
-                    'oxygen mask',
-                    'yellow reflective stripes',
-                    'boots',
-                    'fire extinguisher',
-                    'rescuing',
-                    'soot on face'
-                ],
-                scenes: [
-                    'fighting fire',
-                    'rescuing cat from tree',
-                    'carrying hose',
-                    'putting out flames',
-                    'saving people',
-                    'tired after work',
-                    'waving from truck'
-                ],
+                basePrompt: 'firefighter, rescue worker, in protective gear, holding hose, fire helmet',
                 humor: [
-                    'cats: always in trees',
-                    'when alarm goes off at 3am',
-                    'firefighter: professional nap interruptor',
-                    'that feeling when its a false alarm',
-                    'the truck: always needs washing',
-                    'smoke: not a good look',
-                    'station: 24/7 gym membership',
-                    'dalmatian: official mascot',
-                    'cooking at station: always burns',
-                    'the pole: fastest way down'
+                    'коты: всегда на деревьях',
+                    'сирена в 3 часа ночи (опять)',
+                    'пожарный: спишь? горим!',
+                    'ложный вызов (как всегда)',
+                    'машина: вечно грязная',
+                    'дым: плохо для здоровья',
+                    'казарма: круглосуточный спортзал',
+                    'далматинец: маскот-бездельник',
+                    'готовка в части: вечно горит',
+                    'шест: быстрый спуск (и ушибы)'
                 ]
             },
             {
-                id: 'police',
-                name: '👮 Полицейский',
-                icon: '👮',
-                basePrompt: 'police officer, law enforcement',
-                attributes: [
-                    'police uniform',
-                    'police hat',
-                    'badge',
-                    'handcuffs',
-                    'radio',
-                    'police car',
-                    'nightstick',
-                    'reflective vest',
-                    'walkie-talkie',
-                    'donut'
-                ],
-                scenes: [
-                    'directing traffic',
-                    'writing ticket',
-                    'patrolling',
-                    'chasing suspect',
-                    'helping old lady',
-                    'donut break',
-                    'k9 unit with dog'
-                ],
+                id: 'archaeologist',
+                name: '🔦 Археолог',
+                icon: '🔦',
+                basePrompt: 'archaeologist, digging fossils, with brush, in desert, holding dinosaur bone',
                 humor: [
-                    'donut: official police snack',
-                    'when they ask "do you know why i stopped you?"',
-                    'police: professional paper writer',
-                    'that feeling when the radar catches you',
-                    'k9 unit: the dog does all the work',
-                    'traffic stop: 10 minutes of stress',
-                    'the siren: best music',
-                    'paperwork: 90% of the job',
-                    'coffee: essential equipment',
-                    'bad guys: always run'
+                    'это просто камень (это динозавр)',
+                    'индиана джонс: 1% правды, 99% вранья',
+                    'когда нашёл черепок',
+                    'археолог: профессиональный копатель',
+                    'мумия: древний антистресс',
+                    'студенты: вечно ломают находки',
+                    'раскопки: +40, тень 0',
+                    'кисточка: главный инструмент',
+                    'ничего не нашли? это норма',
+                    'древнее проклятие: тонны отчётов'
                 ]
             },
             {
-                id: 'astronaut',
-                name: '👨‍🚀 Космонавт',
-                icon: '👨‍🚀',
-                basePrompt: 'astronaut, space explorer',
-                attributes: [
-                    'space suit',
-                    'helmet with visor',
-                    'oxygen tank',
-                    'floating in zero-g',
-                    'earth in background',
-                    'holding flag',
-                    'space station',
-                    'moon surface',
-                    'jetpack',
-                    'free floating food'
-                ],
-                scenes: [
-                    'walking on moon',
-                    'floating in space',
-                    'repairing satellite',
-                    'inside spaceship',
-                    'planting flag',
-                    'looking at earth',
-                    'moon landing'
-                ],
+                id: 'veterinarian',
+                name: '🐾 Ветеринар',
+                icon: '🐾',
+                basePrompt: 'veterinarian, animal doctor, with animals, stethoscope, in clinic',
                 humor: [
-                    'space: the final frontier (and very cold)',
-                    'when they ask "is there wifi?"',
-                    'astronaut: professional floater',
-                    'that feeling when you lose grip in space',
-                    'moon rocks: just regular rocks',
-                    'gravity: optional',
-                    'space food: freeze dried dreams',
-                    'earth: that little blue dot',
-                    'space walk: 2 hours of panic',
-                    'reentry: the most stressful ride'
+                    'пациент: кусается, хозяин: "он добрый"',
+                    'кошки: 99% наглости, 1% пациента',
+                    'собака лизнула (я счастлив)',
+                    '1 собака = 5 кошек по стрессу',
+                    'хозяин: "он ест только organic"',
+                    'животные в панике, хозяева в истерике',
+                    'лечу животных, успокаиваю людей',
+                    'у кошки 9 жизней, у меня 0 терпения',
+                    'срочно: кошка на дереве (снова)',
+                    'ветеринар: смотрю в одно место'
+                ]
+            },
+            {
+                id: 'dentist',
+                name: '🦷 Стоматолог',
+                icon: '🦷',
+                basePrompt: 'dentist, dental professional, with dental mirror, drill, in clinic',
+                humor: [
+                    'пациент: "больно?" я: "только кошельку"',
+                    'не чистил зубы 10 лет (герой)',
+                    'стоматолог: профессиональный сверлильщик',
+                    'пациент уснул (или умер?)',
+                    'звук бормашины: саундтрек ужасов',
+                    'брекеты на 6 месяцев (на 2 года)',
+                    'зубная нить: про неё все врут',
+                    'зубы мудрости: совсем не мудрые',
+                    'страховка: плати, лечись сам',
+                    'рот шире... шире... ещё шире'
+                ]
+            },
+            {
+                id: 'librarian',
+                name: '📚 Библиотекарь',
+                icon: '📚',
+                basePrompt: 'librarian, library worker, with books, shushing, glasses',
+                humor: [
+                    'тсс: моё второе имя',
+                    'когда спросили "а есть эта книга?" (их 1000)',
+                    'библиотекарь: профессиональный сортировщик',
+                    'штраф за задержку: моя пенсия',
+                    'когда вернули книгу на полку не туда',
+                    'УДК: древняя магия',
+                    'тихо? нет, это библиотека',
+                    'когда едят в библиотеке (хаос)',
+                    'книги молчат, пока их не прочитают',
+                    'детский час: 30 минут ада'
+                ]
+            },
+            {
+                id: 'mechanic',
+                name: '🔧 Механик',
+                icon: '🔧',
+                basePrompt: 'mechanic, car repair, with wrench, greasy hands, in garage',
+                humor: [
+                    'машина стучит, я: "так и надо"',
+                    'клиент: "сколько стоит?" я: "почку"',
+                    'механик: профессиональный заменятель',
+                    'когда осталась лишняя деталь',
+                    'check engine: новогодняя ёлка',
+                    'руки в масле, душа поёт',
+                    'клиент: "она сама сломалась"',
+                    'инструменты: вечно не там',
+                    'пробег 200к, хозяин: "как новая"',
+                    'электрика: всегда проблема'
+                ]
+            },
+            {
+                id: 'electrician',
+                name: '⚡ Электрик',
+                icon: '⚡',
+                basePrompt: 'electrician, electrical worker, with wires, tool belt, testing voltage',
+                humor: [
+                    'провод: чёрный - не чёрный',
+                    'клиент: "там просто провод" (их 50)',
+                    'электрик: профессиональный дальтоник',
+                    'когда выключил не тот рубильник',
+                    'искры: весело или страшно?',
+                    'заземление: опционально',
+                    '220В: хватит чтобы танцевать',
+                    'щиток: организованный хаос',
+                    'работа под напряжением? нет спасибо',
+                    'свет погас, я работаю'
+                ]
+            },
+            {
+                id: 'plumber',
+                name: '🪠 Сантехник',
+                icon: '🪠',
+                basePrompt: 'plumber, pipe repair, with plunger, pipe wrench, under sink',
+                humor: [
+                    'вода: найдёт любую щель',
+                    'когда смыли то, что нельзя',
+                    'сантехник: смотрящий в унитаз',
+                    'когда прорвало трубу',
+                    'зарплата: утекла в трубу',
+                    'клиент: "вчера же работало"',
+                    'трос: не для рыбалки',
+                    'давление воды: или нет, или много',
+                    'вызов в 2 часа ночи (всегда)',
+                    'унитаз - не мусорка'
+                ]
+            },
+            {
+                id: 'photographer',
+                name: '📸 Фотограф',
+                icon: '📸',
+                basePrompt: 'photographer, taking photos, with camera, big lens, in studio',
+                humor: [
+                    'в фотошопе исправлю',
+                    'клиент: "сделайте меня стройнее"',
+                    'фотограф: профессиональный селф-мейкер',
+                    'объектив: дороже камеры',
+                    'когда села батарея в самый ответственный момент',
+                    'свадьба: стресс в 4K',
+                    'лучший объектив - тот что забыл',
+                    'обработка: 1 час съёмки, 8 часов правки',
+                    '"сделайте чёрно-белое" (спасите)',
+                    'естественный свет: бесплатно, искусственный: 2000$'
+                ]
+            },
+            {
+                id: 'waiter',
+                name: '🍽️ Официант',
+                icon: '🍽️',
+                basePrompt: 'waiter, server, restaurant, holding tray, in uniform',
+                humor: [
+                    'столик 4: хочет всё',
+                    'клиент: "я готов" (не готов)',
+                    'официант: профессиональный носильщик',
+                    'когда уронил поднос',
+                    'чаевые: 0%, наглость: 100%',
+                    'вода: бесплатно, лёд: дороже',
+                    'кухня: вечно горит',
+                    'специальное блюдо: то что надо срочно продать',
+                    'раздельный чек на 8 человек',
+                    'последний столик: никогда не уходит'
+                ]
+            },
+            {
+                id: 'barista',
+                name: '☕ Бариста',
+                icon: '☕',
+                basePrompt: 'barista, coffee maker, making coffee, with espresso machine, apron',
+                humor: [
+                    'декаф: для слабаков',
+                    'клиент: "погорячее" (кипяток)',
+                    'латте-арт: 1% умения, 99% удачи',
+                    'когда написал имя неправильно',
+                    'кофе: вода для уставших',
+                    'бариста: профессиональный молочник',
+                    'утренняя толпа: режим хаос',
+                    '"можно кофе" (50 видов, какой?)',
+                    'мой эспрессо крепче чем я',
+                    'кофемашина: единственная любовь'
                 ]
             },
             {
                 id: 'sailor',
                 name: '⚓ Моряк',
                 icon: '⚓',
-                basePrompt: 'sailor, seaman, captain',
-                attributes: [
-                    'sailor uniform',
-                    'captain hat',
-                    'holding telescope',
-                    'anchor tattoo',
-                    'seagulls',
-                    'steering wheel',
-                    'life preserver',
-                    'boat',
-                    'striped shirt',
-                    'sea legs'
-                ],
-                scenes: [
-                    'steering ship',
-                    'looking through telescope',
-                    'sailing rough seas',
-                    'docking',
-                    'fishing',
-                    'waving from boat',
-                    'reading map'
-                ],
+                basePrompt: 'sailor, seaman, captain, on ship, with telescope, steering wheel',
                 humor: [
-                    'seasick: 90% of first week',
-                    'when they ask "are we there yet?" (its the ocean)',
-                    'sailor: professional rope tier',
-                    'that feeling when you see land',
-                    'the ocean: always moving, never stopping',
-                    'sea gulls: flying rats',
-                    'captain: the one who yells',
-                    'maps: never accurate',
-                    'storms: free roller coaster',
-                    'sea food: always on the menu'
+                    'морская болезнь: 90% новичков',
+                    'когда спросили "мы уже приплыли?"',
+                    'моряк: профессиональный вязальщик узлов',
+                    'когда увидел землю',
+                    'море: вечно движется',
+                    'чайки: летающие крысы',
+                    'капитан: тот кто орёт',
+                    'карты: врут всегда',
+                    'шторм: бесплатные американские горки',
+                    'рыба: всегда в меню'
                 ]
             },
             {
                 id: 'miner',
-                name: '⛏️ Шахтер',
+                name: '⛏️ Шахтёр',
                 icon: '⛏️',
-                basePrompt: 'miner, underground worker',
-                attributes: [
-                    'hard hat with light',
-                    'pickaxe',
-                    'dirty face',
-                    'mining cart',
-                    'lantern',
-                    'shovel',
-                    'coal',
-                    'safety lamp',
-                    'overalls',
-                    'canary'
-                ],
-                scenes: [
-                    'digging coal',
-                    'pushing cart',
-                    'emerging from mine',
-                    'finding gold',
-                    'with canary',
-                    'tired after shift',
-                    'mining tunnel'
-                ],
+                basePrompt: 'miner, underground worker, with pickaxe, hard hat, dirty face',
                 humor: [
-                    'canary: 911 of the mine',
-                    'when the light goes out',
-                    'miner: professional hole digger',
-                    'that feeling when you find coal (its not gold)',
-                    'the mine: always dark, always cold',
-                    'coal: black gold',
-                    'safety: optional',
-                    'lunch: eaten in the dark',
-                    'the surface: mythical place',
-                    'shift: 12 hours of dirt'
+                    'канарейка: мой детектор газа',
+                    'когда погас свет',
+                    'шахтёр: профессиональный копатель',
+                    'нашёл уголь (не золото)',
+                    'в шахте: темно, холодно, страшно',
+                    'уголь: чёрное золото',
+                    'техника безопасности? нет',
+                    'обед: ем в темноте',
+                    'поверхность: мифическое место',
+                    'смена: 12 часов грязи'
                 ]
             },
             {
-                id: 'construction',
+                id: 'pilot',
+                name: '✈️ Пилот',
+                icon: '✈️',
+                basePrompt: 'pilot, aviator, flying, in cockpit, with headset, captain hat',
+                humor: [
+                    'турбулентность: бесплатный аттракцион',
+                    'когда спросили "мы уже прилетели?"',
+                    'пилот: профессиональный водитель облаков',
+                    'посадка при ветре: экстрим',
+                    'второй пилот: тот кто всё делает',
+                    'погода: хуже прогноза',
+                    'пассажиры хлопают (зачем?)',
+                    'задержка: наше любимое слово',
+                    'полёт 2 часа, ждать 4',
+                    'капитан выключил табло (ура)'
+                ]
+            },
+            {
+                id: 'builder',
                 name: '🏗️ Строитель',
                 icon: '🏗️',
-                basePrompt: 'construction worker, builder',
-                attributes: [
-                    'hard hat',
-                    'orange safety vest',
-                    'holding hammer',
-                    'bricks',
-                    'cement mixer',
-                    'blueprints',
-                    'tool belt',
-                    'measuring tape',
-                    'scaffolding',
-                    'lunch pail'
-                ],
-                scenes: [
-                    'building wall',
-                    'operating crane',
-                    'measuring wood',
-                    'holding blueprint',
-                    'taking coffee break',
-                    'high-rise construction',
-                    'with level tool'
-                ],
+                basePrompt: 'construction worker, builder, with hard hat, hammer, blueprints',
                 humor: [
-                    'measure once, cut twice (or something)',
-                    'when the blueprint is wrong',
-                    'builder: professional hammer swinger',
-                    'that feeling when the wall is crooked',
-                    'scaffolding: unstable platform',
-                    'cement: always too wet or too dry',
-                    'lunch: always in the dirt',
-                    'the boss: always watching',
-                    'tools: never where you left them',
-                    'safety meeting: 30 mins of "be careful"'
+                    'отмерь один раз, отрежь два (или наоборот)',
+                    'чертежи: всегда с ошибками',
+                    'строитель: профессиональный молотобоец',
+                    'когда стена кривая',
+                    'леса: шаткая конструкция',
+                    'цемент: то густо, то пусто',
+                    'обед: всегда на земле',
+                    'прораб: вечно смотрит',
+                    'инструменты: вечно теряются',
+                    'планёрка: 30 минут "будьте осторожны"'
                 ]
             },
             {
-                id: 'nurse',
-                name: '👩‍⚕️ Медсестра',
-                icon: '👩‍⚕️',
-                basePrompt: 'nurse, healthcare worker',
-                attributes: [
-                    'nurse uniform',
-                    'nurse cap',
-                    'holding clipboard',
-                    'stethoscope',
-                    'syringe',
-                    'bandage',
-                    'thermometer',
-                    'medical cart',
-                    'red cross',
-                    'tired eyes'
-                ],
-                scenes: [
-                    'checking patient',
-                    'giving medicine',
-                    'taking temperature',
-                    'comforting patient',
-                    'writing chart',
-                    'emergency response',
-                    'holding newborn'
-                ],
+                id: 'farmer',
+                name: '🚜 Фермер',
+                icon: '🚜',
+                basePrompt: 'farmer, agricultural worker, with tractor, straw hat, harvesting',
                 humor: [
-                    'doctor: suggests, nurse: does',
-                    'when patient asks "is it going to hurt?" (yes)',
-                    'nurse: professional paper pusher',
-                    'that feeling when you have 10 patients',
-                    '12 hour shift: 12 cups of coffee',
-                    'the call light: never stops',
-                    'patients: always hungry, always in pain',
-                    'charting: 90% of the job',
-                    'emergency: always when youre eating',
-                    'scrubs: comfortable pajamas'
+                    'петух: будильник 4 утра',
+                    'когда курица снесла яйцо (ура)',
+                    'фермер: профессиональный сажатель',
+                    'урожай: то дождь, то засуха',
+                    'трактор: моя любовь',
+                    'коровы: мычат, я их дою',
+                    'огород: 6 соток рая',
+                    'колорадский жук: враг народа',
+                    'навоз: удобрение и головная боль',
+                    'рынок: продаю, торгуются'
                 ]
             },
             {
-                id: 'judge',
-                name: '⚖️ Судья',
-                icon: '⚖️',
-                basePrompt: 'judge, courtroom',
-                attributes: [
-                    'judge robe',
-                    'gavel',
-                    'wig (UK style)',
-                    'courtroom',
-                    'law books',
-                    'bench',
-                    'scales of justice',
-                    'serious expression',
-                    'glasses',
-                    'gavel'
-                ],
-                scenes: [
-                    'banging gavel',
-                    'reading verdict',
-                    'listening to case',
-                    'pointing sternly',
-                    'signing documents',
-                    'court in session',
-                    'thinking deeply'
-                ],
+                id: 'scientist',
+                name: '🔬 Ученый',
+                icon: '🔬',
+                basePrompt: 'scientist, researcher, in lab, with test tubes, microscope, lab coat',
                 humor: [
-                    'objection overruled (i have no idea)',
-                    'when the lawyer is late',
-                    'judge: professional gavel banger',
-                    'that feeling when the case is boring',
-                    'the wig: itchy, hot, mandatory',
-                    'court: daytime soap opera',
-                    'verdict: always controversial',
-                    'the bench: highest seat in the room',
-                    'lawyers: arguing like children',
-                    'order in the court (there is never order)'
+                    'наука: это как магия, но реально',
+                    'когда эксперимент сработал в пятницу вечером',
+                    'техника безопасности? нет',
+                    'мой контрольный образец: хаос',
+                    'когда нашёл статью, где твоя теория неправильная',
+                    'рецензирование: голодные игры',
+                    'аспирантура: просто большой долг',
+                    'корреляция не равна причинности, но подозрительно',
+                    'когда гипотеза неправильная (всегда)',
+                    'научный метод: угадай, проверь, плачь, повтори'
+                ]
+            },
+            {
+                id: 'journalist',
+                name: '📰 Журналист',
+                icon: '📰',
+                basePrompt: 'journalist, reporter, with microphone, notebook, press badge',
+                humor: [
+                    'дедлайн через 5 минут, а новостей нет',
+                    'мой источник: "строго анонимно" (это я)',
+                    'новость: "сенсация", текст: "ну такое"',
+                    'редактор: "перепиши", я: "переписал" (то же самое)',
+                    'в погоне за сенсацией уже 3 день',
+                    'моя совесть чиста (я её продал)',
+                    'интервью: 2 часа, в эфир: 30 секунд',
+                    'правда где-то рядом (но не сегодня)',
+                    'журналист: "я не вру, я художественно излагаю"',
+                    'горячая новость: котик спасся из пожара'
+                ]
+            },
+            {
+                id: 'athlete',
+                name: '🏃‍♂️ Спортсмен',
+                icon: '🏃‍♂️',
+                basePrompt: 'athlete, sportsman, fit person, training, with trophy, sportswear',
+                humor: [
+                    'день ног: день 365 пропуска',
+                    'мой протеин: вкус сожаления',
+                    'абонемент в зал: 5000/мес, посещений: 3',
+                    'когда рекорд наконец побит',
+                    'тренер: "ещё один подход" уже 2 часа',
+                    'спортивный напиток: дорогая цветная вода',
+                    'до соревнований: загрузка углями = ем всё',
+                    'после соревнований: почему всё болит',
+                    'главная тренировка: дойти до зала',
+                    'фитнес-блогеры: образец для подражания'
+                ]
+            },
+            {
+                id: 'accountant',
+                name: '📊 Бухгалтер',
+                icon: '📊',
+                basePrompt: 'accountant, bookkeeper, with calculator, spreadsheets, glasses',
+                humor: [
+                    'баланс: должен быть ноль (никогда)',
+                    'отчётность: 100500 страниц',
+                    'когда налоговая пришла',
+                    'дедлайн сдачи отчётов: завтра',
+                    'Excel - моя жизнь',
+                    'цифры сходятся? значит я ошибся',
+                    'зарплата: посчитай сам',
+                    'когда нашли ошибку за прошлый год',
+                    'первичка: вечно теряется',
+                    'аудит: веселье с проверяющими'
                 ]
             }
         ];
@@ -1439,32 +1969,19 @@
             document.getElementById('generateBtn').classList.toggle('premium', pack === 'premium');
         };
 
-        // Генерация промпта с атрибутами профессии и юмором
+        // Генерация промпта с русским юмором в картинке
         function generateProfessionPrompt(profession, emotionPrompt, baseCharacter) {
-            // С вероятностью 50% добавляем юмор вместо обычной сцены
-            const useHumor = Math.random() > 0.5 && profession.humor && profession.humor.length > 0;
+            // Выбираем случайную шутку на русском
+            const humorText = profession.humor[Math.floor(Math.random() * profession.humor.length)];
             
-            if (useHumor) {
-                // Выбираем случайный юмористический элемент
-                const humorItem = profession.humor[Math.floor(Math.random() * profession.humor.length)];
-                
-                // Выбираем 2 случайных атрибута
-                const numAttributes = 2;
-                const shuffled = [...profession.attributes].sort(() => 0.5 - Math.random());
-                const selectedAttrs = shuffled.slice(0, numAttributes);
-                
-                return `${baseCharacter}, ${profession.basePrompt}, ${selectedAttrs.join(', ')}, ${humorItem}, ${emotionPrompt}, ${currentStyle}, sticker for Telegram, high quality, isolated on white background, funny meme style`;
-            } else {
-                // Обычная сцена
-                const scene = profession.scenes[Math.floor(Math.random() * profession.scenes.length)];
-                
-                // Выбираем 2-3 случайных атрибута
-                const numAttributes = 2 + Math.floor(Math.random() * 2);
-                const shuffled = [...profession.attributes].sort(() => 0.5 - Math.random());
-                const selectedAttrs = shuffled.slice(0, numAttributes);
-                
-                return `${baseCharacter}, ${profession.basePrompt}, ${selectedAttrs.join(', ')}, ${scene}, ${emotionPrompt}, ${currentStyle}, sticker for Telegram, high quality, isolated on white background`;
-            }
+            // Добавляем текст на русском в промпт
+            // Recraft AI умеет генерировать текст на разных языках
+            const promptWithText = `${baseCharacter}, ${profession.basePrompt}, ${emotionPrompt}, ${currentStyle}, with Russian text saying "${humorText}" in a speech bubble or on a sign, funny meme style, professional humor, clear Russian text, meme sticker`;
+            
+            return {
+                prompt: promptWithText,
+                humor: humorText
+            };
         }
 
         // ========== ROBOFLOW API ЗАПРОС ==========
@@ -1719,6 +2236,7 @@
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
             
+            // Рисуем фон
             const hue = EMOTIONS.findIndex(e => e.id === emotion.id) * 12 % 360;
             const gradient = ctx.createLinearGradient(0, 0, 512, 512);
             gradient.addColorStop(0, `hsl(${hue}, 80%, 70%)`);
@@ -1726,27 +2244,60 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, 512, 512);
             
+            // Рисуем персонажа
             ctx.fillStyle = 'white';
             ctx.beginPath();
             ctx.arc(256, 200, 120, 0, Math.PI * 2);
             ctx.fill();
             
+            // Эмодзи персонажа
             ctx.fillStyle = '#333';
-            ctx.font = 'bold 40px Arial';
-            ctx.fillText(emotion.icon, 200, 150);
-            ctx.font = 'bold 24px Arial';
-            ctx.fillText(professionName, 200, 200);
-            ctx.font = 'bold 18px Arial';
+            ctx.font = 'bold 80px Arial';
+            ctx.fillText(emotion.icon, 200, 180);
             
-            // Отображаем короткую версию юмора
-            const shortHumor = humorText ? humorText.substring(0, 30) + '...' : emotion.name;
-            ctx.fillText(shortHumor, 150, 280);
-            ctx.font = 'bold 14px Arial';
-            ctx.fillStyle = '#666';
-            ctx.fillText('(профессиональный юмор)', 150, 320);
+            // Название профессии
+            ctx.font = 'bold 30px Arial';
+            ctx.fillStyle = '#333';
+            ctx.fillText(professionName, 200, 250);
+            
+            // Русская шутка (на картинке)
+            ctx.font = 'bold 24px Arial';
+            ctx.fillStyle = '#fbbf24';
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            
+            // Облачко для текста
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(100, 280, 312, 80, 20);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Текст шутки
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText(humorText, 120, 330);
             
             return canvas.toDataURL('image/png');
         }
+
+        // Добавляем метод для скругленного прямоугольника
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+            if (w < 2 * r) r = w / 2;
+            if (h < 2 * r) r = h / 2;
+            this.moveTo(x + r, y);
+            this.lineTo(x + w - r, y);
+            this.quadraticCurveTo(x + w, y, x + w, y + r);
+            this.lineTo(x + w, y + h - r);
+            this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            this.lineTo(x + r, y + h);
+            this.quadraticCurveTo(x, y + h, x, y + h - r);
+            this.lineTo(x, y + r);
+            this.quadraticCurveTo(x, y, x + r, y);
+            return this;
+        };
 
         window.generatePack = async () => {
             const character = document.getElementById('characterPrompt').value.trim();
@@ -1771,32 +2322,28 @@
                     const emotion = EMOTIONS.find(e => e.id === emotionId);
                     
                     document.getElementById('loadingProgress').textContent = 
-                        `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
+                        `Генерируем мем ${i+1} из ${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
                     
-                    // Генерируем промпт с атрибутами профессии и юмором
-                    const prompt = generateProfessionPrompt(profession, emotion.prompt, character);
+                    // Генерируем промпт с русским юмором
+                    const { prompt, humor } = generateProfessionPrompt(profession, emotion.prompt, character);
                     
                     let pngImage = await generateRecraftImage(prompt);
                     
-                    // Для демо показываем с юмором
-                    const humorText = profession.humor ? 
-                        profession.humor[Math.floor(Math.random() * profession.humor.length)] : '';
-                    
                     if (!pngImage) {
-                        pngImage = generateDemoImage(emotion, profession.name, humorText);
+                        pngImage = generateDemoImage(emotion, profession.name, humor);
                     }
                     
                     generatedPNG.push({
                         emotion: emotion,
                         profession: profession.name,
+                        humor: humor,
                         dataUrl: pngImage,
-                        filename: `${character}_${profession.id}_${emotion.id}_${i}.png`,
-                        humor: humorText
+                        filename: `${character}_${profession.id}_${emotion.id}_${i}.png`
                     });
                     
                     if (selectedPack === 'premium') {
                         document.getElementById('loadingProgress').textContent = 
-                            `Создаем анимацию ${i+1}: ${emotion.name}`;
+                            `Создаем анимацию для мема ${i+1}`;
                         
                         const zones = await analyzeImageWithRoboflow(pngImage);
                         const tgsData = await convertPngToTgs(pngImage, zones, i);
@@ -1804,9 +2351,9 @@
                         generatedTGS.push({
                             emotion: emotion,
                             profession: profession.name,
+                            humor: humor,
                             dataUrl: tgsData || pngImage,
-                            filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`,
-                            humor: humorText
+                            filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
                         });
                     }
                 }
@@ -1829,7 +2376,7 @@
 
             const title = document.createElement('h2');
             title.style.cssText = 'font-size: 2em; color: white; margin-bottom: 20px;';
-            title.innerHTML = `🎉 Готово! ${pngStickers.length} стикеров с профессиональным юмором (${profession.name})`;
+            title.innerHTML = `🎉 Готово! ${pngStickers.length} мемов для профессии ${profession.name}`;
             resultsDiv.appendChild(title);
 
             const packagesDiv = document.createElement('div');
@@ -1839,7 +2386,7 @@
             basicPackage.className = 'package basic';
             basicPackage.innerHTML = `
                 <div class="package-header">
-                    <div class="package-title">📷 Базовый набор (${profession.name})</div>
+                    <div class="package-title">📷 Базовый набор мемов</div>
                     <div class="package-price">299 ₽</div>
                 </div>
                 <div class="stickers-grid" id="pngGrid"></div>
@@ -1854,7 +2401,7 @@
                 premiumPackage.className = 'package premium';
                 premiumPackage.innerHTML = `
                     <div class="package-header">
-                        <div class="package-title">✨ Премиум набор (${profession.name})</div>
+                        <div class="package-title">✨ Премиум мемы с анимацией</div>
                         <div class="package-price">499 ₽</div>
                     </div>
                     <div class="stickers-grid" id="tgsGrid"></div>
@@ -1876,7 +2423,7 @@
                         <img src="${s.dataUrl}" alt="${s.emotion.name}">
                     </div>
                     <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                    ${s.humor ? `<div style="font-size: 0.6em; color: #fbbf24; margin-top: 2px;">${s.humor.substring(0, 20)}...</div>` : ''}
+                    <div class="sticker-humor">${s.humor}</div>
                     <span class="sticker-badge png">PNG</span>
                 `;
                 pngGrid.appendChild(card);
@@ -1893,7 +2440,7 @@
                             <img src="${s.dataUrl}" alt="${s.emotion.name}">
                         </div>
                         <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                        ${s.humor ? `<div style="font-size: 0.6em; color: #fbbf24; margin-top: 2px;">${s.humor.substring(0, 20)}...</div>` : ''}
+                        <div class="sticker-humor">${s.humor}</div>
                         <span class="sticker-badge tgs">TGS</span>
                         <span class="sticker-badge api">Анимировано</span>
                     `;
@@ -1912,7 +2459,7 @@
                 link.href = s.dataUrl;
                 link.click();
             });
-            alert(`Скачивание ${stickers.length} файлов начато!`);
+            alert(`Скачивание ${stickers.length} мемов начато!`);
         };
 
         // ========== ИСТОРИЯ ==========
@@ -1941,7 +2488,8 @@
                 packType: packType,
                 pngCount: pngStickers.length,
                 tgsCount: tgsStickers.length,
-                previews: pngStickers.slice(0, 5).map(s => s.dataUrl)
+                previews: pngStickers.slice(0, 5).map(s => s.dataUrl),
+                firstHumor: pngStickers[0]?.humor || ''
             };
             
             generationHistory.unshift(entry);
@@ -1991,7 +2539,7 @@
             if (!grid) return;
             
             if (generationHistory.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #4a5568;">История пуста. Создайте первый набор стикеров!</div>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #4a5568;">История пуста. Создайте первый набор мемов!</div>';
                 return;
             }
             
@@ -2003,8 +2551,7 @@
                     <div class="history-prompt">
                         <strong>${entry.professionIcon} ${entry.profession}</strong><br>
                         <strong>Персонаж:</strong> ${entry.character}<br>
-                        <strong>Стиль:</strong> ${entry.style}<br>
-                        <strong>Эмоций:</strong> ${entry.emotions}
+                        <strong>Первый мем:</strong> "${entry.firstHumor}"
                     </div>
                     <div class="history-previews">
                         ${entry.previews.map(url => `
@@ -2113,6 +2660,7 @@
                 }
             });
             
+            // Выбираем зумера по умолчанию
             selectProfession('zoomer');
         }, 100);
     </script>
