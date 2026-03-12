@@ -3263,46 +3263,69 @@ window.debugTGS = async function() {
         
         async function convertPngToTgs(pngDataUrl, poseData, index) {
     try {
-        // 1. СОЗДАЕМ НАШУ СЛОЖНУЮ АНИМАЦИЮ (без изменений)
-        const lottieJson = createAnimationFromPose(pngDataUrl, poseData, index);
+        // Получаем base64 без префикса
+        const base64Data = pngDataUrl.split(',')[1];
         
-        // 2. ДОБАВЛЯЕМ ОБЯЗАТЕЛЬНОЕ ПОЛЕ ДЛЯ TELEGRAM
-        lottieJson.tgs = 1;
+        // Создаем правильную структуру TGS
+        const tgsData = {
+            tgs: 1,
+            v: "5.5.7",
+            fr: 30,
+            ip: 0,
+            op: 45,
+            w: 512,
+            h: 512,
+            assets: [{
+                id: "image_0",
+                w: 512,
+                h: 512,
+                u: "",
+                p: base64Data,
+                e: 1
+            }],
+            layers: [{
+                ddd: 0,
+                ind: 1,
+                ty: 2,
+                nm: "sticker",
+                refId: "image_0",
+                sr: 1,
+                ks: {
+                    o: { a: 0, k: 100 },
+                    r: { a: 0, k: 0 },
+                    p: { a: 0, k: [256, 256, 0] },
+                    a: { a: 0, k: [256, 256, 0] },
+                    s: { a: 0, k: [100, 100, 100] }
+                },
+                ip: 0,
+                op: 45
+            }]
+        };
         
-        // 3. ИСПРАВЛЯЕМ ФОРМАТ ASSETS ДЛЯ TELEGRAM
-        if (lottieJson.assets && lottieJson.assets[0]) {
-            // Извлекаем чистый base64 без префикса
-            const asset = lottieJson.assets[0];
-            if (asset.p && asset.p.startsWith('data:image')) {
-                const base64Match = asset.p.match(/^data:image\/png;base64,(.*)$/);
-                if (base64Match) {
-                    asset.p = base64Match[1]; // только данные
-                }
-            }
-            asset.u = ""; // пустой путь
-            asset.e = 1;  // embedded image
+        // Добавляем простую анимацию (пульсацию) если есть данные о позе
+        if (poseData && poseData.landmarks) {
+            tgsData.layers[0].ks.s = {
+                a: 1,
+                k: [
+                    { t: 0, s: [100, 100, 100] },
+                    { t: 15, s: [105, 105, 100] },
+                    { t: 30, s: [100, 100, 100] },
+                    { t: 45, s: [103, 103, 100] }
+                ]
+            };
         }
         
-        // 4. УБЕЖДАЕМСЯ, ЧТО ВСЕ КЛЮЧЕВЫЕ КАДРЫ ИМЕЮТ ПРАВИЛЬНУЮ СТРУКТУРУ
-        if (lottieJson.layers) {
-            lottieJson.layers.forEach(layer => {
-                // Убеждаемся, что у каждого слоя есть parent если нужно
-                // (это уже должно быть в вашей функции createAnimationFromPose)
-            });
-        }
+        // Конвертируем в JSON и сжимаем
+        const jsonString = JSON.stringify(tgsData);
+        const compressed = pako.gzip(jsonString, { level: 9 });
         
-        // 5. КОНВЕРТИРУЕМ В JSON И СЖИМАЕМ GZIP
-        const jsonString = JSON.stringify(lottieJson);
-        const compressedData = pako.gzip(jsonString);
+        // Создаем blob
+        const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
         
-        // 6. СОЗДАЕМ BLOB С ПРАВИЛЬНЫМ MIME-TYPE
-        const tgsBlob = new Blob([compressedData], { type: 'application/x-tgsticker' });
-        
-        // 7. ВОЗВРАЩАЕМ КАК DATA URL ДЛЯ СКАЧИВАНИЯ
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(tgsBlob);
+            reader.readAsDataURL(blob);
         });
         
     } catch (error) {
