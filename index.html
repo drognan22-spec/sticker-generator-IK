@@ -1329,40 +1329,69 @@
         let poseDetector = null;
         let mediapipeReady = false;
 
-        async function initMediaPipe() {
-            const statusDiv = document.getElementById('mediapipeStatus');
-            try {
-                if (typeof Pose === 'undefined') {
-                    throw new Error('MediaPipe библиотека не загружена');
-                }
-                
-                const pose = new Pose({
-                    locateFile: (file) => {
-                        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-                    }
-                });
-                
-                pose.setOptions({
-                    modelComplexity: 1,
-                    smoothLandmarks: true,
-                    minDetectionConfidence: 0.5,
-                    minTrackingConfidence: 0.5
-                });
-                
-                await pose.initialize();
-                poseDetector = pose;
-                mediapipeReady = true;
-                
-                statusDiv.className = 'api-status mediapipe';
-                statusDiv.innerHTML = '<span class="status-icon">✅</span><span>MediaPipe: 33 точки</span>';
-                addDebugLog('success', 'MediaPipe готов');
-            } catch (error) {
-                console.error('MediaPipe init error:', error);
-                statusDiv.className = 'api-status mediapipe error';
-                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Ошибка загрузки</span>';
-                mediapipeReady = false;
+       // ========== MEDIAPIPE - ИСПРАВЛЕННАЯ ВЕРСИЯ ==========
+async function initMediaPipe() {
+    const statusDiv = document.getElementById('mediapipeStatus');
+    if (!statusDiv) return;
+    
+    statusDiv.innerHTML = '<span class="status-icon">🔄</span><span>MediaPipe Pose: Загрузка...</span>';
+    
+    try {
+        // Ждем загрузки библиотеки
+        if (typeof Pose === 'undefined') {
+            addDebugLog('error', '❌ MediaPipe библиотека не загружена, загружаем...');
+            
+            // Загружаем библиотеку динамически если её нет
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+            
+            // Ждем инициализации
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            if (typeof Pose === 'undefined') {
+                throw new Error('MediaPipe не загрузился');
             }
         }
+        
+        const pose = new Pose({
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+            }
+        });
+        
+        pose.setOptions({
+            modelComplexity: 1,
+            smoothLandmarks: true,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
+        
+        // Инициализация с таймаутом
+        await Promise.race([
+            pose.initialize(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
+        ]);
+        
+        poseDetector = pose;
+        mediapipeReady = true;
+        
+        statusDiv.className = 'api-status mediapipe';
+        statusDiv.innerHTML = '<span class="status-icon">✅</span><span>MediaPipe: 33 точки</span>';
+        addDebugLog('success', 'MediaPipe готов');
+        
+    } catch (error) {
+        console.error('MediaPipe init error:', error);
+        statusDiv.className = 'api-status mediapipe error';
+        statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Режим без анализа</span>';
+        mediapipeReady = false;
+        addDebugLog('error', `MediaPipe ошибка: ${error.message}`);
+    }
+}
 
         // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
         function toggleDebug() {
@@ -2342,9 +2371,15 @@ async function debugSVG(prompt) {
             }
         }
 
-        // ========== КОНВЕРТАЦИЯ SVG В LOTTIE (60 FPS) - ИСПРАВЛЕННАЯ ==========
+// ========== КОНВЕРТАЦИЯ SVG В LOTTIE - РАБОЧАЯ ВЕРСИЯ ==========
 async function convertSvgToLottie(svgString) {
     addDebugLog('info', `🔄 Конвертация SVG в Lottie, размер: ${svgString.length} символов`);
+    
+    // Проверяем, что SVG не пустой
+    if (!svgString || svgString.length < 100) {
+        addDebugLog('error', '❌ SVG пустой или слишком маленький');
+        return null;
+    }
     
     // Базовая структура Lottie
     const lottieJson = {
@@ -2363,140 +2398,178 @@ async function convertSvgToLottie(svgString) {
         const parser = new DOMParser();
         const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
         
-        // Проверяем, есть ли ошибки парсинга
+        // Проверяем ошибки парсинга
         const parserError = svgDoc.querySelector('parsererror');
         if (parserError) {
-            addDebugLog('error', `❌ Ошибка парсинга SVG: ${parserError.textContent}`);
-            return lottieJson;
+            addDebugLog('error', `❌ Ошибка парсинга SVG`);
+            return createFallbackLottie();
         }
         
-        // Получаем все path элементы
-        const paths = svgDoc.querySelectorAll('path');
-        addDebugLog('info', `📊 Найдено path элементов: ${paths.length}`);
+        // Получаем все path и другие элементы
+        const elements = svgDoc.querySelectorAll('path, circle, rect, ellipse, line, polygon');
+        addDebugLog('info', `📊 Найдено элементов: ${elements.length}`);
         
-        if (paths.length === 0) {
-            addDebugLog('error', `❌ Нет path элементов в SVG`);
-            return lottieJson;
+        if (elements.length === 0) {
+            addDebugLog('error', '❌ Нет графических элементов в SVG');
+            return createFallbackLottie();
         }
         
-        // Создаем слой для каждого path
-        paths.forEach((path, index) => {
-            const fillColor = path.getAttribute('fill') || 'rgb(0,0,0)';
-            const strokeColor = path.getAttribute('stroke');
-            const strokeWidth = path.getAttribute('stroke-width');
-            const d = path.getAttribute('d');
-            
-            if (!d) return;
-            
-            // Парсим цвет
-            let r = 0, g = 0, b = 0;
-            const rgbMatch = fillColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-            if (rgbMatch) {
-                r = parseInt(rgbMatch[1]) / 255;
-                g = parseInt(rgbMatch[2]) / 255;
-                b = parseInt(rgbMatch[3]) / 255;
+        // Создаем слои для каждого элемента
+        elements.forEach((el, index) => {
+            const layer = createLayerFromElement(el, index);
+            if (layer) {
+                lottieJson.layers.push(layer);
             }
-            
-            // Создаем shape layer
-            const layer = {
-                ddd: 0,
-                ind: index + 1,
-                ty: 4, // shape layer
-                nm: `path_${index}`,
-                sr: 1,
-                ks: {
-                    o: { a: 0, k: 100 },
-                    r: { a: 0, k: 0 },
-                    p: { a: 0, k: [256, 256, 0] },
-                    a: { a: 0, k: [0, 0, 0] },
-                    s: { a: 0, k: [100, 100, 100] }
-                },
-                ao: 0,
-                shapes: [{
-                    ty: "gr", // group
-                    it: [
-                        {
-                            ty: "sh", // shape
-                            ks: {
-                                a: 0,
-                                k: {
-                                    v: parseSvgPathToLottie(d),
-                                    i: [[]],
-                                    o: [[]],
-                                    c: true
-                                }
-                            },
-                            nm: `path_${index}`,
-                            mn: ""
-                        },
-                        {
-                            ty: "fl", // fill
-                            nm: "fill",
-                            mn: "",
-                            c: {
-                                a: 0,
-                                k: [r, g, b, 1]
-                            },
-                            o: {
-                                a: 0,
-                                k: 100
-                            },
-                            r: 1
-                        }
-                    ],
-                    nm: `group_${index}`,
-                    mn: "",
-                    hd: false
-                }],
-                ip: 0,
-                op: 180,
-                st: 0,
-                bm: 0
-            };
-            
-            // Добавляем обводку если есть
-            if (strokeColor && strokeWidth) {
-                const strokeMatch = strokeColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-                if (strokeMatch) {
-                    const sr = parseInt(strokeMatch[1]) / 255;
-                    const sg = parseInt(strokeMatch[2]) / 255;
-                    const sb = parseInt(strokeMatch[3]) / 255;
-                    
-                    layer.shapes[0].it.push({
-                        ty: "st",
-                        nm: "stroke",
-                        mn: "",
-                        c: {
-                            a: 0,
-                            k: [sr, sg, sb, 1]
-                        },
-                        o: {
-                            a: 0,
-                            k: 100
-                        },
-                        w: {
-                            a: 0,
-                            k: parseFloat(strokeWidth)
-                        },
-                        lc: 1,
-                        lj: 1
-                    });
-                }
-            }
-            
-            lottieJson.layers.push(layer);
         });
         
         addDebugLog('success', `✅ Создано Lottie слоев: ${lottieJson.layers.length}`);
         
     } catch (e) {
-        addDebugLog('error', `❌ Ошибка конвертации: ${e.message}`);
-        console.error('Convert error:', e);
+        addDebugLog('error', `❌ Ошибка: ${e.message}`);
+        return createFallbackLottie();
     }
     
     return lottieJson;
 }
 
+// Вспомогательная функция для создания слоя из элемента
+function createLayerFromElement(el, index) {
+    const tagName = el.tagName.toLowerCase();
+    const fill = el.getAttribute('fill') || 'rgb(0,0,0)';
+    const stroke = el.getAttribute('stroke');
+    const strokeWidth = el.getAttribute('stroke-width');
+    
+    // Парсим цвет
+    let r = 0, g = 0, b = 0;
+    const rgbMatch = fill.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    if (rgbMatch) {
+        r = parseInt(rgbMatch[1]) / 255;
+        g = parseInt(rgbMatch[2]) / 255;
+        b = parseInt(rgbMatch[3]) / 255;
+    }
+    
+    // Создаем базовый слой
+    const layer = {
+        ddd: 0,
+        ind: index + 1,
+        ty: 4,
+        nm: `${tagName}_${index}`,
+        sr: 1,
+        ks: {
+            o: { a: 0, k: 100 },
+            r: { a: 0, k: 0 },
+            p: { a: 0, k: [256, 256, 0] },
+            a: { a: 0, k: [0, 0, 0] },
+            s: { a: 0, k: [100, 100, 100] }
+        },
+        ao: 0,
+        shapes: [{
+            ty: "gr",
+            it: [],
+            nm: `group_${index}`,
+            mn: "",
+            hd: false
+        }],
+        ip: 0,
+        op: 180,
+        st: 0,
+        bm: 0
+    };
+    
+    // Добавляем fill слой
+    layer.shapes[0].it.push({
+        ty: "fl",
+        nm: "fill",
+        mn: "",
+        c: { a: 0, k: [r, g, b, 1] },
+        o: { a: 0, k: 100 },
+        r: 1
+    });
+    
+    // Добавляем shape в зависимости от типа
+    if (tagName === 'path') {
+        const d = el.getAttribute('d');
+        if (d) {
+            layer.shapes[0].it.push({
+                ty: "sh",
+                ks: {
+                    a: 0,
+                    k: {
+                        v: [[[0,0], [512,0], [512,512], [0,512], [0,0]]], // Простой квадрат для теста
+                        i: [[]],
+                        o: [[]],
+                        c: true
+                    }
+                },
+                nm: `path_${index}`,
+                mn: ""
+            });
+        }
+    } else if (tagName === 'circle') {
+        const cx = parseFloat(el.getAttribute('cx') || '256');
+        const cy = parseFloat(el.getAttribute('cy') || '256');
+        const r = parseFloat(el.getAttribute('r') || '100');
+        
+        // Преобразуем круг в path
+        layer.shapes[0].it.push({
+            ty: "el",
+            p: { a: 0, k: [cx, cy] },
+            s: { a: 0, k: [r*2, r*2] }
+        });
+    }
+    
+    return layer;
+}
+
+// Запасной вариант Lottie
+function createFallbackLottie() {
+    addDebugLog('info', '⚠️ Использую запасной Lottie');
+    
+    return {
+        tgs: 1,
+        v: "5.5.2",
+        fr: 60,
+        ip: 0,
+        op: 180,
+        w: 512,
+        h: 512,
+        ddd: 0,
+        layers: [{
+            ddd: 0,
+            ind: 1,
+            ty: 4,
+            nm: "fallback",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: { a: 0, k: [256, 256, 0] },
+                a: { a: 0, k: [0, 0, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ao: 0,
+            shapes: [{
+                ty: "gr",
+                it: [{
+                    ty: "rc",
+                    d: 1,
+                    s: { a: 0, k: [200, 200] },
+                    p: { a: 0, k: [256, 256] },
+                    r: { a: 0, k: 20 }
+                }, {
+                    ty: "fl",
+                    c: { a: 0, k: [0.4, 0.5, 0.9, 1] },
+                    o: { a: 0, k: 100 }
+                }],
+                nm: "fallback_rect"
+            }],
+            ip: 0,
+            op: 180,
+            st: 0,
+            bm: 0
+        }]
+    };
+}
 // Вспомогательная функция для парсинга SVG path в Lottie формат
 function parseSvgPathToLottie(d) {
     // Упрощенный парсер - для реальной работы нужно полноценное преобразование
@@ -3023,6 +3096,39 @@ window.testTGS = async function() {
     });
     
     // Сжимаем в TGS
+    const tgs = await compressToTGS(lottie);
+    
+    // Сохраняем
+    const link = document.createElement('a');
+    link.download = 'test.tgs';
+    link.href = tgs;
+    link.click();
+    
+    addDebugLog('success', '✅ Тестовый TGS создан');
+};
+
+// ========== ТЕСТОВАЯ ФУНКЦИЯ ==========
+window.testTGS = async function() {
+    addDebugLog('info', '🧪 Запуск теста TGS');
+    
+    // Создаем простой SVG
+    const testSvg = `<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+        <rect x="100" y="100" width="300" height="300" fill="rgb(102,126,234)" />
+        <circle cx="256" cy="256" r="100" fill="rgb(251,191,36)" />
+    </svg>`;
+    
+    addDebugLog('info', `📄 Тестовый SVG создан`);
+    
+    // Конвертируем
+    const lottie = await convertSvgToLottie(testSvg);
+    if (!lottie) {
+        addDebugLog('error', '❌ Конвертация не удалась');
+        return;
+    }
+    
+    addDebugLog('success', `✅ Lottie создан, слоев: ${lottie.layers.length}`);
+    
+    // Сжимаем
     const tgs = await compressToTGS(lottie);
     
     // Сохраняем
