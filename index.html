@@ -2279,139 +2279,139 @@
         }
 
         // ========== КОНВЕРТАЦИЯ SVG В LOTTIE (60 FPS) ==========
-async function convertSvgToLottie(svgString) {
-    const lottieJson = {
-        tgs: 1,
-        v: "5.5.2",
-        fr: 60,  // 60 FPS - требование Telegram!
-        ip: 0,
-        op: 180, // 3 секунды × 60 fps = 180 кадров
-        w: 512,
-        h: 512,
-        ddd: 0,
-        layers: []
-    };
-    
-    try {
-        const parser = new DOMParser();
-        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-        const groups = svgDoc.querySelectorAll('g, svg > *');
-        
-        groups.forEach((group, index) => {
-            const layer = {
-                ddd: 0,
-                ind: index + 1,
-                ty: 4,  // shape layer (вектор)
-                nm: group.getAttribute('id') || `layer_${index}`,
-                sr: 1,
-                ks: {
-                    o: { a: 0, k: 100 },
-                    r: { a: 0, k: 0 },
-                    p: { a: 0, k: [256, 256, 0] },
-                    a: { a: 0, k: [256, 256, 0] },
-                    s: { a: 0, k: [100, 100, 100] }
-                },
-                ao: 0,
+        async function convertSvgToLottie(svgString) {
+            const lottieJson = {
+                tgs: 1,
+                v: "5.5.2",
+                fr: 60,  // 60 FPS - требование Telegram!
                 ip: 0,
-                op: 180, // синхронизируем с общей длительностью
-                st: 0,
-                bm: 0
+                op: 180, // 3 секунды × 60 fps = 180 кадров
+                w: 512,
+                h: 512,
+                ddd: 0,
+                layers: []
             };
-            lottieJson.layers.push(layer);
-        });
-    } catch (e) {
-        console.error('SVG parse error:', e);
-    }
-    
-    return lottieJson;
-}
+            
+            try {
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+                const groups = svgDoc.querySelectorAll('g, svg > *');
+                
+                groups.forEach((group, index) => {
+                    const layer = {
+                        ddd: 0,
+                        ind: index + 1,
+                        ty: 4,  // shape layer (вектор)
+                        nm: group.getAttribute('id') || `layer_${index}`,
+                        sr: 1,
+                        ks: {
+                            o: { a: 0, k: 100 },
+                            r: { a: 0, k: 0 },
+                            p: { a: 0, k: [256, 256, 0] },
+                            a: { a: 0, k: [256, 256, 0] },
+                            s: { a: 0, k: [100, 100, 100] }
+                        },
+                        ao: 0,
+                        ip: 0,
+                        op: 180, // синхронизируем с общей длительностью
+                        st: 0,
+                        bm: 0
+                    };
+                    lottieJson.layers.push(layer);
+                });
+            } catch (e) {
+                console.error('SVG parse error:', e);
+            }
+            
+            return lottieJson;
+        }
 
         // ========== 5-СЛОЙНАЯ АНИМАЦИЯ (60 FPS) ==========
-function applyPoseAnimation(lottieJson, poseData) {
-    if (!poseData) return lottieJson;
-    
-    lottieJson.layers.forEach((layer, index) => {
-        // Анимация для лица/головы (вращение)
-        if (index === 0 && poseData.hasFace) {
-            layer.ks.r = {
-                a: 1,
-                k: [
-                    { t: 0, s: [0] },
-                    { t: 60, s: [5] },    // 1 секунда при 60 fps
-                    { t: 120, s: [-3] },   // 2 секунды
-                    { t: 180, s: [0] }     // 3 секунды
-                ]
-            };
+        function applyPoseAnimation(lottieJson, poseData) {
+            if (!poseData) return lottieJson;
+            
+            lottieJson.layers.forEach((layer, index) => {
+                // Анимация для лица/головы (вращение)
+                if (index === 0 && poseData.hasFace) {
+                    layer.ks.r = {
+                        a: 1,
+                        k: [
+                            { t: 0, s: [0] },
+                            { t: 60, s: [5] },    // 1 секунда при 60 fps
+                            { t: 120, s: [-3] },   // 2 секунды
+                            { t: 180, s: [0] }     // 3 секунды
+                        ]
+                    };
+                }
+                
+                // Анимация для рук (движение X)
+                if (index === 1 && poseData.hasArms) {
+                    layer.ks.p = {
+                        a: 1,
+                        k: [
+                            { t: 0, s: [256, 256, 0] },
+                            { t: 60, s: [266, 256, 0] },
+                            { t: 120, s: [246, 256, 0] },
+                            { t: 180, s: [256, 256, 0] }
+                        ]
+                    };
+                }
+                
+                // Анимация для ног (движение Y)
+                if (index === 2 && poseData.hasLegs) {
+                    layer.ks.p = {
+                        a: 1,
+                        k: [
+                            { t: 0, s: [256, 256, 0] },
+                            { t: 60, s: [256, 266, 0] },
+                            { t: 120, s: [256, 246, 0] },
+                            { t: 180, s: [256, 256, 0] }
+                        ]
+                    };
+                }
+                
+                // Пульсация для всех слоёв
+                layer.ks.s = {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100, 100, 100] },
+                        { t: 60, s: [105, 105, 100] },
+                        { t: 120, s: [95, 95, 100] },
+                        { t: 180, s: [100, 100, 100] }
+                    ]
+                };
+            });
+            
+            return lottieJson;
         }
-        
-        // Анимация для рук (движение X)
-        if (index === 1 && poseData.hasArms) {
-            layer.ks.p = {
-                a: 1,
-                k: [
-                    { t: 0, s: [256, 256, 0] },
-                    { t: 60, s: [266, 256, 0] },
-                    { t: 120, s: [246, 256, 0] },
-                    { t: 180, s: [256, 256, 0] }
-                ]
-            };
-        }
-        
-        // Анимация для ног (движение Y)
-        if (index === 2 && poseData.hasLegs) {
-            layer.ks.p = {
-                a: 1,
-                k: [
-                    { t: 0, s: [256, 256, 0] },
-                    { t: 60, s: [256, 266, 0] },
-                    { t: 120, s: [256, 246, 0] },
-                    { t: 180, s: [256, 256, 0] }
-                ]
-            };
-        }
-        
-        // Пульсация для всех слоёв
-        layer.ks.s = {
-            a: 1,
-            k: [
-                { t: 0, s: [100, 100, 100] },
-                { t: 60, s: [105, 105, 100] },
-                { t: 120, s: [95, 95, 100] },
-                { t: 180, s: [100, 100, 100] }
-            ]
-        };
-    });
-    
-    return lottieJson;
-}
 
         // ========== КОМПРЕССИЯ В TGS ==========
-async function compressToTGS(lottieJson) {
-    // Убеждаемся, что есть все обязательные поля
-    lottieJson.tgs = 1;
-    lottieJson.fr = 60;  // жестко фиксируем 60 fps
-    lottieJson.op = 180; // жестко фиксируем 180 кадров (3 сек)
-    
-    // Проверяем размер JSON
-    const jsonString = JSON.stringify(lottieJson);
-    console.log('JSON size before compression:', jsonString.length, 'bytes');
-    
-    // Сжимаем GZIP с максимальным уровнем
-    const compressed = pako.gzip(jsonString, { level: 9 });
-    console.log('Compressed TGS size:', compressed.length, 'bytes');
-    
-    if (compressed.length > 64 * 1024) {
-        console.warn('⚠️ TGS file exceeds 64KB limit!');
-    }
-    
-    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-    
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-    });
-}
+        async function compressToTGS(lottieJson) {
+            // Убеждаемся, что есть все обязательные поля
+            lottieJson.tgs = 1;
+            lottieJson.fr = 60;  // жестко фиксируем 60 fps
+            lottieJson.op = 180; // жестко фиксируем 180 кадров (3 сек)
+            
+            // Проверяем размер JSON
+            const jsonString = JSON.stringify(lottieJson);
+            console.log('JSON size before compression:', jsonString.length, 'bytes');
+            
+            // Сжимаем GZIP с максимальным уровнем
+            const compressed = pako.gzip(jsonString, { level: 9 });
+            console.log('Compressed TGS size:', compressed.length, 'bytes');
+            
+            if (compressed.length > 64 * 1024) {
+                console.warn('⚠️ TGS file exceeds 64KB limit!');
+            }
+            
+            const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+            
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+            });
+        }
 
         // ========== MEDIAPIPE АНАЛИЗ ==========
         async function analyzeImageWithMediaPipe(imageElement) {
@@ -2465,15 +2465,15 @@ async function compressToTGS(lottieJson) {
                     const useHumor = Math.random() < 0.7;
                     const humorText = useHumor ? profession.humor[Math.floor(Math.random() * profession.humor.length)] : null;
                     
-// ==== 1. ГЕНЕРАЦИЯ PNG С ЮМОРОМ ====
-let pngPrompt;
-if (humorText) {
-    // Добавляем текст с юмором прямо в промпт
-    pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, with Russian text saying "${humorText}" in a speech bubble`;
-} else {
-    pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
-}
-let pngImage = await generateRecraftPNG(pngPrompt);
+                    // ==== 1. ГЕНЕРАЦИЯ PNG С ЮМОРОМ ====
+                    let pngPrompt;
+                    if (humorText) {
+                        // Добавляем текст с юмором прямо в промпт
+                        pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, with Russian text saying "${humorText}" in a speech bubble`;
+                    } else {
+                        pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
+                    }
+                    let pngImage = await generateRecraftPNG(pngPrompt);
                     
                     // ==== 2. MEDIAPIPE АНАЛИЗ (по PNG) ====
                     let poseData = null;
@@ -2496,144 +2496,156 @@ let pngImage = await generateRecraftPNG(pngPrompt);
                     }
                     
                     // ==== 4. ГЕНЕРАЦИЯ TGS - БЕЗ ТЕКСТОВОГО СЛОЯ ====
-if (selectedPack === 'premium') {
-    try {
-        // Векторный промпт БЕЗ ТЕКСТА (текст уже в PNG)
-        const vectorPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, flat design, clean lines, white background`;
-        
-        const svgData = await generateRecraftSVG(vectorPrompt);
-        
-        if (svgData) {
-            let lottieJson = await convertSvgToLottie(svgData);
-            lottieJson = applyPoseAnimation(lottieJson, poseData);
-            
-            // ❌ НЕ ДОБАВЛЯЕМ ТЕКСТ - он запрещен в TGS!
-            
-            const tgsData = await compressToTGS(lottieJson);
-            
-            generatedTGS.push({
-                emotion: emotion,
-                profession: profession.name,
-                humor: humorText, // сохраняем для отображения в интерфейсе
-                dataUrl: tgsData,
-                filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
-            });
-            
-            addDebugLog('success', `✅ TGS создан (60 fps) для ${emotion.name}`);
-        } else {
-            addDebugLog('error', `❌ Не удалось получить SVG для ${emotion.name}`);
-        }
-        
-    } catch (e) {
-        addDebugLog('error', `❌ TGS generation error: ${e.message}`);
-        console.error('TGS error:', e);
-    }
-}
+                    if (selectedPack === 'premium') {
+                        try {
+                            // Векторный промпт БЕЗ ТЕКСТА (текст уже в PNG)
+                            const vectorPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, flat design, clean lines, white background`;
+                            
+                            const svgData = await generateRecraftSVG(vectorPrompt);
+                            
+                            if (svgData) {
+                                let lottieJson = await convertSvgToLottie(svgData);
+                                lottieJson = applyPoseAnimation(lottieJson, poseData);
+                                
+                                // ❌ НЕ ДОБАВЛЯЕМ ТЕКСТ - он запрещен в TGS!
+                                
+                                const tgsData = await compressToTGS(lottieJson);
+                                
+                                generatedTGS.push({
+                                    emotion: emotion,
+                                    profession: profession.name,
+                                    humor: humorText, // сохраняем для отображения в интерфейсе
+                                    dataUrl: tgsData,
+                                    filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
+                                });
+                                
+                                addDebugLog('success', `✅ TGS создан (60 fps) для ${emotion.name}`);
+                            } else {
+                                addDebugLog('error', `❌ Не удалось получить SVG для ${emotion.name}`);
+                            }
+                            
+                        } catch (e) {
+                            addDebugLog('error', `❌ TGS generation error: ${e.message}`);
+                            console.error('TGS error:', e);
+                        }
+                    }
+                }
+
+                displayResults(generatedPNG, generatedTGS, profession);
+                addToHistory(character, profession, currentStyle, selectedEmotions.length, generatedPNG, generatedTGS, selectedPack);
+                
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('generateBtn').disabled = false;
+            }
+        };
 
         // ========== ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ==========
-function displayResults(pngStickers, tgsStickers, profession) {
-    const resultsDiv = document.getElementById('results');
-    if (!resultsDiv) return;
-    
-    resultsDiv.innerHTML = '';
+        function displayResults(pngStickers, tgsStickers, profession) {
+            const resultsDiv = document.getElementById('results');
+            if (!resultsDiv) return;
+            
+            resultsDiv.innerHTML = '';
 
-    const humorCount = pngStickers.filter(s => s.hasHumor).length;
-    const classicCount = pngStickers.length - humorCount;
+            const humorCount = pngStickers.filter(s => s.hasHumor).length;
+            const classicCount = pngStickers.length - humorCount;
 
-    const title = document.createElement('h2');
-    title.style.cssText = 'font-size: 2em; color: white; margin-bottom: 20px;';
-    title.innerHTML = `🎉 Готово! ${pngStickers.length} стикеров для профессии ${profession.name} (${humorCount} с юмором, ${classicCount} классических)`;
-    resultsDiv.appendChild(title);
+            const title = document.createElement('h2');
+            title.style.cssText = 'font-size: 2em; color: white; margin-bottom: 20px;';
+            title.innerHTML = `🎉 Готово! ${pngStickers.length} стикеров для профессии ${profession.name} (${humorCount} с юмором, ${classicCount} классических)`;
+            resultsDiv.appendChild(title);
 
-    const packagesDiv = document.createElement('div');
-    packagesDiv.className = 'packages';
+            const packagesDiv = document.createElement('div');
+            packagesDiv.className = 'packages';
 
-    // Базовый набор (PNG)
-    const basicPackage = document.createElement('div');
-    basicPackage.className = 'package basic';
-    basicPackage.innerHTML = `
-        <div class="package-header">
-            <div class="package-title">📷 Базовый (PNG)</div>
-            <div class="package-price">299 ₽</div>
-        </div>
-        <div class="stickers-grid" id="pngGrid"></div>
-        <button class="download-btn" onclick="downloadAll('png')">
-            📥 Скачать PNG (${pngStickers.length})
-        </button>
-    `;
-    packagesDiv.appendChild(basicPackage);
-
-    // Премиум набор (TGS)
-    if (selectedPack === 'premium' && tgsStickers.length > 0) {
-        const premiumPackage = document.createElement('div');
-        premiumPackage.className = 'package premium';
-        premiumPackage.innerHTML = `
-            <div class="package-header">
-                <div class="package-title">✨ Премиум (TGS)</div>
-                <div class="package-price">499 ₽</div>
-            </div>
-            <div class="stickers-grid" id="tgsGrid"></div>
-            <button class="download-btn premium" onclick="downloadAll('tgs')">
-                📥 Скачать TGS (${tgsStickers.length})
-            </button>
-        `;
-        packagesDiv.appendChild(premiumPackage);
-    }
-
-    resultsDiv.appendChild(packagesDiv);
-
-    // Заполняем PNG сетку
-    const pngGrid = document.getElementById('pngGrid');
-    if (pngGrid) {
-        pngStickers.forEach(s => {
-            const card = document.createElement('div');
-            card.className = 'sticker-card';
-            card.innerHTML = `
-                <div class="sticker-preview">
-                    <img src="${s.dataUrl}" alt="${s.emotion.name}">
+            // Базовый набор (PNG)
+            const basicPackage = document.createElement('div');
+            basicPackage.className = 'package basic';
+            basicPackage.innerHTML = `
+                <div class="package-header">
+                    <div class="package-title">📷 Базовый (PNG)</div>
+                    <div class="package-price">299 ₽</div>
                 </div>
-                <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
-                <span class="sticker-badge png">PNG</span>
-                <span class="sticker-badge v4">V4</span>
+                <div class="stickers-grid" id="pngGrid"></div>
+                <button class="download-btn" onclick="downloadAll('png')">
+                    📥 Скачать PNG (${pngStickers.length})
+                </button>
             `;
-            pngGrid.appendChild(card);
-        });
-    }
+            packagesDiv.appendChild(basicPackage);
 
-    // Заполняем TGS сетку - показываем PNG превью
-    if (selectedPack === 'premium' && tgsStickers.length > 0) {
-        const tgsGrid = document.getElementById('tgsGrid');
-        if (tgsGrid) {
-            tgsStickers.forEach((s, index) => {
-                const card = document.createElement('div');
-                card.className = 'sticker-card premium';
-                
-                // Находим соответствующий PNG для превью
-                const pngPreview = generatedPNG.find(p => 
-                    p.emotion.id === s.emotion.id && 
-                    p.profession === s.profession
-                );
-                
-                const previewUrl = pngPreview ? pngPreview.dataUrl : s.dataUrl;
-                
-                card.innerHTML = `
-                    <div class="sticker-preview">
-                        <img src="${previewUrl}" alt="${s.emotion.name}">
+            // Премиум набор (TGS)
+            if (selectedPack === 'premium' && tgsStickers.length > 0) {
+                const premiumPackage = document.createElement('div');
+                premiumPackage.className = 'package premium';
+                premiumPackage.innerHTML = `
+                    <div class="package-header">
+                        <div class="package-title">✨ Премиум (TGS)</div>
+                        <div class="package-price">499 ₽</div>
                     </div>
-                    <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                    ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
-                    <span class="sticker-badge tgs">TGS</span>
-                    <span class="sticker-badge v4">60 FPS</span>
+                    <div class="stickers-grid" id="tgsGrid"></div>
+                    <button class="download-btn premium" onclick="downloadAll('tgs')">
+                        📥 Скачать TGS (${tgsStickers.length})
+                    </button>
                 `;
-                tgsGrid.appendChild(card);
-            });
-        }
-    }
+                packagesDiv.appendChild(premiumPackage);
+            }
 
-    const telegramGuide = document.getElementById('telegramGuide');
-    if (telegramGuide) telegramGuide.style.display = 'block';
-}
+            resultsDiv.appendChild(packagesDiv);
+
+            // Заполняем PNG сетку
+            const pngGrid = document.getElementById('pngGrid');
+            if (pngGrid) {
+                pngStickers.forEach(s => {
+                    const card = document.createElement('div');
+                    card.className = 'sticker-card';
+                    card.innerHTML = `
+                        <div class="sticker-preview">
+                            <img src="${s.dataUrl}" alt="${s.emotion.name}">
+                        </div>
+                        <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
+                        ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
+                        <span class="sticker-badge png">PNG</span>
+                        <span class="sticker-badge v4">V4</span>
+                    `;
+                    pngGrid.appendChild(card);
+                });
+            }
+
+            // Заполняем TGS сетку - показываем PNG превью
+            if (selectedPack === 'premium' && tgsStickers.length > 0) {
+                const tgsGrid = document.getElementById('tgsGrid');
+                if (tgsGrid) {
+                    tgsStickers.forEach((s, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'sticker-card premium';
+                        
+                        // Находим соответствующий PNG для превью
+                        const pngPreview = generatedPNG.find(p => 
+                            p.emotion.id === s.emotion.id && 
+                            p.profession === s.profession
+                        );
+                        
+                        const previewUrl = pngPreview ? pngPreview.dataUrl : s.dataUrl;
+                        
+                        card.innerHTML = `
+                            <div class="sticker-preview">
+                                <img src="${previewUrl}" alt="${s.emotion.name}">
+                            </div>
+                            <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
+                            ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
+                            <span class="sticker-badge tgs">TGS</span>
+                            <span class="sticker-badge v4">60 FPS</span>
+                        `;
+                        tgsGrid.appendChild(card);
+                    });
+                }
+            }
+
+            const telegramGuide = document.getElementById('telegramGuide');
+            if (telegramGuide) telegramGuide.style.display = 'block';
+        }
 
         // ========== СКАЧИВАНИЕ ==========
         window.downloadAll = (type) => {
