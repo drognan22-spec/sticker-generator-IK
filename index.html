@@ -2974,6 +2974,281 @@ window.debugTGS = async function() {
     };
     reader.readAsDataURL(blob);
 };
+
+        window.testTGS1 = async function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#667eea';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 48px Arial';
+    ctx.fillText('TEST', 150, 256);
+    
+    const base64Data = canvas.toDataURL('image/png').split(',')[1];
+    
+    const jsonData = {
+        tgs: 1,
+        v: "5.5.7",
+        fr: 30,
+        ip: 0,
+        op: 30,
+        w: 512,
+        h: 512,
+        assets: [{
+            id: "image_0",
+            w: 512,
+            h: 512,
+            u: "",
+            p: base64Data,
+            e: 1
+        }],
+        layers: [{
+            ddd: 0,
+            ind: 1,
+            ty: 2,
+            nm: "sticker",
+            refId: "image_0",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: { a: 0, k: [256, 256, 0] },
+                a: { a: 0, k: [256, 256, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ip: 0,
+            op: 30
+        }]
+    };
+    
+    const compressed = pako.gzip(JSON.stringify(jsonData));
+    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+    
+    const reader = new FileReader();
+    reader.onloadend = () => {
+        const link = document.createElement('a');
+        link.download = 'test1.tgs';
+        link.href = reader.result;
+        link.click();
+    };
+    reader.readAsDataURL(blob);
+};
+
+        window.testTGS2 = async function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#667eea';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 48px Arial';
+    ctx.fillText('MOVE', 150, 256);
+    
+    const base64Data = canvas.toDataURL('image/png').split(',')[1];
+    
+    const jsonData = {
+        tgs: 1,
+        v: "5.5.7",
+        fr: 30,
+        ip: 0,
+        op: 30,
+        w: 512,
+        h: 512,
+        assets: [{
+            id: "image_0",
+            w: 512,
+            h: 512,
+            u: "",
+            p: base64Data,
+            e: 1
+        }],
+        layers: [{
+            ddd: 0,
+            ind: 1,
+            ty: 2,
+            nm: "sticker",
+            refId: "image_0",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: { 
+                    a: 1, 
+                    k: [
+                        { t: 0, s: [256, 256, 0] },
+                        { t: 15, s: [266, 256, 0] },
+                        { t: 30, s: [256, 256, 0] }
+                    ]
+                },
+                a: { a: 0, k: [256, 256, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ip: 0,
+            op: 30
+        }]
+    };
+    
+    const compressed = pako.gzip(JSON.stringify(jsonData));
+    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+    
+    const reader = new FileReader();
+    reader.onloadend = () => {
+        const link = document.createElement('a');
+        link.download = 'test2.tgs';
+        link.href = reader.result;
+        link.click();
+    };
+    reader.readAsDataURL(blob);
+};
+
+        window.testTGS3 = async function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#667eea';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 48px Arial';
+    ctx.fillText('ROTATE', 120, 256);
+    
+    const base64Data = canvas.toDataURL('image/png').split(',')[1];
+    
+    const jsonData = {
+        tgs: 1,
+        v: "5.5.7",
+        fr: 30,
+        ip: 0,
+        op: 30,
+        w: 512,
+        h: 512,
+        assets: [{
+            id: "image_0",
+            w: 512,
+            h: 512,
+            u: "",
+            p: base64Data,
+            e: 1
+        }],
+        layers: [{
+            ddd: 0,
+            ind: 1,
+            ty: 2,
+            nm: "sticker",
+            refId: "image_0",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { 
+                    a: 1, 
+                    k: [
+                        { t: 0, s: [0] },
+                        { t: 15, s: [10] },
+                        { t: 30, s: [0] }
+                    ]
+                },
+                p: { a: 0, k: [256, 256, 0] },
+                a: { a: 0, k: [256, 256, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ip: 0,
+            op: 30
+        }]
+    };
+    
+    const compressed = pako.gzip(JSON.stringify(jsonData));
+    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+    
+    const reader = new FileReader();
+    reader.onloadend = () => {
+        const link = document.createElement('a');
+        link.download = 'test3.tgs';
+        link.href = reader.result;
+        link.click();
+    };
+    reader.readAsDataURL(blob);
+};
+
+        window.testTGS4 = async function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    
+    // Прозрачный фон
+    ctx.clearRect(0, 0, 512, 512);
+    
+    // Рисуем круг
+    ctx.fillStyle = '#667eea';
+    ctx.beginPath();
+    ctx.arc(256, 256, 150, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 48px Arial';
+    ctx.fillText('TGS', 200, 280);
+    
+    const base64Data = canvas.toDataURL('image/png').split(',')[1];
+    
+    const jsonData = {
+        tgs: 1,
+        v: "5.5.7",
+        fr: 30,
+        ip: 0,
+        op: 30,
+        w: 512,
+        h: 512,
+        assets: [{
+            id: "image_0",
+            w: 512,
+            h: 512,
+            u: "",
+            p: base64Data,
+            e: 1
+        }],
+        layers: [{
+            ddd: 0,
+            ind: 1,
+            ty: 2,
+            nm: "sticker",
+            refId: "image_0",
+            sr: 1,
+            ks: {
+                o: { 
+                    a: 1, 
+                    k: [
+                        { t: 0, s: [100] },
+                        { t: 15, s: [50] },
+                        { t: 30, s: [100] }
+                    ]
+                },
+                r: { a: 0, k: 0 },
+                p: { a: 0, k: [256, 256, 0] },
+                a: { a: 0, k: [256, 256, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ip: 0,
+            op: 30
+        }]
+    };
+    
+    const compressed = pako.gzip(JSON.stringify(jsonData));
+    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+    
+    const reader = new FileReader();
+    reader.onloadend = () => {
+        const link = document.createElement('a');
+        link.download = 'test4.tgs';
+        link.href = reader.result;
+        link.click();
+    };
+    reader.readAsDataURL(blob);
+};
+
+        
         
         async function convertPngToTgs(pngDataUrl, poseData, index) {
     try {
