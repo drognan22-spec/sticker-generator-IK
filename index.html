@@ -2880,23 +2880,72 @@
         }
 
         async function convertPngToTgs(pngDataUrl, poseData, index) {
-            try {
-                const lottieJson = createAnimationFromPose(pngDataUrl, poseData, index);
-                const jsonString = JSON.stringify(lottieJson);
-                const compressedData = pako.gzip(jsonString);
-                const tgsBlob = new Blob([compressedData], { type: 'application/octet-stream' });
-                
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.readAsDataURL(tgsBlob);
+    try {
+        const base64Data = pngDataUrl.split(',')[1];
+        
+        // Создаем слои анимации (ваша существующая логика)
+        const layers = [];
+        let layerIndex = 1;
+        
+        if (poseData && poseData.landmarks) {
+            // ... ваши существующие условия для слоев
+            // (сохраняем всю логику без изменений)
+            layers.push({
+                ind: layerIndex++,
+                ty: 2,
+                refId: "sticker_img",
+                nm: "body_layer",
+                ks: createBodyAnimation(poseData, index)
+            });
+            
+            if (poseData.hasFace) {
+                layers.push({
+                    ind: layerIndex++,
+                    ty: 2,
+                    refId: "sticker_img",
+                    nm: "face_layer",
+                    ks: createFaceAnimation(poseData, index),
+                    parent: 1
                 });
-            } catch (error) {
-                console.error('TGS error:', error);
-                return null;
             }
+            // ... остальные слои
         }
-
+        
+        // ПРАВИЛЬНАЯ СТРУКТУРА TGS
+        const lottieJson = {
+            tgs: 1,                          // обязательно!
+            v: "5.5.7",                       // версия
+            fr: 60,                           // частота кадров
+            ip: 0,                             // начальный кадр
+            op: 180,                           // конечный кадр
+            w: 512,                            // ширина
+            h: 512,                            // высота
+            assets: [{
+                id: "sticker_img",
+                w: 512,
+                h: 512,
+                p: `data:image/png;base64,${base64Data}`,
+                e: 1
+            }],
+            layers: layers
+        };
+        
+        // Сжимаем GZIP
+        const jsonString = JSON.stringify(lottieJson);
+        const compressedData = pako.gzip(jsonString);
+        const tgsBlob = new Blob([compressedData], { type: 'application/octet-stream' });
+        
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(tgsBlob);
+        });
+        
+    } catch (error) {
+        console.error('TGS error:', error);
+        return null;
+    }
+}
         async function generateRecraftImage(prompt) {
             try {
                 const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
