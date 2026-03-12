@@ -3340,75 +3340,51 @@ window.debugTGS = async function() {
         
         async function convertPngToTgs(pngDataUrl, poseData, index) {
     try {
-        // Преобразуем data URL в Blob
-        const response = await fetch(pngDataUrl);
-        const blob = await response.blob();
+        // 1. ВЫЗЫВАЕМ ВАШУ ФУНКЦИЮ - ВСЁ ВАШЕ СОХРАНЯЕТСЯ!
+        const lottieJson = createAnimationFromPose(pngDataUrl, poseData, index);
         
-        // Конвертируем blob в base64 через FileReader
-        const base64Data = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const result = reader.result;
-                const base64 = result.split(',')[1];
-                resolve(base64);
-            };
-            reader.readAsDataURL(blob);
-        });
+        // 2. ДОБАВЛЯЕМ ОБЯЗАТЕЛЬНОЕ ПОЛЕ ДЛЯ TELEGRAM
+        lottieJson.tgs = 1;
         
-        // Минимальная рабочая структура TGS
-        const tgsData = {
-            tgs: 1,
-            v: "5.5.7",
-            fr: 30,
-            ip: 0,
-            op: 30,
-            w: 512,
-            h: 512,
-            assets: [{
-                id: "image_0",
-                w: 512,
-                h: 512,
-                u: "",
-                p: base64Data,
-                e: 1
-            }],
-            layers: [{
-                ddd: 0,
-                ind: 1,
-                ty: 2,
-                nm: "sticker",
-                refId: "image_0",
-                sr: 1,
-                ks: {
-                    o: { a: 0, k: 100 },
-                    r: { a: 0, k: 0 },
-                    p: { a: 0, k: [256, 256, 0] },
-                    a: { a: 0, k: [256, 256, 0] },
-                    s: { a: 0, k: [100, 100, 100] }
-                },
-                ip: 0,
-                op: 30
-            }]
-        };
-        
-        // Добавляем анимацию если есть данные
-        if (poseData && poseData.landmarks) {
-            // Здесь можно добавить вашу сложную анимацию
-            tgsData.layers[0].ks.s = {
-                a: 1,
-                k: [
-                    { t: 0, s: [100, 100, 100] },
-                    { t: 15, s: [105, 105, 100] },
-                    { t: 30, s: [100, 100, 100] }
-                ]
-            };
+        // 3. ИСПРАВЛЯЕМ ФОРМАТ ASSETS
+        if (lottieJson.assets && lottieJson.assets.length > 0) {
+            const asset = lottieJson.assets[0];
+            
+            // Извлекаем чистый base64 без префикса data:image
+            if (asset.p && asset.p.includes('base64,')) {
+                asset.p = asset.p.split(',')[1];
+            }
+            
+            // Добавляем необходимые поля для Telegram
+            asset.u = "";      // пустой путь
+            asset.e = 1;       // embedded image
         }
         
-        // Сжимаем
-        const jsonString = JSON.stringify(tgsData);
+        // 4. ДОБАВЛЯЕМ НЕДОСТАЮЩИЕ ПОЛЯ ВО ВСЕ СЛОИ
+        if (lottieJson.layers && Array.isArray(lottieJson.layers)) {
+            lottieJson.layers.forEach(layer => {
+                // Служебные поля, которые ожидает Telegram
+                if (!layer.hasOwnProperty('ddd')) layer.ddd = 0;
+                if (!layer.hasOwnProperty('ao')) layer.ao = 0;
+                if (!layer.hasOwnProperty('bm')) layer.bm = 0;
+                if (!layer.hasOwnProperty('sr')) layer.sr = 1;
+                if (!layer.hasOwnProperty('st')) layer.st = 0;
+                
+                // ВАШИ ПОЛЯ (ind, ty, nm, refId, ks, ip, op, parent) ОСТАЮТСЯ!
+            });
+        }
+        
+        // 5. ДОБАВЛЯЕМ ПОЛЕ ip, если его нет (начальный кадр)
+        if (!lottieJson.hasOwnProperty('ip')) lottieJson.ip = 0;
+        
+        // 6. СЖИМАЕМ GZIP
+        const jsonString = JSON.stringify(lottieJson);
         const compressed = pako.gzip(jsonString, { level: 9 });
+        
+        // 7. СОЗДАЁМ BLOB С ПРАВИЛЬНЫМ MIME-TYPE
         const tgsBlob = new Blob([compressed], { type: 'application/x-tgsticker' });
         
+        // 8. ВОЗВРАЩАЕМ ДЛЯ СКАЧИВАНИЯ
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
