@@ -3358,6 +3358,125 @@ window.debugTGS = async function() {
     link.click();
     console.log('✅ final.tgs создан');
 }
+
+        window.diagnosticTGS = async function() {
+    console.log("%c🔬 ЗАПУСК ДИАГНОСТИКИ TGS", "background: #667eea; color: white; font-size: 14px; padding: 4px;");
+    
+    // 1. Создаем тестовое изображение (простой цветной прямоугольник)
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#667eea';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 48px Arial';
+    ctx.fillText('DIAG', 150, 256);
+    const pngDataUrl = canvas.toDataURL('image/png');
+    console.log("✅ 1. Тестовое изображение создано");
+
+    // 2. Создаем JSON через вашу функцию
+    console.log("⚙️ 2. Вызываем createAnimationFromPose()...");
+    const lottieJson = createAnimationFromPose(pngDataUrl, null, 0);
+    console.log("✅ Функция выполнена");
+
+    // 3. Проверяем структуру
+    console.log("%c🔍 3. Анализ структуры JSON:", "font-weight: bold;");
+    
+    const checks = {
+        "Поле 'tgs' (обязательно)": lottieJson.tgs !== undefined,
+        "Поле 'v' (версия)": lottieJson.v !== undefined,
+        "Поле 'fr' (частота кадров)": lottieJson.fr !== undefined,
+        "Поле 'ip' (начальный кадр)": lottieJson.ip !== undefined,
+        "Поле 'op' (конечный кадр)": lottieJson.op !== undefined,
+        "Поле 'w' (ширина)": lottieJson.w === 512,
+        "Поле 'h' (высота)": lottieJson.h === 512,
+        "Массив 'assets' существует": Array.isArray(lottieJson.assets),
+        "Массив 'layers' существует": Array.isArray(lottieJson.layers),
+        "Слои не пустые": lottieJson.layers && lottieJson.layers.length > 0
+    };
+    
+    let allGood = true;
+    for (const [check, passed] of Object.entries(checks)) {
+        if (passed) {
+            console.log(`   ✅ ${check}`);
+        } else {
+            console.log(`   ❌ ${check}`);
+            allGood = false;
+        }
+    }
+
+    if (!allGood) {
+        console.warn("⚠️ Обнаружены проблемы в структуре JSON");
+    } else {
+        console.log("✅ Структура JSON корректна!");
+    }
+
+    // 4. Проверяем assets (самое важное!)
+    if (lottieJson.assets && lottieJson.assets[0]) {
+        const asset = lottieJson.assets[0];
+        console.log("%c🖼️ 4. Анализ assets[0]:", "font-weight: bold;");
+        console.log("   - id:", asset.id);
+        console.log("   - w:", asset.w);
+        console.log("   - h:", asset.h);
+        console.log("   - e:", asset.e);
+        console.log("   - p (base64) длина:", asset.p ? asset.p.length : 'отсутствует');
+        
+        // Проверяем, не начинается ли base64 с "data:image"
+        if (asset.p && asset.p.startsWith('data:image')) {
+            console.warn("   ⚠️ Поле 'p' содержит префикс 'data:image'. Telegram этого не любит.");
+        } else {
+            console.log("   ✅ Поле 'p' в правильном формате (без префикса)");
+        }
+    } else {
+        console.error("❌ Отсутствует assets[0]!");
+    }
+
+    // 5. Проверяем слои
+    if (lottieJson.layers && lottieJson.layers.length > 0) {
+        console.log("%c🎬 5. Анализ слоёв:", "font-weight: bold;");
+        lottieJson.layers.forEach((layer, i) => {
+            console.log(`   Слой ${i}:`, {
+                ind: layer.ind,
+                ty: layer.ty,
+                nm: layer.nm,
+                parent: layer.parent,
+                hasKs: !!layer.ks
+            });
+        });
+    }
+
+    // 6. Создаем TGS файл
+    console.log("%c📦 6. Создаём TGS файл...", "font-weight: bold;");
+    
+    // Добавляем обязательное поле tgs
+    lottieJson.tgs = 1;
+    
+    const jsonString = JSON.stringify(lottieJson);
+    console.log(`   Размер JSON: ${jsonString.length} байт`);
+    
+    const compressed = pako.gzip(jsonString);
+    console.log(`   Размер GZIP: ${compressed.length} байт`);
+    
+    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+    console.log(`   Размер Blob: ${blob.size} байт`);
+
+    // 7. Сохраняем
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'diagnostic.tgs';
+    link.click();
+    
+    console.log("%c✅ Диагностика завершена! Файл 'diagnostic.tgs' сохранён. Отправьте его в Telegram и скажите, что произошло.", "background: #48bb78; color: white; font-size: 14px; padding: 4px;");
+    
+    // 8. Дополнительно: выводим JSON в консоль для ручного анализа
+    console.log("%c📄 Полный JSON (для копирования):", "font-weight: bold;");
+    console.log(JSON.stringify(lottieJson, null, 2));
+};
+
+// Добавляем функцию в глобальную область
+window.runDiagnostics = diagnosticTGS;
         
         async function convertPngToTgs(pngDataUrl, poseData, index) {
     try {
