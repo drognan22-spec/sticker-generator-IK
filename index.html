@@ -2632,15 +2632,26 @@
             });
         }
 
-        window.selectProfession = (professionId) => {
-            selectedProfession = professionId;
-            document.querySelectorAll('.profession-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            event.currentTarget.classList.add('selected');
-            const profession = PROFESSIONS.find(p => p.id === professionId);
-            document.getElementById('selectedProfessionCount').textContent = profession.name;
-        };
+window.selectProfession = (professionId) => {
+    selectedProfession = professionId;
+    
+    // Убираем выделение со всех
+    document.querySelectorAll('.profession-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // Находим элемент, на который кликнули, и выделяем его
+    const selectedElement = event?.currentTarget;
+    if (selectedElement) {
+        selectedElement.classList.add('selected');
+    }
+    
+    // Обновляем название выбранной профессии
+    const profession = PROFESSIONS.find(p => p.id === professionId);
+    if (profession) {
+        document.getElementById('selectedProfessionCount').textContent = profession.name;
+    }
+};
 
         // Заполняем эмоции
         function renderEmotions() {
