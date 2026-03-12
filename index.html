@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator PRO - История + Умная детекция</title>
+    <title>Sticker Generator PRO - Умная детекция + История</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
@@ -29,6 +29,7 @@
             text-align: center;
             margin-bottom: 40px;
             color: white;
+            position: relative;
         }
 
         .header h1 {
@@ -51,6 +52,248 @@
         .subtitle {
             color: #a0aec0;
             font-size: 1.1em;
+        }
+
+        .project-info-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .project-info-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 48px;
+            padding: 40px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #4a5568;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+        }
+
+        .modal h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #1a1f2e;
+        }
+
+        .modal h3 {
+            font-size: 1.3em;
+            margin: 25px 0 15px;
+            color: #2d3a5e;
+        }
+
+        .modal p {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-item {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 24px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #1a1f2e;
+        }
+
+        .feature-desc {
+            font-size: 0.9em;
+            color: #4a5568;
+        }
+
+        .diagram-container {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 30px;
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+
+        .sequence-diagram {
+            min-width: 800px;
+        }
+
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .diagram-actor {
+            width: 120px;
+            font-weight: 600;
+            color: #1a1f2e;
+        }
+
+        .diagram-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #fbbf24);
+            position: relative;
+            margin: 0 20px;
+        }
+
+        .diagram-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 12px;
+            top: -5px;
+        }
+
+        .diagram-point.left {
+            left: 0;
+        }
+
+        .diagram-point.right {
+            right: 0;
+        }
+
+        .diagram-label {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #1a1f2e;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .diagram-step {
+            display: flex;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 700;
+            color: #1a1f2e;
+            margin-bottom: 5px;
+        }
+
+        .step-desc {
+            color: #4a5568;
+            font-size: 0.95em;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .stat-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .stat-badge span {
+            color: #fbbf24;
+            font-weight: 800;
         }
 
         .tabs {
@@ -725,6 +968,218 @@
         <div class="header">
             <h1>🎨 Sticker Generator <span>PRO</span></h1>
             <div class="subtitle">Умная детекция • История генераций • 30 эмоций</div>
+            <div class="stats">
+                <div class="stat-badge"><span>30</span> эмоций</div>
+                <div class="stat-badge"><span>15+</span> стилей</div>
+                <div class="stat-badge"><span>5</span> слоев анимации</div>
+            </div>
+            <button class="project-info-btn" onclick="openProjectInfo()">
+                ℹ️ О проекте
+            </button>
+        </div>
+
+        <!-- Модальное окно с информацией о проекте -->
+        <div id="projectModal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeProjectInfo()">×</button>
+                
+                <h2>🎯 О проекте Sticker Generator PRO</h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">🎨</div>
+                        <div class="feature-title">Recraft AI</div>
+                        <div class="feature-desc">Генерация PNG по текстовому описанию</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔍</div>
+                        <div class="feature-title">Roboflow YOLOv8</div>
+                        <div class="feature-desc">Умная детекция объектов (люди, животные, предметы)</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">✨</div>
+                        <div class="feature-title">5-слойная анимация</div>
+                        <div class="feature-desc">Lottie + TGS формат для Telegram</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📜</div>
+                        <div class="feature-title">История</div>
+                        <div class="feature-desc">Сохранение и перегенерация наборов</div>
+                    </div>
+                </div>
+
+                <h3>📊 Диаграмма последовательности</h3>
+                <div class="diagram-container">
+                    <div class="sequence-diagram">
+                        <!-- Шаг 1 -->
+                        <div class="diagram-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Пользователь → Генератор</div>
+                                <div class="step-desc">Выбирает эмоции, персонажа и стиль</div>
+                                <div style="margin-top: 10px;">
+                                    <span style="background: #667eea; color: white; padding: 4px 8px; border-radius: 20px; font-size: 0.8em;">Ввод</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Шаг 2 -->
+                        <div class="diagram-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Генератор → Recraft API</div>
+                                <div class="step-desc">Отправляет промпт для создания PNG</div>
+                                <div style="margin-top: 10px;">
+                                    <span style="background: #38bdf8; color: white; padding: 4px 8px; border-radius: 20px; font-size: 0.8em;">API запрос</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Шаг 3 -->
+                        <div class="diagram-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Recraft API → Генератор</div>
+                                <div class="step-desc">Возвращает PNG 1024x1024</div>
+                                <div style="margin-top: 10px;">
+                                    <span style="background: #4ade80; color: white; padding: 4px 8px; border-radius: 20px; font-size: 0.8em;">Изображение</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Шаг 4 -->
+                        <div class="diagram-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <div class="step-title">Генератор → Roboflow API</div>
+                                <div class="step-desc">Отправляет PNG для анализа (если выбран Premium)</div>
+                                <div style="margin-top: 10px;">
+                                    <span style="background: #38bdf8; color: white; padding: 4px 8px; border-radius: 20px; font-size: 0.8em;">API запрос</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Шаг 5 -->
+                        <div class="diagram-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <div class="step-title">Roboflow API → Генератор</div>
+                                <div class="step-desc">
+                                    <strong>Умная детекция:</strong><br>
+                                    • Человек → human-анимация<br>
+                                    • Животное → animal-анимация<br>
+                                    • Предмет → object-анимация
+                                </div>
+                                <div style="margin-top: 10px;">
+                                    <span style="background: #4ade80; color: white; padding: 4px 8px; border-radius: 20px; font-size: 0.8em;">Ключевые точки</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Шаг 6 -->
+                        <div class="diagram-step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <div class="step-title">Генератор → Lottie</div>
+                                <div class="step-desc">Создает 5-слойную анимацию на основе детекции</div>
+                                <div style="margin-top: 10px;">
+                                    <span style="background: #fbbf24; color: #1a1f2e; padding: 4px 8px; border-radius: 20px; font-size: 0.8em;">Анимация</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Шаг 7 -->
+                        <div class="diagram-step">
+                            <div class="step-number">7</div>
+                            <div class="step-content">
+                                <div class="step-title">Генератор → Пользователь</div>
+                                <div class="step-desc">
+                                    • PNG (базовый набор)<br>
+                                    • TGS (анимированный набор)<br>
+                                    • Сохранение в историю
+                                </div>
+                                <div style="margin-top: 10px;">
+                                    <span style="background: #fbbf24; color: #1a1f2e; padding: 4px 8px; border-radius: 20px; font-size: 0.8em;">Результат</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Визуализация потока данных -->
+                        <div style="margin-top: 40px; padding: 20px; background: linear-gradient(145deg, #f8fafc, #e2e8f0); border-radius: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <span style="font-weight: 700; color: #1a1f2e;">Поток данных:</span>
+                                <div style="display: flex; gap: 10px;">
+                                    <span style="background: #38bdf8; width: 12px; height: 12px; border-radius: 12px;"></span>
+                                    <span style="font-size: 0.8em; color: #4a5568;">API запросы</span>
+                                    <span style="background: #4ade80; width: 12px; height: 12px; border-radius: 12px; margin-left: 10px;"></span>
+                                    <span style="font-size: 0.8em; color: #4a5568;">Ответы</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-around;">
+                                <div style="text-align: center;">
+                                    <div style="background: #667eea; width: 40px; height: 40px; border-radius: 40px; margin: 0 auto 5px;"></div>
+                                    <div style="font-size: 0.8em;">Генератор</div>
+                                </div>
+                                <div style="font-size: 1.5em; color: #4a5568;">→</div>
+                                <div style="text-align: center;">
+                                    <div style="background: #38bdf8; width: 40px; height: 40px; border-radius: 40px; margin: 0 auto 5px;"></div>
+                                    <div style="font-size: 0.8em;">Recraft AI</div>
+                                </div>
+                                <div style="font-size: 1.5em; color: #4a5568;">→</div>
+                                <div style="text-align: center;">
+                                    <div style="background: #4ade80; width: 40px; height: 40px; border-radius: 40px; margin: 0 auto 5px;"></div>
+                                    <div style="font-size: 0.8em;">Roboflow</div>
+                                </div>
+                                <div style="font-size: 1.5em; color: #4a5568;">→</div>
+                                <div style="text-align: center;">
+                                    <div style="background: #fbbf24; width: 40px; height: 40px; border-radius: 40px; margin: 0 auto 5px;"></div>
+                                    <div style="font-size: 0.8em;">Lottie TGS</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🚀 Монетизация</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 16px;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">📷</div>
+                        <div style="font-weight: 700;">Базовый набор (299 ₽)</div>
+                        <ul style="margin-top: 10px; color: #4a5568;">
+                            <li>30 PNG стикеров</li>
+                            <li>Высокое качество 512x512</li>
+                            <li>Готово для Telegram</li>
+                        </ul>
+                    </div>
+                    <div style="background: #fffbeb; padding: 20px; border-radius: 16px; border: 2px solid #fbbf24;">
+                        <div style="font-size: 2em; margin-bottom: 10px;">✨</div>
+                        <div style="font-weight: 700;">Премиум набор (499 ₽)</div>
+                        <ul style="margin-top: 10px; color: #4a5568;">
+                            <li>PNG + TGS анимация</li>
+                            <li>Умная детекция объектов</li>
+                            <li>5-слойная анимация</li>
+                            <li>Разные типы для людей/животных</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>📈 Преимущества</h3>
+                <ul style="margin: 20px 0; color: #4a5568;">
+                    <li style="margin-bottom: 10px;"><strong>✅ Умная детекция</strong> — определяет человека, животное или предмет и подбирает анимацию</li>
+                    <li style="margin-bottom: 10px;"><strong>✅ 5 независимых слоев</strong> — голова, глаза, руки, корпус, ноги анимируются отдельно</li>
+                    <li style="margin-bottom: 10px;"><strong>✅ История генераций</strong> — все наборы сохраняются, можно перегенерировать</li>
+                    <li style="margin-bottom: 10px;"><strong>✅ TGS формат</strong> — официальный формат анимированных стикеров Telegram</li>
+                    <li style="margin-bottom: 10px;"><strong>✅ Работает без сервера</strong> — все в браузере, ключи встроены в код</li>
+                </ul>
+
+                <h3>🔮 Будущее: See-through</h3>
+                <p style="color: #4a5568;">
+                    В будущем планируется интеграция с <strong>See-through (arXiv 2026)</strong> — 
+                    нейросетью, которая разбивает изображение на семантические слои 
+                    (глаза, руки, волосы, одежду) и позволяет создавать еще более 
+                    сложную и естественную анимацию.
+                </p>
+            </div>
         </div>
 
         <div class="tabs">
@@ -844,6 +1299,30 @@
     </footer>
 
     <script>
+        // ========== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА ==========
+        function openProjectInfo() {
+            document.getElementById('projectModal').classList.add('active');
+        }
+
+        function closeProjectInfo() {
+            document.getElementById('projectModal').classList.remove('active');
+        }
+
+        // Закрытие по клику вне модального окна
+        window.onclick = function(event) {
+            const modal = document.getElementById('projectModal');
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Закрытие по ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('projectModal').classList.remove('active');
+            }
+        });
+
         // ========== API КЛЮЧИ ==========
         const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
         const ROBOFLOW_API_KEY = 'rf_KLBpuPIa1CVLhJiUj27P9fOBWjt2';
