@@ -2527,51 +2527,6 @@
             });
         }
 
-        // ========== TGS ГЕНЕРАЦИЯ ==========
-        async function createFallbackTGS(pngDataUrl, humor, poseData) {
-    try {
-        const base64Data = pngDataUrl.split(',')[1];
-        
-        // ТОЧНАЯ СТРУКТУРА, КОТОРУЮ ОЖИДАЕТ TELEGRAM
-        const tgsJson = {
-            "tgs": 1,
-            "v": "5.5.2",
-            "fr": 30,
-            "ip": 0,
-            "op": 90,
-            "w": 512,
-            "h": 512,
-            "nm": "",
-            "ddd": 0,
-            "assets": [{
-                "id": "image_0",
-                "w": 512,
-                "h": 512,
-                "u": "",
-                "p": base64Data,
-                "e": 1
-            }],
-            "layers": [{
-                "ddd": 0,
-                "ind": 1,
-                "ty": 2,
-                "nm": "",
-                "refId": "image_0",
-                "sr": 1,
-                "ks": {
-                    "o": { "a": 0, "k": 100 },
-                    "r": { "a": 0, "k": 0 },
-                    "p": { "a": 0, "k": [256, 256, 0] },
-                    "a": { "a": 0, "k": [256, 256, 0] },
-                    "s": { "a": 0, "k": [100, 100, 100] }
-                },
-                "ao": 0,
-                "ip": 0,
-                "op": 90,
-                "st": 0,
-                "bm": 0
-            }]
-        };
 
         // ТЕПЕРЬ ДОБАВЛЯЕМ ВАШУ 5-СЛОЙНУЮ АНИМАЦИЮ
         if (poseData) {
@@ -2656,6 +2611,152 @@
                 reader.readAsDataURL(blob);
             });
         }
+		
+
+// Конвертация SVG в Lottie
+async function convertSvgToLottie(svgString) {
+    // Базовая структура Lottie
+    const lottieJson = {
+        v: "5.5.2",
+        fr: 30,
+        ip: 0,
+        op: 90,
+        w: 512,
+        h: 512,
+        layers: []
+    };
+    
+    try {
+        // Парсим SVG для извлечения слоёв
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+        const groups = svgDoc.querySelectorAll('g, svg > *');
+        
+        groups.forEach((group, index) => {
+            // Создаём слой для каждой группы
+            const layer = {
+                ddd: 0,
+                ind: index + 1,
+                ty: 4, // shape layer
+                nm: group.getAttribute('id') || `layer_${index}`,
+                sr: 1,
+                ks: {
+                    o: { a: 0, k: 100 },
+                    r: { a: 0, k: 0 },
+                    p: { a: 0, k: [256, 256, 0] },
+                    a: { a: 0, k: [256, 256, 0] },
+                    s: { a: 0, k: [100, 100, 100] }
+                },
+                ao: 0,
+                ip: 0,
+                op: 90,
+                st: 0,
+                bm: 0
+            };
+            lottieJson.layers.push(layer);
+        });
+    } catch (e) {
+        console.error('SVG parse error:', e);
+    }
+    
+    return lottieJson;
+}
+
+// Применение 5-слойной анимации
+function applyPoseAnimation(lottieJson, poseData) {
+    if (!poseData) return lottieJson;
+    
+    lottieJson.layers.forEach((layer, index) => {
+        // Анимация для первых слоёв (голова)
+        if (index === 0 && poseData.hasFace) {
+            layer.ks.r = {
+                a: 1,
+                k: [
+                    { t: 0, s: [0] },
+                    { t: 30, s: [5] },
+                    { t: 60, s: [-3] },
+                    { t: 90, s: [0] }
+                ]
+            };
+        }
+        
+        // Анимация для средних слоёв (руки)
+        if (index === 1 && poseData.hasArms) {
+            layer.ks.p = {
+                a: 1,
+                k: [
+                    { t: 0, s: [256, 256, 0] },
+                    { t: 30, s: [266, 256, 0] },
+                    { t: 60, s: [246, 256, 0] },
+                    { t: 90, s: [256, 256, 0] }
+                ]
+            };
+        }
+        
+        // Анимация для последних слоёв (ноги)
+        if (index === 2 && poseData.hasLegs) {
+            layer.ks.p = {
+                a: 1,
+                k: [
+                    { t: 0, s: [256, 256, 0] },
+                    { t: 30, s: [256, 266, 0] },
+                    { t: 60, s: [256, 246, 0] },
+                    { t: 90, s: [256, 256, 0] }
+                ]
+            };
+        }
+        
+        // Пульсация для всех слоёв
+        layer.ks.s = {
+            a: 1,
+            k: [
+                { t: 0, s: [100, 100, 100] },
+                { t: 30, s: [105, 105, 100] },
+                { t: 60, s: [95, 95, 100] },
+                { t: 90, s: [100, 100, 100] }
+            ]
+        };
+    });
+    
+    return lottieJson;
+}
+
+// Добавление текстового слоя
+function addTextLayer(lottieJson, text) {
+    const textLayer = {
+        ddd: 0,
+        ind: lottieJson.layers.length + 1,
+        ty: 5,
+        nm: "humor_text",
+        sr: 1,
+        ks: {
+            o: { a: 0, k: 100 },
+            r: { a: 0, k: 0 },
+            p: { a: 0, k: [256, 400, 0] },
+            a: { a: 0, k: [0, 0, 0] },
+            s: { a: 0, k: [100, 100, 100] }
+        },
+        t: {
+            d: {
+                k: [{
+                    t: 0,
+                    s: {
+                        t: text,
+                        s: 24,
+                        f: "Arial",
+                        fc: [0, 0, 0, 1],
+                        j: 2
+                    }
+                }]
+            }
+        },
+        ip: 0,
+        op: lottieJson.op || 90
+    };
+    
+    lottieJson.layers.push(textLayer);
+    return lottieJson;
+}
 
         // ========== MEDIAPIPE АНАЛИЗ ==========
         async function analyzeImageWithMediaPipe(imageElement) {
@@ -2681,62 +2782,84 @@
         }
 
         // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
-        window.generatePack = async () => {
-            const character = document.getElementById('characterPrompt').value.trim();
+// ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
+window.generatePack = async () => {
+    const character = document.getElementById('characterPrompt').value.trim();
+    
+    if (!character || !selectedProfession || selectedEmotions.length === 0) {
+        alert('Пожалуйста, выберите персонажа, профессию и эмоции');
+        return;
+    }
+
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('generateBtn').disabled = true;
+    document.getElementById('results').innerHTML = '';
+
+    try {
+        generatedPNG = [];
+        generatedTGS = [];
+        
+        const profession = PROFESSIONS.find(p => p.id === selectedProfession);
+
+        for (let i = 0; i < selectedEmotions.length; i++) {
+            const emotionId = selectedEmotions[i];
+            const emotion = EMOTIONS.find(e => e.id === emotionId);
             
-            if (!character || !selectedProfession || selectedEmotions.length === 0) {
-                alert('Пожалуйста, выберите персонажа, профессию и эмоции');
-                return;
+            document.getElementById('loadingProgress').textContent = 
+                `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name}`;
+            
+            const useHumor = Math.random() < 0.7;
+            const humorText = useHumor ? profession.humor[Math.floor(Math.random() * profession.humor.length)] : null;
+            
+            // ==== 1. ГЕНЕРАЦИЯ PNG (ДЛЯ БАЗОВОГО НАБОРА) ====
+            const pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
+            let pngImage = await generateRecraftPNG(pngPrompt);
+            
+            // ==== 2. MEDIAPIPE АНАЛИЗ ====
+            let poseData = null;
+            if (pngImage) {
+                const img = new Image();
+                await new Promise((resolve) => { img.onload = resolve; img.src = pngImage; });
+                poseData = await analyzeImageWithMediaPipe(img);
             }
-
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('generateBtn').disabled = true;
-            document.getElementById('results').innerHTML = '';
-
-            try {
-                generatedPNG = [];
-                generatedTGS = [];
-                
-                const profession = PROFESSIONS.find(p => p.id === selectedProfession);
-
-                for (let i = 0; i < selectedEmotions.length; i++) {
-                    const emotionId = selectedEmotions[i];
-                    const emotion = EMOTIONS.find(e => e.id === emotionId);
+            
+            // ==== 3. СОХРАНЯЕМ PNG ====
+            if (pngImage) {
+                generatedPNG.push({
+                    emotion: emotion,
+                    profession: profession.name,
+                    humor: humorText,
+                    dataUrl: pngImage,
+                    filename: `${character}_${profession.id}_${emotion.id}_${i}.png`,
+                    hasHumor: useHumor
+                });
+            }
+            
+            // ==== 4. ГЕНЕРАЦИЯ TGS (ТОЛЬКО ДЛЯ ПРЕМИУМ) - ИСПОЛЬЗУЕМ SVG! ====
+            if (selectedPack === 'premium') {
+                try {
+                    // Формируем промпт для вектора (НЕ ИСПОЛЬЗУЕМ PNG)
+                    const vectorPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, flat design, clean lines, white background`;
                     
-                    document.getElementById('loadingProgress').textContent = 
-                        `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name}`;
+                    // ПОЛУЧАЕМ SVG ОТ RECRAFT
+                    const svgData = await generateRecraftSVG(vectorPrompt);
                     
-                    const useHumor = Math.random() < 0.7;
-                    const humorText = useHumor ? profession.humor[Math.floor(Math.random() * profession.humor.length)] : null;
-                    
-                    // 1. Генерируем PNG
-                    const pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
-                    let pngImage = await generateRecraftPNG(pngPrompt);
-                    
-                    // 2. MediaPipe анализ
-                    let poseData = null;
-                    if (pngImage) {
-                        const img = new Image();
-                        await new Promise((resolve) => { img.onload = resolve; img.src = pngImage; });
-                        poseData = await analyzeImageWithMediaPipe(img);
-                    }
-                    
-                    // 3. Сохраняем PNG
-                    if (pngImage) {
-                        generatedPNG.push({
-                            emotion: emotion,
-                            profession: profession.name,
-                            humor: humorText,
-                            dataUrl: pngImage,
-                            filename: `${character}_${profession.id}_${emotion.id}_${i}.png`,
-                            hasHumor: useHumor
-                        });
-                    }
-                    
-                    // 4. Генерируем TGS (только для премиум)
-                    if (selectedPack === 'premium') {
-                        try {
-                            const tgsData = await createFallbackTGS(pngImage, humorText || profession.name, poseData);
+                    if (svgData) {
+                        // Конвертируем SVG в Lottie с сохранением слоёв
+                        let lottieJson = await convertSvgToLottie(svgData);
+                        
+                        // Применяем вашу 5-слойную анимацию на основе позы
+                        if (lottieJson && lottieJson.layers) {
+                            lottieJson = applyPoseAnimation(lottieJson, poseData);
+                            
+                            // Добавляем текст с юмором
+                            if (humorText) {
+                                lottieJson = addTextLayer(lottieJson, humorText);
+                            }
+                            
+                            // Сжимаем в TGS
+                            const tgsData = await compressToTGS(lottieJson);
+                            
                             generatedTGS.push({
                                 emotion: emotion,
                                 profession: profession.name,
@@ -2744,22 +2867,30 @@
                                 dataUrl: tgsData,
                                 filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
                             });
-                        } catch (e) {
-                            console.error('TGS generation error:', e);
+                            
+                            addDebugLog('success', `✅ TGS создан из SVG для ${emotion.name}`);
                         }
+                    } else {
+                        addDebugLog('error', `❌ Не удалось получить SVG для ${emotion.name}`);
                     }
+                    
+                } catch (e) {
+                    addDebugLog('error', `❌ TGS generation error: ${e.message}`);
+                    console.error('TGS error:', e);
                 }
-
-                displayResults(generatedPNG, generatedTGS, profession);
-                addToHistory(character, profession, currentStyle, selectedEmotions.length, generatedPNG, generatedTGS, selectedPack);
-                
-            } catch (error) {
-                alert('Ошибка: ' + error.message);
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('generateBtn').disabled = false;
             }
-        };
+        }
+
+        displayResults(generatedPNG, generatedTGS, profession);
+        addToHistory(character, profession, currentStyle, selectedEmotions.length, generatedPNG, generatedTGS, selectedPack);
+        
+    } catch (error) {
+        alert('Ошибка: ' + error.message);
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('generateBtn').disabled = false;
+    }
+};
 
         // ========== ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ==========
         function displayResults(pngStickers, tgsStickers, profession) {
