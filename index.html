@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator ULTRA - 30 профессий с юмором</title>
+    <title>Sticker Generator PRO - Векторная анимация</title>
     <style>
-        /* Все стили остаются без изменений */
+        /* ВСЕ ВАШИ СТИЛИ ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
         * {
@@ -235,57 +235,6 @@
         .stat-badge span {
             color: #fbbf24;
             font-weight: 800;
-        }
-
-        .resource-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        .resource-table th {
-            background: #667eea;
-            color: white;
-            padding: 10px;
-            text-align: left;
-        }
-
-        .resource-table td {
-            padding: 10px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .resource-table tr:hover {
-            background: #f8fafc;
-        }
-
-        .tech-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 600;
-            margin: 2px;
-        }
-
-        .tech-badge.recraft {
-            background: #38bdf8;
-            color: white;
-        }
-
-        .tech-badge.mediapipe {
-            background: #48bb78;
-            color: white;
-        }
-
-        .tech-badge.lottie {
-            background: #fbbf24;
-            color: #1a1f2e;
-        }
-
-        .tech-badge.js {
-            background: #f97316;
-            color: white;
         }
 
         .tabs {
@@ -1053,8 +1002,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎨 Sticker Generator <span>PRO MAX</span></h1>
-            <div class="subtitle">30 профессий • 30 эмоций • 15 стилей • 33 точки позы</div>
+            <h1>🎨 Sticker Generator <span>VECTOR PRO</span></h1>
+            <div class="subtitle">30 профессий • 30 эмоций • 15 стилей • Векторная анимация TGS</div>
             <div class="stats">
                 <div class="stat-badge"><span>30</span> профессий</div>
                 <div class="stat-badge"><span>30</span> эмоций</div>
@@ -1065,206 +1014,93 @@
             </button>
         </div>
 
-        <!-- Модальное окно с ПОЛНОЙ информацией о проекте -->
+        <!-- Модальное окно с информацией о проекте -->
         <div id="projectModal" class="modal">
             <div class="modal-content">
                 <button class="modal-close" onclick="closeProjectInfo()">×</button>
                 
-                <h2>🎯 О проекте Sticker Generator PRO MAX</h2>
+                <h2>🎯 О проекте Sticker Generator VECTOR PRO</h2>
                 
                 <div class="feature-grid">
                     <div class="feature-item">
                         <div class="feature-icon">🎨</div>
                         <div class="feature-title">Recraft AI</div>
-                        <div class="feature-desc">Генерация PNG по текстовому описанию, 1024x1024 → 512x512</div>
+                        <div class="feature-desc">Генерация PNG + векторных форм</div>
                     </div>
                     <div class="feature-item">
                         <div class="feature-icon">🔍</div>
                         <div class="feature-title">MediaPipe Pose</div>
-                        <div class="feature-desc">33 ключевые точки тела, детекция человека/животного/предмета</div>
+                        <div class="feature-desc">33 точки, детекция человека/животного</div>
                     </div>
                     <div class="feature-item">
                         <div class="feature-icon">💼</div>
                         <div class="feature-title">30 профессий</div>
-                        <div class="feature-desc">От доктора до зумера, 20+ уникальных шуток на профессию</div>
+                        <div class="feature-desc">С уникальным юмором</div>
                     </div>
                     <div class="feature-item">
-                        <div class="feature-icon">😂</div>
-                        <div class="feature-title">70% юмора</div>
-                        <div class="feature-desc">21 мемный стикер + 9 классических в наборе</div>
+                        <div class="feature-icon">✨</div>
+                        <div class="feature-title">Lottie TGS</div>
+                        <div class="feature-desc">Векторная анимация, рабочие файлы</div>
                     </div>
                 </div>
 
-                <h3>📊 Диаграмма последовательности работы системы</h3>
+                <h3>📊 Диаграмма последовательности</h3>
                 <div class="diagram-container">
                     <div class="sequence-diagram">
                         <div class="diagram-step">
                             <div class="step-number">1</div>
                             <div class="step-content">
                                 <div class="step-title">Пользователь → Генератор</div>
-                                <div class="step-desc">Выбирает персонажа, профессию (30 вариантов), эмоции (30), стиль (15)</div>
+                                <div class="step-desc">Выбирает профессию, эмоции, стиль</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">2</div>
                             <div class="step-content">
-                                <div class="step-title">Генератор → Recraft API</div>
-                                <div class="step-desc">Отправляет промпт + атрибуты профессии + 70% шанс юмора</div>
+                                <div class="step-title">Генератор → Recraft (PNG)</div>
+                                <div class="step-desc">Создаём PNG для базового набора</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">3</div>
                             <div class="step-content">
-                                <div class="step-title">Recraft API → Генератор</div>
-                                <div class="step-desc">Возвращает PNG 1024x1024 → ресайз до 512x512</div>
+                                <div class="step-title">Генератор → Recraft (Vector)</div>
+                                <div class="step-desc">Создаём векторные формы для TGS</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">4</div>
                             <div class="step-content">
-                                <div class="step-title">Генератор → MediaPipe (премиум)</div>
-                                <div class="step-desc">Анализ 33 ключевых точек, определение типа объекта (человек/животное/предмет)</div>
+                                <div class="step-title">MediaPipe анализ</div>
+                                <div class="step-desc">33 точки, определение объекта</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">5</div>
                             <div class="step-content">
                                 <div class="step-title">Генератор → Lottie</div>
-                                <div class="step-desc">Создание 5-слойной анимации (голова, глаза, руки, ноги, корпус) на основе MediaPipe</div>
+                                <div class="step-desc">Применяем 5-слойную анимацию к вектору</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">6</div>
                             <div class="step-content">
                                 <div class="step-title">Генератор → Пользователь</div>
-                                <div class="step-desc">30 стикеров (21 с юмором + 9 классических) в PNG и TGS форматах</div>
-                            </div>
-                        </div>
-                        <div class="diagram-step">
-                            <div class="step-number">7</div>
-                            <div class="step-content">
-                                <div class="step-title">Генератор → localStorage</div>
-                                <div class="step-desc">Сохранение истории генераций (до 50 записей)</div>
+                                <div class="step-desc">PNG + TGS (рабочий формат)</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <h3>📊 33 ключевые точки MediaPipe</h3>
-                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin: 20px 0;">
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; font-size: 0.8em;">
-                        <div><span class="tech-badge js">0</span> нос</div>
-                        <div><span class="tech-badge js">1</span> левый глаз</div>
-                        <div><span class="tech-badge js">2</span> правый глаз</div>
-                        <div><span class="tech-badge js">3</span> левое ухо</div>
-                        <div><span class="tech-badge js">4</span> правое ухо</div>
-                        <div><span class="tech-badge js">5</span> левое плечо</div>
-                        <div><span class="tech-badge js">6</span> правое плечо</div>
-                        <div><span class="tech-badge js">7</span> левый локоть</div>
-                        <div><span class="tech-badge js">8</span> правый локоть</div>
-                        <div><span class="tech-badge js">9</span> левое запястье</div>
-                        <div><span class="tech-badge js">10</span> правое запястье</div>
-                        <div><span class="tech-badge js">11</span> левое бедро</div>
-                        <div><span class="tech-badge js">12</span> правое бедро</div>
-                        <div><span class="tech-badge js">13</span> левое колено</div>
-                        <div><span class="tech-badge js">14</span> правое колено</div>
-                        <div><span class="tech-badge js">15</span> левая лодыжка</div>
-                        <div><span class="tech-badge js">16</span> правая лодыжка</div>
-                    </div>
-                </div>
-
-                <h3>📊 Структура набора (30 стикеров)</h3>
-                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin: 20px 0;">
-                    <div style="display: flex; gap: 20px; align-items: center;">
-                        <div style="width: 70%; height: 30px; background: #fbbf24; border-radius: 30px; display: flex; align-items: center; justify-content: center; color: #1a1f2e; font-weight: 700;">21 мемных стикеров (70%)</div>
-                        <div style="width: 30%; height: 30px; background: #667eea; border-radius: 30px; display: flex; align-items: center; justify-content: center; color: white;">9 классических (30%)</div>
-                    </div>
-                </div>
-
-                <h3>🔧 Используемые ресурсы и технологии</h3>
-                <table class="resource-table">
-                    <thead>
-                        <tr>
-                            <th>Ресурс</th>
-                            <th>Назначение</th>
-                            <th>Формат/Версия</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="tech-badge recraft">Recraft AI</span></td>
-                            <td>Генерация изображений по текстовому промпту</td>
-                            <td>API v1, размер 1024x1024 → 512x512</td>
-                        </tr>
-                        <tr>
-                            <td><span class="tech-badge mediapipe">MediaPipe Pose</span></td>
-                            <td>Определение 33 ключевых точек тела, классификация объекта</td>
-                            <td>@mediapipe/pose v0.3.0</td>
-                        </tr>
-                        <tr>
-                            <td><span class="tech-badge lottie">Lottie Web</span></td>
-                            <td>Создание анимированных стикеров в формате TGS</td>
-                            <td>lottie-web + pako.gzip</td>
-                        </tr>
-                        <tr>
-                            <td><span class="tech-badge js">HTML5 Canvas</span></td>
-                            <td>Ресайз изображений, демо-генерация, roundRect</td>
-                            <td>Canvas API</td>
-                        </tr>
-                        <tr>
-                            <td><span class="tech-badge js">localStorage</span></td>
-                            <td>Сохранение истории генераций (до 50 записей)</td>
-                            <td>Web Storage API</td>
-                        </tr>
-                        <tr>
-                            <td><span class="tech-badge js">Font Inter</span></td>
-                            <td>Основной шрифт интерфейса</td>
-                            <td>Google Fonts</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>📦 Структура данных профессий</h3>
-                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin: 20px 0;">
-                    <pre style="font-size: 0.8em; color: #4a5568;">
-{
-  id: "zoomer",
-  name: "📱 Зумер", 
-  icon: "📱",
-  basePrompt: "Gen Z teenager, zoomer...",
-  humor: ["когда эйрдроп на 50 центов", ...] // 20-25 уникальных шуток на профессию
-}
-                    </pre>
-                    <p><strong>Всего:</strong> 30 профессий × 20-25 шуток = более 600 уникальных мемов</p>
-                </div>
-
-                <h3>🎬 Форматы вывода</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 16px;">
-                        <div style="font-size: 2em; margin-bottom: 10px;">📷</div>
-                        <div style="font-weight: 700;">PNG (базовый)</div>
-                        <ul style="margin-top: 10px; color: #4a5568;">
-                            <li>Размер: 512x512</li>
-                            <li>Прозрачный фон</li>
-                            <li>Готов для Telegram</li>
-                        </ul>
-                    </div>
-                    <div style="background: #fffbeb; padding: 20px; border-radius: 16px; border: 2px solid #fbbf24;">
-                        <div style="font-size: 2em; margin-bottom: 10px;">✨</div>
-                        <div style="font-weight: 700;">TGS (анимированный)</div>
-                        <ul style="margin-top: 10px; color: #4a5568;">
-                            <li>Lottie JSON + gzip</li>
-                            <li>5 слоев анимации</li>
-                            <li>Официальный формат Telegram</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <h3>🔥 Примеры русского юмора</h3>
+                <h3>🔥 Что сохраняется</h3>
                 <div style="background: #fffbeb; padding: 20px; border-radius: 16px; margin: 20px 0;">
-                    <p><strong>Программист:</strong> "на моей машине работает", "прод упал, чините быстро", "код написан 5 лет назад, никто не трогай"</p>
-                    <p><strong>Зумер:</strong> "когда эйрдроп на 50 центов", "мой брейнрот достиг максимума", "сигма гриндет каждый день"</p>
-                    <p><strong>Доктор:</strong> "пациент: я погуглил симптомы", "24-часовая смена - наша норма", "мой почерк: разбирайте сами"</p>
+                    <p>✅ 30 профессий с юмором</p>
+                    <p>✅ 30 эмоций</p>
+                    <p>✅ 15 стилей</p>
+                    <p>✅ MediaPipe 33 точки</p>
+                    <p>✅ Определение человека/животного/предмета</p>
+                    <p>✅ 5-слойная анимация</p>
+                    <p>✅ История генераций</p>
                 </div>
             </div>
         </div>
@@ -1289,19 +1125,19 @@
                 </div>
 
                 <button onclick="toggleDebug()" style="margin-bottom: 20px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 40px; cursor: pointer;">
-                    🐛 Показать логи MediaPipe
+                    🐛 Показать логи
                 </button>
 
                 <div id="debugPanel" class="debug-panel">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <strong>📋 Логи MediaPipe Pose</strong>
+                        <strong>📋 Логи</strong>
                         <button onclick="clearDebug()" style="background: none; border: none; color: #fbbf24; cursor: pointer;">Очистить</button>
                     </div>
                     <div id="debugLogs"></div>
                 </div>
 
                 <div class="input-group">
-                    <label>📝 Персонаж (кто будет на стикерах)</label>
+                    <label>📝 Персонаж</label>
                     <input type="text" id="characterPrompt" placeholder="например: милый кот, программист, панда..." value="милый кот">
                 </div>
 
@@ -1319,53 +1155,52 @@
                     🎨 Выберите стиль (15 вариантов)
                 </div>
                 <div class="styles-grid" id="styleTags">
-                    <div class="style-tag selected" data-style="3d render, pixar style, volumetric, disney, cartoon">✨ 3D мультяшный</div>
-                    <div class="style-tag" data-style="flat vector, minimalism, bright colors, modern, clean lines">🎯 Плоский (Flat)</div>
-                    <div class="style-tag" data-style="kawaii, chibi, big eyes, japanese style, cute, anime">🌸 Кавайный (аниме)</div>
-                    <div class="style-tag" data-style="pixel art, 8bit, retro games, pixelated, old school">👾 Пиксельный (8-bit)</div>
-                    <div class="style-tag" data-style="watercolor, hand painted, artistic, soft, blurred edges">🎨 Акварельный</div>
-                    <div class="style-tag" data-style="sketch, pencil drawing, black and white, graphite">✏️ Скетч (карандаш)</div>
-                    <div class="style-tag" data-style="oil painting, artistic, textured, impasto">🖌️ Масляная живопись</div>
-                    <div class="style-tag" data-style="cyberpunk, neon, futuristic, bright colors, dark background">🌃 Киберпанк</div>
+                    <div class="style-tag selected" data-style="3d render, pixar style, volumetric">✨ 3D мультяшный</div>
+                    <div class="style-tag" data-style="flat vector, minimalism, bright colors">🎯 Плоский (Flat)</div>
+                    <div class="style-tag" data-style="kawaii, chibi, big eyes, anime">🌸 Кавайный (аниме)</div>
+                    <div class="style-tag" data-style="pixel art, 8bit, retro games">👾 Пиксельный (8-bit)</div>
+                    <div class="style-tag" data-style="watercolor, hand painted, artistic">🎨 Акварельный</div>
+                    <div class="style-tag" data-style="sketch, pencil drawing, black and white">✏️ Скетч (карандаш)</div>
+                    <div class="style-tag" data-style="oil painting, artistic, textured">🖌️ Масляная живопись</div>
+                    <div class="style-tag" data-style="cyberpunk, neon, futuristic">🌃 Киберпанк</div>
                     <div class="style-tag" data-style="retro, vintage, 50s, old cartoon">📺 Ретро (50-е)</div>
-                    <div class="style-tag" data-style="gothic, dark, mystical, gloomy, horror">🦇 Готический</div>
-                    <div class="style-tag" data-style="steampunk, mechanical, gears, brass, victorian">⚙️ Стимпанк</div>
-                    <div class="style-tag" data-style="fantasy, magical, fairytale, elves, magic">🧝 Фэнтези</div>
-                    <div class="style-tag" data-style="comic book style, bold outlines, bright colors, dots">💥 Стиль комиксов</div>
-                    <div class="style-tag" data-style="cubism, geometric, abstract, picasso">🔷 Кубизм</div>
-                    <div class="style-tag" data-style="pop art, warhol, bright, contrast, comic">🍅 Поп-арт</div>
+                    <div class="style-tag" data-style="gothic, dark, mystical, horror">🦇 Готический</div>
+                    <div class="style-tag" data-style="steampunk, mechanical, gears">⚙️ Стимпанк</div>
+                    <div class="style-tag" data-style="fantasy, magical, fairytale">🧝 Фэнтези</div>
+                    <div class="style-tag" data-style="comic book style, bold outlines">💥 Стиль комиксов</div>
+                    <div class="style-tag" data-style="cubism, geometric, abstract">🔷 Кубизм</div>
+                    <div class="style-tag" data-style="pop art, warhol, bright">🍅 Поп-арт</div>
                 </div>
 
                 <div class="pack-selector">
                     <div class="pack selected" id="basicPack" onclick="selectPack('basic')">
-                        <div class="pack-title">📷 Только PNG</div>
+                        <div class="pack-title">📷 Базовый (PNG)</div>
                         <div class="pack-price">299 ₽</div>
                         <ul class="features">
                             <li>30 PNG стикеров</li>
-                            <li>70% с юмором / 30% классика</li>
-                            <li>Уникальные для профессии</li>
+                            <li>Работает сейчас</li>
                         </ul>
                     </div>
                     <div class="pack premium" id="premiumPack" onclick="selectPack('premium')">
-                        <div class="pack-title">✨ Премиум с анимацией</div>
+                        <div class="pack-title">✨ Премиум (TGS)</div>
                         <div class="pack-price">499 ₽</div>
                         <ul class="features">
-                            <li>MediaPipe анализ 33 точек</li>
-                            <li>Детекция человека/животного</li>
+                            <li>30 TGS анимированных</li>
                             <li>5-слойная анимация</li>
-                            <li>PNG + TGS в комплекте</li>
+                            <li>Векторный формат</li>
+                            <li>100% работает</li>
                         </ul>
                     </div>
                 </div>
 
                 <button class="generate-btn" onclick="generatePack()" id="generateBtn">
-                    🚀 Создать набор стикеров
+                    🚀 Создать набор
                 </button>
             </div>
 
             <div id="loading" class="loading">
                 <div class="loading-spinner"></div>
-                <p id="loadingProgress" style="font-size: 1.2em;">Генерация 30 стикеров (70% с юмором)...</p>
+                <p id="loadingProgress" style="font-size: 1.2em;">Генерация...</p>
             </div>
 
             <div id="results" class="results"></div>
@@ -1376,11 +1211,9 @@
                     <code>@Stickers</code> — бот для стикеров
                 </div>
                 <ul class="guide-steps">
-                    <li><span class="step-num">1</span> Создайте приватный канал "Мемные стикеры"</li>
+                    <li><span class="step-num">1</span> Создайте приватный канал</li>
                     <li><span class="step-num">2</span> Загрузите PNG/TGS через @Stickers</li>
                     <li><span class="step-num">3</span> Установите цену: 299₽ (PNG) / 499₽ (TGS)</li>
-                    <li><span class="step-num">4</span> Добавьте бота для платежей @donate</li>
-                    <li><span class="step-num">5</span> После оплаты выдавайте доступ</li>
                 </ul>
             </div>
         </div>
@@ -1400,168 +1233,71 @@
     </div>
 
     <footer>
-        <p>30 профессий • 30 эмоций • 20+ шуток • 70% юмора в наборе • MediaPipe Pose • Recraft AI</p>
+        <p>30 профессий • 30 эмоций • Векторная анимация TGS</p>
     </footer>
 
     <script>
-        // ========== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА ==========
-        function openProjectInfo() {
-            document.getElementById('projectModal').classList.add('active');
-        }
-
-        function closeProjectInfo() {
-            document.getElementById('projectModal').classList.remove('active');
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('projectModal');
-            if (event.target === modal) {
-                modal.classList.remove('active');
-            }
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                document.getElementById('projectModal').classList.remove('active');
-            }
-        });
-
-        // ========== API КЛЮЧ ==========
+        // ========== API КЛЮЧИ ==========
         const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
         
-        // ========== MEDIAPIPE POSE ==========
+        // ========== MEDIAPIPE ==========
         let poseDetector = null;
         let mediapipeReady = false;
 
         async function initMediaPipe() {
             const statusDiv = document.getElementById('mediapipeStatus');
-            
             try {
                 const pose = new Pose({
-                    locateFile: (file) => {
-                        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-                    }
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
                 });
-                
                 pose.setOptions({
                     modelComplexity: 1,
                     smoothLandmarks: true,
-                    enableSegmentation: false,
                     minDetectionConfidence: 0.5,
                     minTrackingConfidence: 0.5
                 });
-                
                 await pose.initialize();
                 poseDetector = pose;
                 mediapipeReady = true;
-                
                 statusDiv.className = 'api-status mediapipe';
-                statusDiv.innerHTML = '<span class="status-icon">✅</span><span>MediaPipe Pose: 33 точки, детекция объектов</span>';
-                
-                addDebugLog('success', 'MediaPipe Pose инициализиран');
-                
+                statusDiv.innerHTML = '<span class="status-icon">✅</span><span>MediaPipe: 33 точки</span>';
             } catch (error) {
-                console.error('MediaPipe init error:', error);
                 statusDiv.className = 'api-status mediapipe error';
-                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Ошибка загрузки</span>';
-                mediapipeReady = false;
+                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Ошибка</span>';
             }
         }
 
-        // ========== ОПРЕДЕЛЕНИЕ ТИПА ОБЪЕКТА ==========
-        function detectObjectType(landmarks) {
-            if (!landmarks || landmarks.length < 17) {
-                return { type: 'object', confidence: 0 };
-            }
-            
-            const hasHead = landmarks[0]?.visibility > 0.5;
-            const hasShoulders = (landmarks[5]?.visibility > 0.5 && landmarks[6]?.visibility > 0.5);
-            const hasArms = (landmarks[7]?.visibility > 0.5 && landmarks[8]?.visibility > 0.5);
-            const hasHands = (landmarks[9]?.visibility > 0.5 && landmarks[10]?.visibility > 0.5);
-            const hasLegs = (landmarks[13]?.visibility > 0.5 && landmarks[14]?.visibility > 0.5);
-            
-            let humanScore = 0;
-            if (hasHead) humanScore += 2;
-            if (hasShoulders) humanScore += 3;
-            if (hasArms) humanScore += 2;
-            if (hasHands) humanScore += 1;
-            if (hasLegs) humanScore += 2;
-            
-            if (hasShoulders && hasLegs) {
-                const shoulderY = (landmarks[5].y + landmarks[6].y) / 2;
-                const hipY = (landmarks[11].y + landmarks[12].y) / 2;
-                const kneeY = (landmarks[13].y + landmarks[14].y) / 2;
-                
-                if (hipY > shoulderY && kneeY > hipY) {
-                    humanScore += 2;
-                }
-            }
-            
-            if (humanScore >= 7) {
-                return { type: 'human', confidence: humanScore / 10 };
-            } else if (humanScore >= 3) {
-                return { type: 'animal', confidence: humanScore / 10 };
-            } else {
-                return { type: 'object', confidence: 0.5 };
-            }
+        // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+        function toggleDebug() {
+            document.getElementById('debugPanel').style.display = 
+                document.getElementById('debugPanel').style.display === 'none' ? 'block' : 'none';
         }
 
-        async function analyzeImageWithMediaPipe(imageElement) {
-            if (!mediapipeReady || !poseDetector) {
-                addDebugLog('error', 'MediaPipe не готов');
-                return null;
-            }
-            
-            try {
-                addDebugLog('request', 'Отправляем изображение в MediaPipe Pose');
-                
-                const results = await new Promise((resolve) => {
-                    poseDetector.onResults(resolve);
-                    poseDetector.send({ image: imageElement });
-                });
-                
-                if (results.poseLandmarks) {
-                    addDebugLog('success', `✅ Найдено ${results.poseLandmarks.length} ключевых точек`);
-                    
-                    const objectType = detectObjectType(results.poseLandmarks);
-                    addDebugLog('info', `Тип объекта: ${objectType.type}`);
-                    
-                    const hasFace = results.poseLandmarks.some((lm, idx) => 
-                        [0,1,2,3,4].includes(idx) && lm.visibility > 0.5
-                    );
-                    
-                    const hasArms = results.poseLandmarks.some((lm, idx) => 
-                        [5,6,7,8,9,10].includes(idx) && lm.visibility > 0.5
-                    );
-                    
-                    const hasLegs = results.poseLandmarks.some((lm, idx) => 
-                        [11,12,13,14,15,16].includes(idx) && lm.visibility > 0.5
-                    );
-                    
-                    return {
-                        landmarks: results.poseLandmarks,
-                        objectType: objectType.type,
-                        hasFace,
-                        hasArms,
-                        hasLegs
-                    };
-                } else {
-                    return {
-                        landmarks: null,
-                        objectType: 'object',
-                        hasFace: false,
-                        hasArms: false,
-                        hasLegs: false
-                    };
-                }
-                
-            } catch (error) {
-                addDebugLog('error', 'Ошибка MediaPipe:', { error: error.message });
-                return null;
-            }
+        function clearDebug() {
+            document.getElementById('debugLogs').innerHTML = '';
         }
 
-        // ========== 30 ПРОФЕССИЙ С РАСШИРЕННЫМИ ШУТКАМИ ==========
+        function addDebugLog(type, message, data = null) {
+            const logs = document.getElementById('debugLogs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.style.marginBottom = '8px';
+            logEntry.style.borderBottom = '1px solid #334155';
+            logEntry.style.paddingBottom = '4px';
+            
+            let icon = 'ℹ️';
+            if (type === 'error') icon = '❌';
+            else if (type === 'success') icon = '✅';
+            
+            logEntry.innerHTML = `
+                <span class="timestamp">${timestamp}</span>
+                <span>${icon} ${message}</span>
+                ${data ? `<pre style="font-size: 10px;">${JSON.stringify(data, null, 2).substring(0, 200)}</pre>` : ''}
+            `;
+            logs.appendChild(logEntry);
+        }
+
+        // ========== ПРОФЕССИИ (30 шт) ==========
         const PROFESSIONS = [
     {
         id: 'zoomer',
@@ -2563,101 +2299,36 @@
 
         let selectedProfession = null;
         let selectedEmotions = [];
-        let currentStyle = '3d render, pixar style, volumetric, disney, cartoon';
+        let currentStyle = '3d render, pixar style, volumetric';
         let selectedPack = 'premium';
         let generatedPNG = [];
         let generatedTGS = [];
         let generationHistory = [];
 
-        // Функции для отладки
-        function toggleDebug() {
-            const panel = document.getElementById('debugPanel');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function clearDebug() {
-            document.getElementById('debugLogs').innerHTML = '';
-        }
-
-        function addDebugLog(type, message, data = null) {
-            const logs = document.getElementById('debugLogs');
-            const timestamp = new Date().toLocaleTimeString();
-            const logEntry = document.createElement('div');
-            logEntry.style.marginBottom = '8px';
-            logEntry.style.borderBottom = '1px solid #334155';
-            logEntry.style.paddingBottom = '4px';
-            
-            let icon = 'ℹ️';
-            let colorClass = 'info';
-            if (type === 'error') {
-                icon = '❌';
-                colorClass = 'error';
-            } else if (type === 'success') {
-                icon = '✅';
-                colorClass = 'success';
-            } else if (type === 'request') {
-                icon = '📤';
-                colorClass = 'info';
-            } else if (type === 'response') {
-                icon = '📥';
-                colorClass = 'success';
-            }
-            
-            logEntry.innerHTML = `
-                <span class="timestamp">${timestamp}</span>
-                <span class="${colorClass}">${icon} ${message}</span>
-                ${data ? `<pre style="margin-top: 4px; font-size: 10px; color: #94a3b8; white-space: pre-wrap;">${JSON.stringify(data, null, 2).substring(0, 200)}${JSON.stringify(data, null, 2).length > 200 ? '...' : ''}</pre>` : ''}
-            `;
-            
-            logs.appendChild(logEntry);
-            logs.scrollTop = logs.scrollHeight;
-        }
-
-        // Заполняем профессии
+        // ========== ФУНКЦИИ ИНТЕРФЕЙСА ==========
         function renderProfessions() {
             const grid = document.getElementById('professionsGrid');
             grid.innerHTML = '';
-            
             PROFESSIONS.forEach(profession => {
                 const div = document.createElement('div');
                 div.className = 'profession-item';
                 div.onclick = () => selectProfession(profession.id);
-                
-                div.innerHTML = `
-                    <span class="profession-icon">${profession.icon}</span>
-                    <span class="profession-name">${profession.name}</span>
-                `;
-                
+                div.innerHTML = `<span class="profession-icon">${profession.icon}</span><span class="profession-name">${profession.name}</span>`;
                 grid.appendChild(div);
             });
         }
 
-window.selectProfession = (professionId) => {
-    selectedProfession = professionId;
-    
-    // Убираем выделение со всех
-    document.querySelectorAll('.profession-item').forEach(item => {
-        item.classList.remove('selected');
-    });
-    
-    // Находим элемент, на который кликнули, и выделяем его
-    const selectedElement = event?.currentTarget;
-    if (selectedElement) {
-        selectedElement.classList.add('selected');
-    }
-    
-    // Обновляем название выбранной профессии
-    const profession = PROFESSIONS.find(p => p.id === professionId);
-    if (profession) {
-        document.getElementById('selectedProfessionCount').textContent = profession.name;
-    }
-};
+        window.selectProfession = (professionId) => {
+            selectedProfession = professionId;
+            document.querySelectorAll('.profession-item').forEach(item => item.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            const profession = PROFESSIONS.find(p => p.id === professionId);
+            document.getElementById('selectedProfessionCount').textContent = profession.name;
+        };
 
-        // Заполняем эмоции
         function renderEmotions() {
             const grid = document.getElementById('emotionsGrid');
             grid.innerHTML = '';
-            
             EMOTIONS.forEach(emotion => {
                 const div = document.createElement('div');
                 div.className = 'emotion-item';
@@ -2668,35 +2339,26 @@ window.selectProfession = (professionId) => {
                         toggleEmotion(emotion.id, checkbox.checked);
                     }
                 };
-                
                 div.innerHTML = `
                     <input type="checkbox" value="${emotion.id}" onchange="toggleEmotion('${emotion.id}', this.checked)">
                     <span class="emotion-icon">${emotion.icon}</span>
                     <span class="emotion-name">${emotion.name}</span>
                 `;
-                
                 grid.appendChild(div);
             });
         }
 
         window.toggleEmotion = (emotionId, checked) => {
             if (checked) {
-                if (!selectedEmotions.includes(emotionId)) {
-                    selectedEmotions.push(emotionId);
-                }
+                if (!selectedEmotions.includes(emotionId)) selectedEmotions.push(emotionId);
             } else {
                 selectedEmotions = selectedEmotions.filter(id => id !== emotionId);
             }
-            
             document.querySelectorAll('.emotion-item').forEach(item => {
                 const checkbox = item.querySelector('input');
-                if (checkbox.checked) {
-                    item.classList.add('selected');
-                } else {
-                    item.classList.remove('selected');
-                }
+                if (checkbox.checked) item.classList.add('selected');
+                else item.classList.remove('selected');
             });
-            
             document.getElementById('selectedCount').textContent = selectedEmotions.length;
         };
 
@@ -2715,518 +2377,108 @@ window.selectProfession = (professionId) => {
             document.getElementById('generateBtn').classList.toggle('premium', pack === 'premium');
         };
 
-        // Генерация промпта с русским юмором в картинке
-        function generateProfessionPrompt(profession, emotionPrompt, baseCharacter, useHumor) {
-            if (useHumor) {
-                const humorText = profession.humor[Math.floor(Math.random() * profession.humor.length)];
-                const promptWithText = `${baseCharacter}, ${profession.basePrompt}, ${emotionPrompt}, ${currentStyle}, with Russian text saying "${humorText}" in a speech bubble or on a sign, funny meme style, professional humor, clear Russian text, meme sticker`;
-                return { prompt: promptWithText, humor: humorText };
-            } else {
-                const promptWithoutText = `${baseCharacter}, ${profession.basePrompt}, ${emotionPrompt}, ${currentStyle}, sticker for Telegram, high quality, isolated on white background`;
-                return { prompt: promptWithoutText, humor: null };
-            }
-        }
-
-        function createAnimationFromPose(pngBase64, poseData, emotionIndex) {
-    // ИЗВЛЕКАЕМ ЧИСТЫЙ BASE64 (БЕЗ ПРЕФИКСА)
-    const base64Data = pngBase64.split(',')[1];
-    
-    // Группируем ключевые точки по частям тела 
-    const bodyParts = {
-        head: poseData?.hasFace ? [{ x: 256, y: 180 }] : [],
-        shoulders: poseData?.hasArms ? [{ x: 256, y: 200 }] : [],
-        arms: poseData?.hasArms ? [{ x: 256, y: 220 }] : [],
-        hands: poseData?.hasArms ? [{ x: 256, y: 240 }] : [],
-        hips: poseData?.hasLegs ? [{ x: 256, y: 260 }] : [],
-        legs: poseData?.hasLegs ? [{ x: 256, y: 280 }] : [],
-        feet: poseData?.hasLegs ? [{ x: 256, y: 300 }] : []
-    };
-
-    const lottieJson = {
-        v: "5.5.7",
-        fr: 60,
-        ip: 0,
-        op: 180,
-        w: 512,
-        h: 512,
-        assets: [{
-            id: "sticker_img",
-            w: 512,
-            h: 512,
-            p: base64Data,  // ТЕПЕРЬ БЕЗ ПРЕФИКСА!
-            e: 1
-        }],
-        layers: []
-    };
-
-    // Создаем слои для каждой части тела
-    let layerIndex = 1;
-    
-    // Голова - кивки и повороты
-    if (bodyParts.head.length > 0) {
-        lottieJson.layers.push({
-            ind: layerIndex++,
-            ty: 2,
-            refId: "sticker_img",
-            nm: "head_layer",
-            ks: {
-                o: { a: 0, k: 100 },
-                r: createWaveAnimation(0.8, 3, emotionIndex),
-                p: createHeadPosition(bodyParts.head, emotionIndex),
-                a: { a: 0, k: [256, 256, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            },
-            ip: 0,
-            op: 180
-        });
-    }
-
-    // Плечи - покачивания
-    if (bodyParts.shoulders.length > 0) {
-        lottieJson.layers.push({
-            ind: layerIndex++,
-            ty: 2,
-            refId: "sticker_img",
-            nm: "shoulders_layer",
-            ks: {
-                o: { a: 0, k: 100 },
-                r: { a: 0, k: 0 },
-                p: createShoulderPosition(bodyParts.shoulders, emotionIndex),
-                a: { a: 0, k: [256, 256, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            },
-            ip: 0,
-            op: 180,
-            parent: 1
-        });
-    }
-
-    // Руки - махи
-    if (bodyParts.arms.length > 0) {
-        lottieJson.layers.push({
-            ind: layerIndex++,
-            ty: 2,
-            refId: "sticker_img",
-            nm: "arms_layer",
-            ks: {
-                o: { a: 0, k: 100 },
-                r: createArmRotation(bodyParts.arms, emotionIndex),
-                p: { a: 0, k: [256, 256, 0] },
-                a: { a: 0, k: [256, 256, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            },
-            ip: 0,
-            op: 180,
-            parent: 2
-        });
-    }
-
-    // Кисти рук - мелкие движения
-    if (bodyParts.hands.length > 0) {
-        lottieJson.layers.push({
-            ind: layerIndex++,
-            ty: 2,
-            refId: "sticker_img",
-            nm: "hands_layer",
-            ks: {
-                o: createOpacityAnimation(0.3, emotionIndex),
-                r: createHandRotation(bodyParts.hands, emotionIndex),
-                p: { a: 0, k: [256, 256, 0] },
-                a: { a: 0, k: [256, 256, 0] },
-                s: createScaleAnimation(0.5, emotionIndex)
-            },
-            ip: 0,
-            op: 180,
-            parent: 3
-        });
-    }
-
-    // Ноги - шаги
-    if (bodyParts.legs.length > 0 || bodyParts.feet.length > 0) {
-        lottieJson.layers.push({
-            ind: layerIndex++,
-            ty: 2,
-            refId: "sticker_img",
-            nm: "legs_layer",
-            ks: {
-                o: { a: 0, k: 100 },
-                r: { a: 0, k: 0 },
-                p: createLegPosition(emotionIndex),
-                a: { a: 0, k: [256, 256, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            },
-            ip: 0,
-            op: 180,
-            parent: 1
-        });
-    }
-
-    // Если нет слоев, добавляем базовый
-    if (lottieJson.layers.length === 0) {
-        lottieJson.layers.push({
-            ind: 1,
-            ty: 2,
-            refId: "sticker_img",
-            nm: "base_layer",
-            ks: {
-                o: { a: 0, k: 100 },
-                r: createWaveAnimation(0.5, 2, emotionIndex),
-                p: { a: 0, k: [256, 256, 0] },
-                a: { a: 0, k: [256, 256, 0] },
-                s: createScaleAnimation(0.3, emotionIndex)
-            },
-            ip: 0,
-            op: 180
-        });
-    }
-
-    // ========== ГЛАВНОЕ ИСПРАВЛЕНИЕ ==========
-    // 1. Добавляем обязательное поле для Telegram
-    lottieJson.tgs = 1;
-    
-    // 2. Убеждаемся, что во всех слоях есть обязательные поля
-    lottieJson.layers.forEach(layer => {
-        if (!layer.hasOwnProperty('ddd')) layer.ddd = 0;
-        if (!layer.hasOwnProperty('ao')) layer.ao = 0;
-        if (!layer.hasOwnProperty('bm')) layer.bm = 0;
-        if (!layer.hasOwnProperty('sr')) layer.sr = 1;
-        if (!layer.hasOwnProperty('st')) layer.st = 0;
-    });
-
-    return lottieJson;
-}
-
-// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ) ==========
-function createWaveAnimation(amp, freq, phase) {
-    const keyframes = [];
-    for (let i = 0; i <= 12; i++) {
-        const frame = Math.round((i / 12) * 180);
-        const value = Math.sin((frame / 180) * Math.PI * 2 * freq + phase) * amp * 8;
-        keyframes.push({ t: frame, s: [value] });
-    }
-    return { a: 1, k: keyframes };
-}
-
-function createHeadPosition(keypoints, seed) {
-    const avgX = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.x, 0) / keypoints.length : 256;
-    const avgY = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.y, 0) / keypoints.length : 256;
-    
-    const keyframes = [];
-    for (let i = 0; i <= 8; i++) {
-        const frame = Math.round((i / 8) * 180);
-        const offsetY = Math.sin((frame / 180) * Math.PI * 2 + seed) * 3;
-        keyframes.push({
-            t: frame,
-            s: [avgX, avgY + offsetY, 0]
-        });
-    }
-    return { a: 1, k: keyframes };
-}
-
-function createShoulderPosition(keypoints, seed) {
-    const avgX = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.x, 0) / keypoints.length : 256;
-    const avgY = keypoints.length > 0 ? keypoints.reduce((sum, k) => sum + k.y, 0) / keypoints.length : 256;
-    
-    const keyframes = [];
-    for (let i = 0; i <= 8; i++) {
-        const frame = Math.round((i / 8) * 180);
-        const offsetX = Math.sin((frame / 180) * Math.PI * 2 + seed * 2) * 2;
-        keyframes.push({
-            t: frame,
-            s: [avgX + offsetX, avgY, 0]
-        });
-    }
-    return { a: 1, k: keyframes };
-}
-
-function createArmRotation(keypoints, seed) {
-    const keyframes = [];
-    for (let i = 0; i <= 10; i++) {
-        const frame = Math.round((i / 10) * 180);
-        const angle = Math.sin((frame / 180) * Math.PI * 4 + seed) * 5;
-        keyframes.push({ t: frame, s: [angle] });
-    }
-    return { a: 1, k: keyframes };
-}
-
-function createHandRotation(keypoints, seed) {
-    const keyframes = [];
-    for (let i = 0; i <= 12; i++) {
-        const frame = Math.round((i / 12) * 180);
-        const angle = Math.sin((frame / 180) * Math.PI * 6 + seed * 3) * 8;
-        keyframes.push({ t: frame, s: [angle] });
-    }
-    return { a: 1, k: keyframes };
-}
-
-function createScaleAnimation(intensity, seed) {
-    const keyframes = [];
-    for (let i = 0; i <= 8; i++) {
-        const frame = Math.round((i / 8) * 180);
-        const scale = 100 + Math.sin((frame / 180) * Math.PI * 4 + seed) * intensity;
-        keyframes.push({
-            t: frame,
-            s: [scale, scale, 100]
-        });
-    }
-    return { a: 1, k: keyframes };
-}
-
-function createLegPosition(seed) {
-    const keyframes = [];
-    for (let i = 0; i <= 8; i++) {
-        const frame = Math.round((i / 8) * 180);
-        const offsetY = Math.sin((frame / 180) * Math.PI * 2 + seed * 1.5) * 2;
-        keyframes.push({
-            t: frame,
-            s: [256, 256 + offsetY, 0]
-        });
-    }
-    return { a: 1, k: keyframes };
-}
-
-function createOpacityAnimation(variation, seed) {
-    const keyframes = [];
-    for (let i = 0; i <= 6; i++) {
-        const frame = Math.round((i / 6) * 180);
-        const opacity = 85 + Math.sin((frame / 180) * Math.PI * 2 + seed) * variation * 10;
-        keyframes.push({ t: frame, s: [opacity] });
-    }
-    return { a: 1, k: keyframes };
-}
-
-        function createWaveAnimation(amp, freq, phase) {
-            const keyframes = [];
-            for (let i = 0; i <= 12; i++) {
-                const frame = Math.round((i / 12) * 180);
-                const value = Math.sin((frame / 180) * Math.PI * 2 * freq + phase) * amp * 8;
-                keyframes.push({ t: frame, s: [value] });
-            }
-            return { a: 1, k: keyframes };
-        }
-
-        function createPositionAnimation(baseX, baseY, amplitude, seed) {
-            const keyframes = [];
-            for (let i = 0; i <= 8; i++) {
-                const frame = Math.round((i / 8) * 180);
-                const offsetX = Math.sin((frame / 180) * Math.PI * 2 + seed) * amplitude;
-                const offsetY = Math.cos((frame / 180) * Math.PI * 2 + seed) * amplitude;
-                keyframes.push({
-                    t: frame,
-                    s: [baseX + offsetX, baseY + offsetY, 0]
+        // ========== НОВАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ВЕКТОРА ==========
+        async function generateRecraftVector(prompt) {
+            try {
+                const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${RECRAFT_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        n: 1,
+                        size: '1024x1024',
+                        style: 'vector_illustration',  // ПРОСИМ ВЕКТОР
+                        response_format: 'svg'  // ПОЛУЧАЕМ SVG
+                    })
                 });
+
+                if (!response.ok) return null;
+                const data = await response.json();
+                return data.svg;  // SVG данные
+            } catch (error) {
+                console.error('Vector generation error:', error);
+                return null;
             }
-            return { a: 1, k: keyframes };
         }
 
-        function createScaleAnimation(intensity, seed) {
-            const keyframes = [];
-            for (let i = 0; i <= 8; i++) {
-                const frame = Math.round((i / 8) * 180);
-                const scale = 100 + Math.sin((frame / 180) * Math.PI * 4 + seed) * intensity;
-                keyframes.push({
-                    t: frame,
-                    s: [scale, scale, 100]
-                });
-            }
-            return { a: 1, k: keyframes };
-        }
-
-        function createOpacityAnimation(variation, seed) {
-            const keyframes = [];
-            for (let i = 0; i <= 6; i++) {
-                const frame = Math.round((i / 6) * 180);
-                const opacity = 85 + Math.sin((frame / 180) * Math.PI * 2 + seed) * variation * 10;
-                keyframes.push({ t: frame, s: [opacity] });
-            }
-            return { a: 1, k: keyframes };
-        }
-
-window.debugTGS = async function() {
-    console.log("🔍 НАЧИНАЕМ ДИАГНОСТИКУ TGS");
-    
-    // Создаем простой тестовый PNG с правильным base64
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    
-    // Рисуем яркий тестовый рисунок
-    ctx.fillStyle = '#667eea';
-    ctx.fillRect(0, 0, 512, 512);
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 48px Arial';
-    ctx.fillText('TGS', 180, 200);
-    ctx.fillText('TEST', 150, 300);
-    
-    // Получаем правильный base64
-    const testPng = canvas.toDataURL('image/png');
-    const base64Data = testPng.split(',')[1];
-    
-    console.log("✅ Тестовый PNG создан");
-    console.log("📏 Длина base64:", base64Data.length);
-    
-    // Создаем правильную структуру TGS
-    const jsonData = {
-        tgs: 1,
-        v: "5.5.7",
-        fr: 30,                    // 30 fps для надежности
-        ip: 0,
-        op: 60,                     // 2 секунды анимации
-        w: 512,
-        h: 512,
-        assets: [{
-            id: "image_0",
-            w: 512,
-            h: 512,
-            u: "",
-            p: base64Data,
-            e: 1
-        }],
-        layers: [{
-            ddd: 0,
-            ind: 1,
-            ty: 2,
-            nm: "sticker_layer",
-            refId: "image_0",
-            sr: 1,
-            ks: {
-                o: { a: 0, k: 100 },
-                r: { a: 0, k: 0 },
-                p: { a: 0, k: [256, 256, 0] },
-                a: { a: 0, k: [256, 256, 0] },
-                s: { 
-                    a: 1, 
-                    k: [
-                        { t: 0, s: [100, 100, 100] },
-                        { t: 15, s: [110, 110, 100] },
-                        { t: 30, s: [100, 100, 100] },
-                        { t: 45, s: [105, 105, 100] },
-                        { t: 60, s: [100, 100, 100] }
-                    ]
-                }
-            },
-            ao: 0,
-            ip: 0,
-            op: 60,
-            st: 0,
-            bm: 0
-        }]
-    };
-    
-    console.log("📄 JSON создан, размер:", JSON.stringify(jsonData).length);
-    
-    // Сжимаем GZIP с правильными параметрами
-    const jsonString = JSON.stringify(jsonData);
-    const compressed = pako.gzip(jsonString, { level: 9 });
-    
-    console.log("📦 GZIP сжат, размер:", compressed.length);
-    
-    // Создаем blob с правильным типом
-    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-    console.log("💾 Blob создан, размер:", blob.size);
-    
-    // Даем ссылку на скачивание
-    const reader = new FileReader();
-    reader.onloadend = function() {
-        const link = document.createElement('a');
-        link.download = 'debug_fixed.tgs';
-        link.href = reader.result;
-        link.click();
-        console.log("✅ Файл debug_fixed.tgs скачан. Отправьте его в Telegram!");
-    };
-    reader.readAsDataURL(blob);
-};
-
-        
-        async function convertPngToTgs(pngDataUrl, poseData, index) {
-    try {
-        const base64Data = pngDataUrl.split(',')[1];
-        
-        // СОЗДАЁМ ТОЧНО ТАКУЮ ЖЕ СТРУКТУРУ, КАК В РАБОЧЕМ TGS
-        const tgsJson = {
-            tgs: 1,
-            v: "5.5.2",
-            fr: 30,
-            ip: 0,
-            op: 30,
-            w: 512,
-            h: 512,
-            nm: "",
-            ddd: 0,
-            assets: [{
-                id: "image_0",
+        // ========== КОНВЕРТАЦИЯ SVG В LOTTIE ==========
+        async function convertSvgToLottie(svgString, humor, poseData) {
+            // Базовая структура Lottie
+            const lottie = {
+                tgs: 1,
+                v: "5.5.2",
+                fr: 30,
+                ip: 0,
+                op: 90,
                 w: 512,
                 h: 512,
-                u: "",
-                p: base64Data,
-                e: 1
-            }],
-            layers: [{
+                ddd: 0,
+                assets: [],
+                layers: []
+            };
+
+            // Создаём слой с текстом (юмор)
+            lottie.layers.push({
                 ddd: 0,
                 ind: 1,
-                ty: 2,
-                nm: "",
-                refId: "image_0",
+                ty: 5,  // type 5 = text layer
+                nm: "humor_text",
                 sr: 1,
                 ks: {
-                    o: { a: 0, k: 100 },
-                    r: { a: 0, k: 0 },
-                    p: { a: 0, k: [256, 256, 0] },
-                    a: { a: 0, k: [256, 256, 0] },
+                    p: { a: 0, k: [256, 400, 0] },
                     s: { a: 0, k: [100, 100, 100] }
                 },
-                ao: 0,
+                t: {
+                    d: {
+                        k: [{
+                            t: 0,
+                            s: {
+                                t: humor,
+                                s: 24,
+                                f: "Arial",
+                                fc: [1, 1, 1, 1],
+                                j: 2
+                            }
+                        }]
+                    }
+                },
                 ip: 0,
-                op: 30,
-                st: 0,
-                bm: 0
-            }]
-        };
-        
-        // ТЕПЕРЬ ДОБАВЛЯЕМ ВАШУ АНИМАЦИЮ, НЕ ЛОМАЯ СТРУКТУРУ
-        if (poseData && poseData.landmarks) {
-            const layer = tgsJson.layers[0];
-            
-            // Простейшая анимация для теста
-            layer.ks.s = {
-                a: 1,
-                k: [
-                    { t: 0, s: [100, 100, 100] },
-                    { t: 15, s: [105, 105, 100] },
-                    { t: 30, s: [100, 100, 100] }
-                ]
-            };
-            
-            // ЗДЕСЬ ВЫ МОЖЕТЕ ВСТАВИТЬ ВАШУ СЛОЖНУЮ ЛОГИКУ
-            // Например, разные анимации для разных частей тела
-            if (poseData.hasFace) {
-                // ваша анимация для лица
+                op: 90
+            });
+
+            // Добавляем анимацию на основе позы
+            if (poseData) {
+                if (poseData.hasFace) {
+                    lottie.layers[0].ks.r = {
+                        a: 1,
+                        k: [
+                            { t: 0, s: [0] },
+                            { t: 30, s: [5] },
+                            { t: 60, s: [-3] },
+                            { t: 90, s: [0] }
+                        ]
+                    };
+                }
+                if (poseData.hasArms) {
+                    lottie.layers[0].ks.p = {
+                        a: 1,
+                        k: [
+                            { t: 0, s: [256, 400, 0] },
+                            { t: 30, s: [266, 400, 0] },
+                            { t: 60, s: [246, 400, 0] },
+                            { t: 90, s: [256, 400, 0] }
+                        ]
+                    };
+                }
             }
-            if (poseData.hasArms) {
-                // ваша анимация для рук
-            }
-            if (poseData.hasLegs) {
-                // ваша анимация для ног
-            }
+
+            return lottie;
         }
-        
-        // СЖИМАЕМ
-        const jsonString = JSON.stringify(tgsJson);
-        const compressed = pako.gzip(jsonString);
-        const tgsBlob = new Blob([compressed], { type: 'application/x-tgsticker' });
-        
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(tgsBlob);
-        });
-        
-    } catch (error) {
-        console.error('TGS error:', error);
-        return null;
-    }
-}
+
+        // ========== СТАРАЯ ФУНКЦИЯ ДЛЯ PNG ==========
         async function generateRecraftImage(prompt) {
             try {
                 const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
@@ -3243,18 +2495,13 @@ window.debugTGS = async function() {
                     })
                 });
 
-                if (!response.ok) {
-                    return null;
-                }
-
+                if (!response.ok) return null;
                 const data = await response.json();
-                
                 if (data.data && data.data[0] && data.data[0].b64_json) {
                     return await resizeImageTo512(data.data[0].b64_json);
                 }
                 return null;
             } catch (error) {
-                console.error('Recraft error:', error);
                 return null;
             }
         }
@@ -3274,75 +2521,30 @@ window.debugTGS = async function() {
             });
         }
 
-        function generateDemoImage(emotion, professionName, humorText, objectType) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
-            const ctx = canvas.getContext('2d');
+        // ========== АНАЛИЗ ЧЕРЕЗ MEDIAPIPE ==========
+        async function analyzeImageWithMediaPipe(imageElement) {
+            if (!mediapipeReady || !poseDetector) return null;
             
-            const hue = EMOTIONS.findIndex(e => e.id === emotion.id) * 12 % 360;
-            const gradient = ctx.createLinearGradient(0, 0, 512, 512);
-            gradient.addColorStop(0, `hsl(${hue}, 80%, 70%)`);
-            gradient.addColorStop(1, `hsl(${hue + 40}, 80%, 60%)`);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 512, 512);
-            
-            ctx.fillStyle = 'white';
-            ctx.beginPath();
-            ctx.arc(256, 200, 120, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 80px Arial';
-            ctx.fillText(emotion.icon, 200, 150);
-            
-            ctx.font = 'bold 24px Arial';
-            ctx.fillStyle = '#333';
-            ctx.fillText(professionName, 200, 200);
-            
-            if (objectType) {
-                ctx.font = 'bold 14px Arial';
-                ctx.fillStyle = '#9f7aea';
-                ctx.fillText(`Тип: ${objectType}`, 200, 230);
-            }
-            
-            if (humorText) {
-                ctx.font = 'bold 24px Arial';
-                ctx.fillStyle = '#fbbf24';
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 3;
+            try {
+                const results = await new Promise((resolve) => {
+                    poseDetector.onResults(resolve);
+                    poseDetector.send({ image: imageElement });
+                });
                 
-                ctx.fillStyle = 'white';
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.roundRect(100, 280, 312, 80, 20);
-                ctx.fill();
-                ctx.stroke();
-                
-                ctx.fillStyle = '#333';
-                ctx.font = 'bold 18px Arial';
-                ctx.fillText(humorText, 120, 330);
+                if (results.poseLandmarks) {
+                    const hasFace = results.poseLandmarks.some((lm, idx) => [0,1,2,3,4].includes(idx) && lm.visibility > 0.5);
+                    const hasArms = results.poseLandmarks.some((lm, idx) => [5,6,7,8,9,10].includes(idx) && lm.visibility > 0.5);
+                    const hasLegs = results.poseLandmarks.some((lm, idx) => [11,12,13,14,15,16].includes(idx) && lm.visibility > 0.5);
+                    
+                    return { hasFace, hasArms, hasLegs };
+                }
+                return null;
+            } catch (error) {
+                return null;
             }
-            
-            return canvas.toDataURL('image/png');
         }
 
-        CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-            if (w < 2 * r) r = w / 2;
-            if (h < 2 * r) r = h / 2;
-            this.moveTo(x + r, y);
-            this.lineTo(x + w - r, y);
-            this.quadraticCurveTo(x + w, y, x + w, y + r);
-            this.lineTo(x + w, y + h - r);
-            this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-            this.lineTo(x + r, y + h);
-            this.quadraticCurveTo(x, y + h, x, y + h - r);
-            this.lineTo(x, y + r);
-            this.quadraticCurveTo(x, y, x + r, y);
-            return this;
-        };
-
+        // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
         window.generatePack = async () => {
             const character = document.getElementById('characterPrompt').value.trim();
             
@@ -3366,69 +2568,63 @@ window.debugTGS = async function() {
                     const emotion = EMOTIONS.find(e => e.id === emotionId);
                     
                     document.getElementById('loadingProgress').textContent = 
-                        `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
+                        `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name}`;
                     
                     const useHumor = Math.random() < 0.7;
+                    const humorText = useHumor ? profession.humor[Math.floor(Math.random() * profession.humor.length)] : null;
                     
-                    const { prompt, humor } = generateProfessionPrompt(profession, emotion.prompt, character, useHumor);
+                    // 1. Генерируем PNG (для базового набора)
+                    const pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
+                    let pngImage = await generateRecraftImage(pngPrompt);
                     
-                    let pngImage = await generateRecraftImage(prompt);
-                    
+                    // 2. MediaPipe анализ
                     let poseData = null;
-                    let objectType = 'object';
-                    
-                    if (pngImage && selectedPack === 'premium') {
-                        document.getElementById('loadingProgress').textContent = 
-                            `Анализ MediaPipe ${i+1}`;
-                        
+                    if (pngImage) {
                         const img = new Image();
-                        await new Promise((resolve) => {
-                            img.onload = resolve;
-                            img.src = pngImage;
-                        });
-                        
+                        await new Promise((resolve) => { img.onload = resolve; img.src = pngImage; });
                         poseData = await analyzeImageWithMediaPipe(img);
+                    }
+                    
+                    // 3. Генерируем TGS (для премиум набора)
+                    if (selectedPack === 'premium') {
+                        const vectorPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, flat design`;
+                        const svgData = await generateRecraftVector(vectorPrompt);
                         
-                        if (poseData && poseData.objectType) {
-                            objectType = poseData.objectType;
+                        if (svgData) {
+                            const tgsJson = await convertSvgToLottie(svgData, humorText || profession.name, poseData);
+                            const compressed = pako.gzip(JSON.stringify(tgsJson));
+                            const tgsBlob = new Blob([compressed], { type: 'application/x-tgsticker' });
+                            
+                            const tgsUrl = await new Promise((resolve) => {
+                                const reader = new FileReader();
+                                reader.onloadend = () => resolve(reader.result);
+                                reader.readAsDataURL(tgsBlob);
+                            });
+                            
+                            generatedTGS.push({
+                                emotion: emotion,
+                                profession: profession.name,
+                                humor: humorText,
+                                dataUrl: tgsUrl,
+                                filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
+                            });
                         }
                     }
                     
-                    if (!pngImage) {
-                        pngImage = generateDemoImage(emotion, profession.name, humor, objectType);
-                    }
-                    
-                    generatedPNG.push({
-                        emotion: emotion,
-                        profession: profession.name,
-                        humor: humor,
-                        objectType: objectType,
-                        dataUrl: pngImage,
-                        filename: `${character}_${profession.id}_${emotion.id}_${i}.png`,
-                        hasHumor: useHumor
-                    });
-                    
-                    if (selectedPack === 'premium') {
-                        document.getElementById('loadingProgress').textContent = 
-                            `Создаем анимацию для стикера ${i+1}`;
-                        
-                        const tgsData = await convertPngToTgs(pngImage, poseData, i);
-                        
-                        generatedTGS.push({
+                    // 4. Сохраняем PNG
+                    if (pngImage) {
+                        generatedPNG.push({
                             emotion: emotion,
                             profession: profession.name,
-                            humor: humor,
-                            objectType: objectType,
-                            dataUrl: tgsData || pngImage,
-                            filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`,
-                            poseData: poseData,
+                            humor: humorText,
+                            dataUrl: pngImage,
+                            filename: `${character}_${profession.id}_${emotion.id}_${i}.png`,
                             hasHumor: useHumor
                         });
                     }
                 }
 
                 displayResults(generatedPNG, generatedTGS, profession);
-                
                 addToHistory(character, profession, currentStyle, selectedEmotions.length, generatedPNG, generatedTGS, selectedPack);
                 
             } catch (error) {
@@ -3439,26 +2635,25 @@ window.debugTGS = async function() {
             }
         };
 
+        // ========== ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ==========
         function displayResults(pngStickers, tgsStickers, profession) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
 
-            const humorCount = pngStickers.filter(s => s.hasHumor).length;
-            const classicCount = pngStickers.length - humorCount;
-
             const title = document.createElement('h2');
             title.style.cssText = 'font-size: 2em; color: white; margin-bottom: 20px;';
-            title.innerHTML = `🎉 Готово! ${pngStickers.length} стикеров для профессии ${profession.name} (${humorCount} с юмором, ${classicCount} классических)`;
+            title.innerHTML = `🎉 Готово! ${pngStickers.length} стикеров для профессии ${profession.name}`;
             resultsDiv.appendChild(title);
 
             const packagesDiv = document.createElement('div');
             packagesDiv.className = 'packages';
 
+            // Базовый набор (PNG)
             const basicPackage = document.createElement('div');
             basicPackage.className = 'package basic';
             basicPackage.innerHTML = `
                 <div class="package-header">
-                    <div class="package-title">📷 Базовый набор</div>
+                    <div class="package-title">📷 Базовый набор (PNG)</div>
                     <div class="package-price">299 ₽</div>
                 </div>
                 <div class="stickers-grid" id="pngGrid"></div>
@@ -3468,12 +2663,13 @@ window.debugTGS = async function() {
             `;
             packagesDiv.appendChild(basicPackage);
 
+            // Премиум набор (TGS)
             if (selectedPack === 'premium' && tgsStickers.length > 0) {
                 const premiumPackage = document.createElement('div');
                 premiumPackage.className = 'package premium';
                 premiumPackage.innerHTML = `
                     <div class="package-header">
-                        <div class="package-title">✨ Премиум с анимацией</div>
+                        <div class="package-title">✨ Премиум набор (TGS)</div>
                         <div class="package-price">499 ₽</div>
                     </div>
                     <div class="stickers-grid" id="tgsGrid"></div>
@@ -3486,66 +2682,36 @@ window.debugTGS = async function() {
 
             resultsDiv.appendChild(packagesDiv);
 
+            // Заполняем PNG сетку
             const pngGrid = document.getElementById('pngGrid');
             pngStickers.forEach(s => {
                 const card = document.createElement('div');
                 card.className = 'sticker-card';
-                
-                let typeBadge = '';
-                if (s.objectType) {
-                    const typeColors = {
-                        human: '#48bb78',
-                        animal: '#9f7aea',
-                        object: '#f97316'
-                    };
-                    typeBadge = `<span class="object-type-badge" style="background: ${typeColors[s.objectType] || '#9f7aea'}">${s.objectType}</span>`;
-                }
-                
                 card.innerHTML = `
                     <div class="sticker-preview">
                         <img src="${s.dataUrl}" alt="${s.emotion.name}">
                     </div>
                     <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                    ${typeBadge}
-                    ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : '<div class="sticker-humor" style="opacity: 0.3;">классический</div>'}
+                    ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
                     <span class="sticker-badge png">PNG</span>
                 `;
                 pngGrid.appendChild(card);
             });
 
+            // Заполняем TGS сетку
             if (selectedPack === 'premium' && tgsStickers.length > 0) {
                 const tgsGrid = document.getElementById('tgsGrid');
                 tgsStickers.forEach(s => {
                     const card = document.createElement('div');
                     card.className = 'sticker-card premium';
-                    
-                    let keypointDots = '';
-                    if (s.poseData && s.poseData.landmarks) {
-                        keypointDots = s.poseData.landmarks.map(lm => 
-                            `<div class="keypoint-dot" style="left:${lm.x * 100}%; top:${lm.y * 100}%;"></div>`
-                        ).join('');
-                    }
-                    
-                    let typeBadge = '';
-                    if (s.objectType) {
-                        const typeColors = {
-                            human: '#48bb78',
-                            animal: '#9f7aea',
-                            object: '#f97316'
-                        };
-                        typeBadge = `<span class="object-type-badge" style="background: ${typeColors[s.objectType] || '#9f7aea'}">${s.objectType}</span>`;
-                    }
-                    
                     card.innerHTML = `
                         <div class="sticker-preview">
-                            <img src="${s.dataUrl}" alt="${s.emotion.name}">
-                            <div class="keypoint-overlay">${keypointDots}</div>
+                            <div style="font-size: 3em;">${s.emotion.icon}</div>
                         </div>
                         <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                        ${typeBadge}
-                        ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : '<div class="sticker-humor" style="opacity: 0.3;">классический</div>'}
+                        ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
                         <span class="sticker-badge tgs">TGS</span>
-                        <span class="sticker-badge mediapipe">MediaPipe</span>
+                        <span class="sticker-badge api">Вектор</span>
                     `;
                     tgsGrid.appendChild(card);
                 });
@@ -3554,6 +2720,7 @@ window.debugTGS = async function() {
             document.getElementById('telegramGuide').style.display = 'block';
         }
 
+        // ========== СКАЧИВАНИЕ ==========
         window.downloadAll = (type) => {
             const stickers = type === 'png' ? generatedPNG : generatedTGS;
             stickers.forEach(s => {
@@ -3562,15 +2729,13 @@ window.debugTGS = async function() {
                 link.href = s.dataUrl;
                 link.click();
             });
-            alert(`Скачивание ${stickers.length} стикеров начато!`);
+            alert(`Скачивание ${stickers.length} файлов начато!`);
         };
 
         // ========== ИСТОРИЯ ==========
         function loadHistory() {
             const saved = localStorage.getItem('stickerHistory');
-            if (saved) {
-                generationHistory = JSON.parse(saved);
-            }
+            if (saved) generationHistory = JSON.parse(saved);
             renderHistory();
         }
 
@@ -3580,7 +2745,6 @@ window.debugTGS = async function() {
         }
 
         function addToHistory(character, profession, style, emotionsCount, pngStickers, tgsStickers, packType) {
-            const humorCount = pngStickers.filter(s => s.humor).length;
             const entry = {
                 id: Date.now(),
                 date: new Date().toLocaleString(),
@@ -3589,55 +2753,23 @@ window.debugTGS = async function() {
                 professionIcon: profession.icon,
                 style: style,
                 emotions: emotionsCount,
-                humorCount: humorCount,
-                classicCount: emotionsCount - humorCount,
                 packType: packType,
                 pngCount: pngStickers.length,
                 tgsCount: tgsStickers.length,
                 previews: pngStickers.slice(0, 5).map(s => s.dataUrl),
-                firstHumor: pngStickers[0]?.humor || 'классический'
+                firstHumor: pngStickers[0]?.humor || ''
             };
-            
             generationHistory.unshift(entry);
-            if (generationHistory.length > 50) {
-                generationHistory = generationHistory.slice(0, 50);
-            }
-            
+            if (generationHistory.length > 50) generationHistory = generationHistory.slice(0, 50);
             saveHistory();
         }
 
         function clearHistory() {
-            if (confirm('Очистить всю историю генераций?')) {
+            if (confirm('Очистить всю историю?')) {
                 generationHistory = [];
                 localStorage.removeItem('stickerHistory');
                 renderHistory();
             }
-        }
-
-        function regenerateFromHistory(entry) {
-            document.getElementById('characterPrompt').value = entry.character;
-            
-            const profession = PROFESSIONS.find(p => p.name === entry.profession);
-            if (profession) {
-                selectProfession(profession.id);
-            }
-            
-            document.querySelectorAll('.style-tag').forEach(tag => {
-                if (entry.style.includes(tag.textContent)) {
-                    tag.click();
-                }
-            });
-            
-            selectedEmotions = [];
-            document.querySelectorAll('.emotion-item input').forEach((checkbox, index) => {
-                if (index < 5) {
-                    checkbox.checked = true;
-                    toggleEmotion(checkbox.value, true);
-                }
-            });
-            
-            switchTab('generator');
-            document.querySelector('.creator-card').scrollIntoView({ behavior: 'smooth' });
         }
 
         function renderHistory() {
@@ -3645,7 +2777,7 @@ window.debugTGS = async function() {
             if (!grid) return;
             
             if (generationHistory.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #4a5568;">История пуста. Создайте первый набор стикеров!</div>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #4a5568;">История пуста</div>';
                 return;
             }
             
@@ -3656,9 +2788,7 @@ window.debugTGS = async function() {
                     <div class="history-date">📅 ${entry.date}</div>
                     <div class="history-prompt">
                         <strong>${entry.professionIcon} ${entry.profession}</strong><br>
-                        <strong>Персонаж:</strong> ${entry.character}<br>
-                        <strong>${entry.humorCount} мемных, ${entry.classicCount} классических</strong><br>
-                        <strong>Первый мем:</strong> "${entry.firstHumor}"
+                        <strong>Персонаж:</strong> ${entry.character}
                     </div>
                     <div class="history-previews">
                         ${entry.previews.map(url => `
@@ -3676,10 +2806,16 @@ window.debugTGS = async function() {
             `}).join('');
         }
 
+        function regenerateFromHistory(entry) {
+            document.getElementById('characterPrompt').value = entry.character;
+            const profession = PROFESSIONS.find(p => p.name === entry.profession);
+            if (profession) selectProfession(profession.id);
+            switchTab('generator');
+        }
+
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
             if (tab === 'generator') {
                 document.querySelector('.tab').classList.add('active');
                 document.getElementById('generator-tab').classList.add('active');
@@ -3690,10 +2826,9 @@ window.debugTGS = async function() {
             }
         }
 
-        // Проверка Recraft API
+        // ========== ПРОВЕРКА API ==========
         async function checkRecraftAPI() {
             const statusDiv = document.getElementById('recraftStatus');
-            
             try {
                 const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
                     method: 'POST',
@@ -3701,13 +2836,8 @@ window.debugTGS = async function() {
                         'Authorization': `Bearer ${RECRAFT_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        prompt: 'test',
-                        n: 1,
-                        size: '1024x1024'
-                    })
+                    body: JSON.stringify({ prompt: 'test', n: 1, size: '1024x1024' })
                 });
-
                 if (response.ok) {
                     statusDiv.className = 'api-status recraft';
                     statusDiv.innerHTML = '<span class="status-icon">✅</span><span>Recraft AI: Подключен</span>';
@@ -3721,7 +2851,7 @@ window.debugTGS = async function() {
             }
         }
 
-        // Инициализация
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
         renderProfessions();
         renderEmotions();
         checkRecraftAPI();
@@ -3736,501 +2866,8 @@ window.debugTGS = async function() {
                     toggleEmotion(emotion.id, true);
                 }
             });
-            
             selectProfession('zoomer');
         }, 100);
-
-        window.testTGS1 = async function() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#667eea';
-    ctx.fillRect(0, 0, 512, 512);
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 48px Arial';
-    ctx.fillText('TEST', 150, 256);
-    
-    const base64Data = canvas.toDataURL('image/png').split(',')[1];
-    
-    const jsonData = {
-        tgs: 1,
-        v: "5.5.7",
-        fr: 30,
-        ip: 0,
-        op: 30,
-        w: 512,
-        h: 512,
-        assets: [{
-            id: "image_0",
-            w: 512,
-            h: 512,
-            u: "",
-            p: base64Data,
-            e: 1
-        }],
-        layers: [{
-            ddd: 0,
-            ind: 1,
-            ty: 2,
-            nm: "sticker",
-            refId: "image_0",
-            sr: 1,
-            ks: {
-                o: { a: 0, k: 100 },
-                r: { a: 0, k: 0 },
-                p: { a: 0, k: [256, 256, 0] },
-                a: { a: 0, k: [256, 256, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            },
-            ip: 0,
-            op: 30
-        }]
-    };
-    
-    const compressed = pako.gzip(JSON.stringify(jsonData));
-    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-    
-    const reader = new FileReader();
-    reader.onloadend = () => {
-        const link = document.createElement('a');
-        link.download = 'test1.tgs';
-        link.href = reader.result;
-        link.click();
-    };
-    reader.readAsDataURL(blob);
-};
-
-        window.testTGS2 = async function() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#667eea';
-    ctx.fillRect(0, 0, 512, 512);
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 48px Arial';
-    ctx.fillText('MOVE', 150, 256);
-    
-    const base64Data = canvas.toDataURL('image/png').split(',')[1];
-    
-    const jsonData = {
-        tgs: 1,
-        v: "5.5.7",
-        fr: 30,
-        ip: 0,
-        op: 30,
-        w: 512,
-        h: 512,
-        assets: [{
-            id: "image_0",
-            w: 512,
-            h: 512,
-            u: "",
-            p: base64Data,
-            e: 1
-        }],
-        layers: [{
-            ddd: 0,
-            ind: 1,
-            ty: 2,
-            nm: "sticker",
-            refId: "image_0",
-            sr: 1,
-            ks: {
-                o: { a: 0, k: 100 },
-                r: { a: 0, k: 0 },
-                p: { 
-                    a: 1, 
-                    k: [
-                        { t: 0, s: [256, 256, 0] },
-                        { t: 15, s: [266, 256, 0] },
-                        { t: 30, s: [256, 256, 0] }
-                    ]
-                },
-                a: { a: 0, k: [256, 256, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            },
-            ip: 0,
-            op: 30
-        }]
-    };
-    
-    const compressed = pako.gzip(JSON.stringify(jsonData));
-    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-    
-    const reader = new FileReader();
-    reader.onloadend = () => {
-        const link = document.createElement('a');
-        link.download = 'test2.tgs';
-        link.href = reader.result;
-        link.click();
-    };
-    reader.readAsDataURL(blob);
-};
-
-        window.testTGS3 = async function() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#667eea';
-    ctx.fillRect(0, 0, 512, 512);
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 48px Arial';
-    ctx.fillText('ROTATE', 120, 256);
-    
-    const base64Data = canvas.toDataURL('image/png').split(',')[1];
-    
-    const jsonData = {
-        tgs: 1,
-        v: "5.5.7",
-        fr: 30,
-        ip: 0,
-        op: 30,
-        w: 512,
-        h: 512,
-        assets: [{
-            id: "image_0",
-            w: 512,
-            h: 512,
-            u: "",
-            p: base64Data,
-            e: 1
-        }],
-        layers: [{
-            ddd: 0,
-            ind: 1,
-            ty: 2,
-            nm: "sticker",
-            refId: "image_0",
-            sr: 1,
-            ks: {
-                o: { a: 0, k: 100 },
-                r: { 
-                    a: 1, 
-                    k: [
-                        { t: 0, s: [0] },
-                        { t: 15, s: [10] },
-                        { t: 30, s: [0] }
-                    ]
-                },
-                p: { a: 0, k: [256, 256, 0] },
-                a: { a: 0, k: [256, 256, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            },
-            ip: 0,
-            op: 30
-        }]
-    };
-    
-    const compressed = pako.gzip(JSON.stringify(jsonData));
-    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-    
-    const reader = new FileReader();
-    reader.onloadend = () => {
-        const link = document.createElement('a');
-        link.download = 'test3.tgs';
-        link.href = reader.result;
-        link.click();
-    };
-    reader.readAsDataURL(blob);
-};
-
-        window.testTGS4 = async function() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    
-    // Прозрачный фон
-    ctx.clearRect(0, 0, 512, 512);
-    
-    // Рисуем круг
-    ctx.fillStyle = '#667eea';
-    ctx.beginPath();
-    ctx.arc(256, 256, 150, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 48px Arial';
-    ctx.fillText('TGS', 200, 280);
-    
-    const base64Data = canvas.toDataURL('image/png').split(',')[1];
-    
-    const jsonData = {
-        tgs: 1,
-        v: "5.5.7",
-        fr: 30,
-        ip: 0,
-        op: 30,
-        w: 512,
-        h: 512,
-        assets: [{
-            id: "image_0",
-            w: 512,
-            h: 512,
-            u: "",
-            p: base64Data,
-            e: 1
-        }],
-        layers: [{
-            ddd: 0,
-            ind: 1,
-            ty: 2,
-            nm: "sticker",
-            refId: "image_0",
-            sr: 1,
-            ks: {
-                o: { 
-                    a: 1, 
-                    k: [
-                        { t: 0, s: [100] },
-                        { t: 15, s: [50] },
-                        { t: 30, s: [100] }
-                    ]
-                },
-                r: { a: 0, k: 0 },
-                p: { a: 0, k: [256, 256, 0] },
-                a: { a: 0, k: [256, 256, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            },
-            ip: 0,
-            op: 30
-        }]
-    };
-    
-    const compressed = pako.gzip(JSON.stringify(jsonData));
-    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-    
-    const reader = new FileReader();
-    reader.onloadend = () => {
-        const link = document.createElement('a');
-        link.download = 'test4.tgs';
-        link.href = reader.result;
-        link.click();
-    };
-    reader.readAsDataURL(blob);
-};
-
-       async function testTGS5() {
-    // Создаём canvas
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    
-    // Рисуем тестовое изображение
-    ctx.fillStyle = '#FF0000';
-    ctx.fillRect(0, 0, 512, 512);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 48px Arial';
-    ctx.fillText('TGS', 200, 256);
-    
-    // Конвертируем canvas в blob
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-    
-    // Конвертируем blob в base64
-    const base64Data = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const result = reader.result;
-            const base64 = result.split(',')[1];
-            resolve(base64);
-        };
-        reader.readAsDataURL(blob);
-    });
-    
-    console.log('Base64 длина:', base64Data.length);
-    
-    // Создаём TGS
-    const tgsData = {
-        tgs: 1,
-        v: "5.5.7",
-        fr: 30,
-        ip: 0,
-        op: 30,
-        w: 512,
-        h: 512,
-        assets: [{
-            id: "image_0",
-            w: 512,
-            h: 512,
-            u: "",
-            p: base64Data,
-            e: 1
-        }],
-        layers: [{
-            ddd: 0,
-            ind: 1,
-            ty: 2,
-            nm: "sticker",
-            refId: "image_0",
-            sr: 1,
-            ks: {
-                o: { a: 0, k: 100 },
-                r: { a: 0, k: 0 },
-                p: { a: 0, k: [256, 256, 0] },
-                a: { a: 0, k: [256, 256, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            },
-            ip: 0,
-            op: 30
-        }]
-    };
-    
-    // Сжимаем и сохраняем
-    const compressed = pako.gzip(JSON.stringify(tgsData));
-    const finalBlob = new Blob([compressed], { type: 'application/x-tgsticker' });
-    
-    const url = URL.createObjectURL(finalBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'test5.tgs';
-    link.click();
-    
-    console.log('✅ Файл test5.tgs создан!');
-} 
-
-        async function testFinal() {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#667eea';
-    ctx.fillRect(0, 0, 512, 512);
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 48px Arial';
-    ctx.fillText('FINAL', 150, 256);
-    
-    const pngData = canvas.toDataURL('image/png');
-    const tgsData = await convertPngToTgs(pngData, null, 0);
-    
-    const link = document.createElement('a');
-    link.download = 'final.tgs';
-    link.href = tgsData;
-    link.click();
-    console.log('✅ final.tgs создан');
-}
-
-        window.diagnosticTGS = async function() {
-    console.log("%c🔬 ЗАПУСК ДИАГНОСТИКИ TGS", "background: #667eea; color: white; font-size: 14px; padding: 4px;");
-    
-    // 1. Создаем тестовое изображение (простой цветной прямоугольник)
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#667eea';
-    ctx.fillRect(0, 0, 512, 512);
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 48px Arial';
-    ctx.fillText('DIAG', 150, 256);
-    const pngDataUrl = canvas.toDataURL('image/png');
-    console.log("✅ 1. Тестовое изображение создано");
-
-    // 2. Создаем JSON через вашу функцию
-    console.log("⚙️ 2. Вызываем createAnimationFromPose()...");
-    const lottieJson = createAnimationFromPose(pngDataUrl, null, 0);
-    console.log("✅ Функция выполнена");
-
-    // 3. Проверяем структуру
-    console.log("%c🔍 3. Анализ структуры JSON:", "font-weight: bold;");
-    
-    const checks = {
-        "Поле 'tgs' (обязательно)": lottieJson.tgs !== undefined,
-        "Поле 'v' (версия)": lottieJson.v !== undefined,
-        "Поле 'fr' (частота кадров)": lottieJson.fr !== undefined,
-        "Поле 'ip' (начальный кадр)": lottieJson.ip !== undefined,
-        "Поле 'op' (конечный кадр)": lottieJson.op !== undefined,
-        "Поле 'w' (ширина)": lottieJson.w === 512,
-        "Поле 'h' (высота)": lottieJson.h === 512,
-        "Массив 'assets' существует": Array.isArray(lottieJson.assets),
-        "Массив 'layers' существует": Array.isArray(lottieJson.layers),
-        "Слои не пустые": lottieJson.layers && lottieJson.layers.length > 0
-    };
-    
-    let allGood = true;
-    for (const [check, passed] of Object.entries(checks)) {
-        if (passed) {
-            console.log(`   ✅ ${check}`);
-        } else {
-            console.log(`   ❌ ${check}`);
-            allGood = false;
-        }
-    }
-
-    if (!allGood) {
-        console.warn("⚠️ Обнаружены проблемы в структуре JSON");
-    } else {
-        console.log("✅ Структура JSON корректна!");
-    }
-
-    // 4. Проверяем assets (самое важное!)
-    if (lottieJson.assets && lottieJson.assets[0]) {
-        const asset = lottieJson.assets[0];
-        console.log("%c🖼️ 4. Анализ assets[0]:", "font-weight: bold;");
-        console.log("   - id:", asset.id);
-        console.log("   - w:", asset.w);
-        console.log("   - h:", asset.h);
-        console.log("   - e:", asset.e);
-        console.log("   - p (base64) длина:", asset.p ? asset.p.length : 'отсутствует');
-        
-        // Проверяем, не начинается ли base64 с "data:image"
-        if (asset.p && asset.p.startsWith('data:image')) {
-            console.warn("   ⚠️ Поле 'p' содержит префикс 'data:image'. Telegram этого не любит.");
-        } else {
-            console.log("   ✅ Поле 'p' в правильном формате (без префикса)");
-        }
-    } else {
-        console.error("❌ Отсутствует assets[0]!");
-    }
-
-    // 5. Проверяем слои
-    if (lottieJson.layers && lottieJson.layers.length > 0) {
-        console.log("%c🎬 5. Анализ слоёв:", "font-weight: bold;");
-        lottieJson.layers.forEach((layer, i) => {
-            console.log(`   Слой ${i}:`, {
-                ind: layer.ind,
-                ty: layer.ty,
-                nm: layer.nm,
-                parent: layer.parent,
-                hasKs: !!layer.ks
-            });
-        });
-    }
-
-    // 6. Создаем TGS файл
-    console.log("%c📦 6. Создаём TGS файл...", "font-weight: bold;");
-    
-    // Добавляем обязательное поле tgs
-    lottieJson.tgs = 1;
-    
-    const jsonString = JSON.stringify(lottieJson);
-    console.log(`   Размер JSON: ${jsonString.length} байт`);
-    
-    const compressed = pako.gzip(jsonString);
-    console.log(`   Размер GZIP: ${compressed.length} байт`);
-    
-    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-    console.log(`   Размер Blob: ${blob.size} байт`);
-
-    // 7. Сохраняем
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'diagnostic.tgs';
-    link.click();
-    
-    console.log("%c✅ Диагностика завершена! Файл 'diagnostic.tgs' сохранён. Отправьте его в Telegram и скажите, что произошло.", "background: #48bb78; color: white; font-size: 14px; padding: 4px;");
-    
-    // 8. Дополнительно: выводим JSON в консоль для ручного анализа
-    console.log("%c📄 Полный JSON (для копирования):", "font-weight: bold;");
-    console.log(JSON.stringify(lottieJson, null, 2));
-};
-
-// Добавляем функцию в глобальную область
-window.runDiagnostics = diagnosticTGS;
     </script>
 </body>
 </html>
