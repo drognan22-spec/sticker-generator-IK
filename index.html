@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator PRO - Recraft V4</title>
+    <title>Sticker Generator PRO - ФИНАЛЬНАЯ ВЕРСИЯ</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
@@ -1063,12 +1063,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎨 Sticker Generator <span>V4</span></h1>
-            <div class="subtitle">30 профессий • 30 эмоций • 15 стилей • V4 вектор для TGS</div>
+            <h1>🎨 Sticker Generator <span>FINAL</span></h1>
+            <div class="subtitle">30 профессий • 30 эмоций • 60 FPS • TGS работает</div>
             <div class="stats">
                 <div class="stat-badge"><span>30</span> профессий</div>
                 <div class="stat-badge"><span>30</span> эмоций</div>
-                <div class="stat-badge"><span>20+</span> шуток</div>
+                <div class="stat-badge"><span>60</span> FPS</div>
             </div>
             <button class="project-info-btn" onclick="openProjectInfo()">
                 ℹ️ О проекте
@@ -1080,18 +1080,18 @@
             <div class="modal-content">
                 <button class="modal-close" onclick="closeProjectInfo()">×</button>
                 
-                <h2>🎯 О проекте Sticker Generator V4</h2>
+                <h2>🎯 О проекте Sticker Generator FINAL</h2>
                 
                 <div class="feature-grid">
                     <div class="feature-item">
                         <div class="feature-icon">🎨</div>
                         <div class="feature-title">Recraft V4</div>
-                        <div class="feature-desc">Новейшая модель, вектор для TGS</div>
+                        <div class="feature-desc">PNG с текстом через промпт</div>
                     </div>
                     <div class="feature-item">
                         <div class="feature-icon">🔍</div>
                         <div class="feature-title">MediaPipe Pose</div>
-                        <div class="feature-desc">33 точки, детекция человека/животного</div>
+                        <div class="feature-desc">33 точки, 60 FPS анимация</div>
                     </div>
                     <div class="feature-item">
                         <div class="feature-icon">💼</div>
@@ -1100,8 +1100,8 @@
                     </div>
                     <div class="feature-item">
                         <div class="feature-icon">✨</div>
-                        <div class="feature-title">5-слойная анимация</div>
-                        <div class="feature-desc">TGS из вектора, не из PNG</div>
+                        <div class="feature-title">TGS 60 FPS</div>
+                        <div class="feature-desc">Текст в PNG, анимация векторная</div>
                     </div>
                 </div>
 
@@ -1119,35 +1119,35 @@
                             <div class="step-number">2</div>
                             <div class="step-content">
                                 <div class="step-title">Генератор → Recraft V4</div>
-                                <div class="step-desc">Генерация PNG (модель recraftv4)</div>
+                                <div class="step-desc">PNG с текстом (юмор в speech bubble)</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">3</div>
                             <div class="step-content">
                                 <div class="step-title">Генератор → Recraft V4 Vector</div>
-                                <div class="step-desc">Генерация SVG (модель recraftv4_vector) - ТОЛЬКО ДЛЯ TGS!</div>
+                                <div class="step-desc">SVG для TGS (без текста)</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">4</div>
                             <div class="step-content">
                                 <div class="step-title">MediaPipe анализ</div>
-                                <div class="step-desc">33 точки, определение объекта (по PNG)</div>
+                                <div class="step-desc">33 точки по PNG</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">5</div>
                             <div class="step-content">
                                 <div class="step-title">Применение анимации</div>
-                                <div class="step-desc">5-слойная анимация к векторным слоям SVG</div>
+                                <div class="step-desc">5-слойная, 60 FPS</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">6</div>
                             <div class="step-content">
                                 <div class="step-title">Генератор → Пользователь</div>
-                                <div class="step-desc">PNG + TGS (из SVG, а не из PNG)</div>
+                                <div class="step-desc">PNG + TGS (текст есть, анимация работает)</div>
                             </div>
                         </div>
                     </div>
@@ -1159,26 +1159,10 @@
                     <p>✅ 30 эмоций</p>
                     <p>✅ 15 стилей</p>
                     <p>✅ MediaPipe 33 точки</p>
-                    <p>✅ Определение человека/животного/предмета</p>
                     <p>✅ 5-слойная анимация</p>
-                    <p>✅ TGS создается ТОЛЬКО из SVG (НЕ ИЗ PNG)</p>
+                    <p>✅ 60 FPS (требование Telegram)</p>
+                    <p>✅ Текст в PNG, TGS без текстовых слоев</p>
                 </div>
-
-                <h3>📦 Технологии</h3>
-                <table class="resource-table">
-                    <tr>
-                        <td><span class="tech-badge recraft">Recraft V4</span></td>
-                        <td>PNG генерация</td>
-                    </tr>
-                    <tr>
-                        <td><span class="tech-badge recraft">Recraft V4 Vector</span></td>
-                        <td>SVG вектор для TGS</td>
-                    </tr>
-                    <tr>
-                        <td><span class="tech-badge mediapipe">MediaPipe</span></td>
-                        <td>33 точки позы</td>
-                    </tr>
-                </table>
             </div>
         </div>
 
@@ -1255,8 +1239,8 @@
                         <div class="pack-price">299 ₽</div>
                         <ul class="features">
                             <li>30 PNG стикеров</li>
-                            <li>70% с юмором</li>
-                            <li>Recraft V4</li>
+                            <li>Текст нарисован Recraft</li>
+                            <li>Работает сейчас</li>
                         </ul>
                     </div>
                     <div class="pack premium" id="premiumPack" onclick="selectPack('premium')">
@@ -1265,8 +1249,8 @@
                         <ul class="features">
                             <li>30 TGS анимированных</li>
                             <li>5-слойная анимация</li>
-                            <li>Recraft V4 Vector (SVG → TGS)</li>
-                            <li>НЕ ИСПОЛЬЗУЕТ PNG для TGS</li>
+                            <li>60 FPS (требование Telegram)</li>
+                            <li>Текст уже в PNG</li>
                         </ul>
                     </div>
                 </div>
@@ -1278,7 +1262,7 @@
 
             <div id="loading" class="loading">
                 <div class="loading-spinner"></div>
-                <p id="loadingProgress" style="font-size: 1.2em;">Генерация PNG и SVG для TGS...</p>
+                <p id="loadingProgress" style="font-size: 1.2em;">Генерация PNG с текстом и TGS 60 FPS...</p>
             </div>
 
             <div id="results" class="results"></div>
@@ -1311,7 +1295,7 @@
     </div>
 
     <footer>
-        <p>30 профессий • 30 эмоций • Recraft V4 • TGS из вектора (не из PNG)</p>
+        <p>30 профессий • 30 эмоций • 60 FPS • TGS работает</p>
     </footer>
 
     <script>
@@ -1555,6 +1539,438 @@
                     'мой любимый цвет - "дорогой"',
                     'когда просят нарисовать за "спасибо"'
                 ]
+            },
+            {
+                id: 'musician',
+                name: '🎸 Музыкант',
+                icon: '🎸',
+                basePrompt: 'musician, singer, performer',
+                humor: [
+                    'у группы 5 человек и 3 фаната',
+                    'жизнь в автобусе: тур-издание',
+                    'когда басист наконец пришёл',
+                    'барабанщик - тоже музыкант?',
+                    'играю "в лесу родилась ёлочка" в 1000й раз',
+                    'забыл слова на сцене (опять)',
+                    'репетиция: 10% музыки, 90% споров',
+                    'гонорар: пиво и аплодисменты',
+                    'когда зрители наконец зааплодировали',
+                    'купил гитару за 100к, играю в метро'
+                ]
+            },
+            {
+                id: 'lawyer',
+                name: '👔 Юрист',
+                icon: '👔',
+                basePrompt: 'lawyer, attorney, legal counsel',
+                humor: [
+                    'протестую (хотя не уверен)',
+                    'почасовка: 10 000/час, чтение документов',
+                    'когда нашёл лазейку в законе',
+                    'клиент: а вот в интернете написано',
+                    'суд: место где проигрывают все',
+                    'юрист математик: 1 час = 6 часов',
+                    'кодекс: 1000 страниц сна',
+                    'договор: 50 страниц мелким шрифтом',
+                    'мой костюм дороже твоей машины',
+                    'оправдан? значит плохо работал'
+                ]
+            },
+            {
+                id: 'psychologist',
+                name: '🧠 Психолог',
+                icon: '🧠',
+                basePrompt: 'psychologist, therapist, counselor',
+                humor: [
+                    'и как вы себя чувствуете? (я знаю что плохо)',
+                    'мой диплом: просто картинка',
+                    'сессия: 50 минут, молчание: 45',
+                    'пациент платит за то, чтобы поплакать',
+                    'я сам хожу к психологу (к себе)',
+                    '"расскажите о детстве" (там всё сломано)',
+                    'моя кушетка удобнее чем моя зарплата',
+                    'киваю, хотя не слушаю (профессиональное)',
+                    'выпишу рецепт на успокоительное (себе)',
+                    'пациент: вы меня понимаете? я: нет'
+                ]
+            },
+            {
+                id: 'cosmonaut',
+                name: '👨‍🚀 Космонавт',
+                icon: '👨‍🚀',
+                basePrompt: 'cosmonaut, astronaut, space explorer',
+                humor: [
+                    'космос: холодно, страшно, красиво',
+                    'когда спросили "а вайфай есть?"',
+                    'космонавт: профессиональный летун',
+                    'отвязался от станции (ой)',
+                    'лунный грунт: просто песок',
+                    'невесомость: круто, но тошнит',
+                    'космическая еда: сухой паёк',
+                    'земля: маленький голубой шарик',
+                    'выход в открытый космос: 2 часа страха',
+                    'возвращение: самая страшная поездка'
+                ]
+            },
+            {
+                id: 'firefighter',
+                name: '🚒 Пожарный',
+                icon: '🚒',
+                basePrompt: 'firefighter, rescue worker',
+                humor: [
+                    'коты: всегда на деревьях',
+                    'сирена в 3 часа ночи (опять)',
+                    'пожарный: спишь? горим!',
+                    'ложный вызов (как всегда)',
+                    'машина: вечно грязная',
+                    'дым: плохо для здоровья',
+                    'казарма: круглосуточный спортзал',
+                    'далматинец: маскот-бездельник',
+                    'готовка в части: вечно горит',
+                    'шест: быстрый спуск (и ушибы)'
+                ]
+            },
+            {
+                id: 'archaeologist',
+                name: '🔦 Археолог',
+                icon: '🔦',
+                basePrompt: 'archaeologist, digging fossils',
+                humor: [
+                    'это просто камень (это динозавр)',
+                    'индиана джонс: 1% правды, 99% вранья',
+                    'когда нашёл черепок',
+                    'археолог: профессиональный копатель',
+                    'мумия: древний антистресс',
+                    'студенты: вечно ломают находки',
+                    'раскопки: +40, тень 0',
+                    'кисточка: главный инструмент',
+                    'ничего не нашли? это норма',
+                    'древнее проклятие: тонны отчётов'
+                ]
+            },
+            {
+                id: 'veterinarian',
+                name: '🐾 Ветеринар',
+                icon: '🐾',
+                basePrompt: 'veterinarian, animal doctor',
+                humor: [
+                    'пациент: кусается, хозяин: "он добрый"',
+                    'кошки: 99% наглости, 1% пациента',
+                    'собака лизнула (я счастлив)',
+                    '1 собака = 5 кошек по стрессу',
+                    'хозяин: "он ест только organic"',
+                    'животные в панике, хозяева в истерике',
+                    'лечу животных, успокаиваю людей',
+                    'у кошки 9 жизней, у меня 0 терпения',
+                    'срочно: кошка на дереве (снова)',
+                    'ветеринар: смотрю в одно место'
+                ]
+            },
+            {
+                id: 'dentist',
+                name: '🦷 Стоматолог',
+                icon: '🦷',
+                basePrompt: 'dentist, dental professional',
+                humor: [
+                    'пациент: "больно?" я: "только кошельку"',
+                    'не чистил зубы 10 лет (герой)',
+                    'стоматолог: профессиональный сверлильщик',
+                    'пациент уснул (или умер?)',
+                    'звук бормашины: саундтрек ужасов',
+                    'брекеты на 6 месяцев (на 2 года)',
+                    'зубная нить: про неё все врут',
+                    'зубы мудрости: совсем не мудрые',
+                    'страховка: плати, лечись сам',
+                    'рот шире... шире... ещё шире'
+                ]
+            },
+            {
+                id: 'librarian',
+                name: '📚 Библиотекарь',
+                icon: '📚',
+                basePrompt: 'librarian, library worker',
+                humor: [
+                    'тсс: моё второе имя',
+                    'когда спросили "а есть эта книга?" (их 1000)',
+                    'библиотекарь: профессиональный сортировщик',
+                    'штраф за задержку: моя пенсия',
+                    'когда вернули книгу на полку не туда',
+                    'УДК: древняя магия',
+                    'тихо? нет, это библиотека',
+                    'когда едят в библиотеке (хаос)',
+                    'книги молчат, пока их не прочитают',
+                    'детский час: 30 минут ада'
+                ]
+            },
+            {
+                id: 'mechanic',
+                name: '🔧 Механик',
+                icon: '🔧',
+                basePrompt: 'mechanic, car repair',
+                humor: [
+                    'машина стучит, я: "так и надо"',
+                    'клиент: "сколько стоит?" я: "почку"',
+                    'механик: профессиональный заменятель',
+                    'когда осталась лишняя деталь',
+                    'check engine: новогодняя ёлка',
+                    'руки в масле, душа поёт',
+                    'клиент: "она сама сломалась"',
+                    'инструменты: вечно не там',
+                    'пробег 200к, хозяин: "как новая"',
+                    'электрика: всегда проблема'
+                ]
+            },
+            {
+                id: 'electrician',
+                name: '⚡ Электрик',
+                icon: '⚡',
+                basePrompt: 'electrician, electrical worker',
+                humor: [
+                    'провод: чёрный - не чёрный',
+                    'клиент: "там просто провод" (их 50)',
+                    'электрик: профессиональный дальтоник',
+                    'когда выключил не тот рубильник',
+                    'искры: весело или страшно?',
+                    'заземление: опционально',
+                    '220В: хватит чтобы танцевать',
+                    'щиток: организованный хаос',
+                    'работа под напряжением? нет спасибо',
+                    'свет погас, я работаю'
+                ]
+            },
+            {
+                id: 'plumber',
+                name: '🪠 Сантехник',
+                icon: '🪠',
+                basePrompt: 'plumber, pipe repair',
+                humor: [
+                    'вода: найдёт любую щель',
+                    'когда смыли то, что нельзя',
+                    'сантехник: смотрящий в унитаз',
+                    'когда прорвало трубу',
+                    'зарплата: утекла в трубу',
+                    'клиент: "вчера же работало"',
+                    'трос: не для рыбалки',
+                    'давление воды: или нет, или много',
+                    'вызов в 2 часа ночи (всегда)',
+                    'унитаз - не мусорка'
+                ]
+            },
+            {
+                id: 'photographer',
+                name: '📸 Фотограф',
+                icon: '📸',
+                basePrompt: 'photographer, taking photos',
+                humor: [
+                    'в фотошопе исправлю',
+                    'клиент: "сделайте меня стройнее"',
+                    'фотограф: профессиональный селф-мейкер',
+                    'объектив: дороже камеры',
+                    'когда села батарея в самый ответственный момент',
+                    'свадьба: стресс в 4K',
+                    'лучший объектив - тот что забыл',
+                    'обработка: 1 час съёмки, 8 часов правки',
+                    '"сделайте чёрно-белое" (спасите)',
+                    'естественный свет: бесплатно, искусственный: 2000$'
+                ]
+            },
+            {
+                id: 'waiter',
+                name: '🍽️ Официант',
+                icon: '🍽️',
+                basePrompt: 'waiter, server, restaurant',
+                humor: [
+                    'столик 4: хочет всё',
+                    'клиент: "я готов" (не готов)',
+                    'официант: профессиональный носильщик',
+                    'когда уронил поднос',
+                    'чаевые: 0%, наглость: 100%',
+                    'вода: бесплатно, лёд: дороже',
+                    'кухня: вечно горит',
+                    'специальное блюдо: то что надо срочно продать',
+                    'раздельный чек на 8 человек',
+                    'последний столик: никогда не уходит'
+                ]
+            },
+            {
+                id: 'barista',
+                name: '☕ Бариста',
+                icon: '☕',
+                basePrompt: 'barista, coffee maker',
+                humor: [
+                    'декаф: для слабаков',
+                    'клиент: "погорячее" (кипяток)',
+                    'латте-арт: 1% умения, 99% удачи',
+                    'когда написал имя неправильно',
+                    'кофе: вода для уставших',
+                    'бариста: профессиональный молочник',
+                    'утренняя толпа: режим хаос',
+                    '"можно кофе" (50 видов, какой?)',
+                    'мой эспрессо крепче чем я',
+                    'кофемашина: единственная любовь'
+                ]
+            },
+            {
+                id: 'sailor',
+                name: '⚓ Моряк',
+                icon: '⚓',
+                basePrompt: 'sailor, seaman, captain',
+                humor: [
+                    'морская болезнь: 90% новичков',
+                    'когда спросили "мы уже приплыли?"',
+                    'моряк: профессиональный вязальщик узлов',
+                    'когда увидел землю',
+                    'море: вечно движется',
+                    'чайки: летающие крысы',
+                    'капитан: тот кто орёт',
+                    'карты: врут всегда',
+                    'шторм: бесплатные американские горки',
+                    'рыба: всегда в меню'
+                ]
+            },
+            {
+                id: 'miner',
+                name: '⛏️ Шахтёр',
+                icon: '⛏️',
+                basePrompt: 'miner, underground worker',
+                humor: [
+                    'канарейка: мой детектор газа',
+                    'когда погас свет',
+                    'шахтёр: профессиональный копатель',
+                    'нашёл уголь (не золото)',
+                    'в шахте: темно, холодно, страшно',
+                    'уголь: чёрное золото',
+                    'техника безопасности? нет',
+                    'обед: ем в темноте',
+                    'поверхность: мифическое место',
+                    'смена: 12 часов грязи'
+                ]
+            },
+            {
+                id: 'pilot',
+                name: '✈️ Пилот',
+                icon: '✈️',
+                basePrompt: 'pilot, aviator, flying',
+                humor: [
+                    'турбулентность: бесплатный аттракцион',
+                    'когда спросили "мы уже прилетели?"',
+                    'пилот: профессиональный водитель облаков',
+                    'посадка при ветре: экстрим',
+                    'второй пилот: тот кто всё делает',
+                    'погода: хуже прогноза',
+                    'пассажиры хлопают (зачем?)',
+                    'задержка: наше любимое слово',
+                    'полёт 2 часа, ждать 4',
+                    'капитан выключил табло (ура)'
+                ]
+            },
+            {
+                id: 'builder',
+                name: '🏗️ Строитель',
+                icon: '🏗️',
+                basePrompt: 'construction worker, builder',
+                humor: [
+                    'отмерь один раз, отрежь два (или наоборот)',
+                    'чертежи: всегда с ошибками',
+                    'строитель: профессиональный молотобоец',
+                    'когда стена кривая',
+                    'леса: шаткая конструкция',
+                    'цемент: то густо, то пусто',
+                    'обед: всегда на земле',
+                    'прораб: вечно смотрит',
+                    'инструменты: вечно теряются',
+                    'планёрка: 30 минут "будьте осторожны"'
+                ]
+            },
+            {
+                id: 'farmer',
+                name: '🚜 Фермер',
+                icon: '🚜',
+                basePrompt: 'farmer, agricultural worker',
+                humor: [
+                    'петух: будильник 4 утра',
+                    'когда курица снесла яйцо (ура)',
+                    'фермер: профессиональный сажатель',
+                    'урожай: то дождь, то засуха',
+                    'трактор: моя любовь',
+                    'коровы: мычат, я их дою',
+                    'огород: 6 соток рая',
+                    'колорадский жук: враг народа',
+                    'навоз: удобрение и головная боль',
+                    'рынок: продаю, торгуются'
+                ]
+            },
+            {
+                id: 'scientist',
+                name: '🔬 Ученый',
+                icon: '🔬',
+                basePrompt: 'scientist, researcher, in lab',
+                humor: [
+                    'наука: это как магия, но реально',
+                    'когда эксперимент сработал в пятницу вечером',
+                    'техника безопасности? нет',
+                    'мой контрольный образец: хаос',
+                    'когда нашёл статью, где твоя теория неправильная',
+                    'рецензирование: голодные игры',
+                    'аспирантура: просто большой долг',
+                    'корреляция не равна причинности, но подозрительно',
+                    'когда гипотеза неправильная (всегда)',
+                    'научный метод: угадай, проверь, плачь, повтори'
+                ]
+            },
+            {
+                id: 'journalist',
+                name: '📰 Журналист',
+                icon: '📰',
+                basePrompt: 'journalist, reporter',
+                humor: [
+                    'дедлайн через 5 минут, а новостей нет',
+                    'мой источник: "строго анонимно" (это я)',
+                    'новость: "сенсация", текст: "ну такое"',
+                    'редактор: "перепиши", я: "переписал" (то же самое)',
+                    'в погоне за сенсацией уже 3 день',
+                    'моя совесть чиста (я её продал)',
+                    'интервью: 2 часа, в эфир: 30 секунд',
+                    'правда где-то рядом (но не сегодня)',
+                    'журналист: "я не вру, я художественно излагаю"',
+                    'горячая новость: котик спасся из пожара'
+                ]
+            },
+            {
+                id: 'athlete',
+                name: '🏃‍♂️ Спортсмен',
+                icon: '🏃‍♂️',
+                basePrompt: 'athlete, sportsman, fit person',
+                humor: [
+                    'день ног: день 365 пропуска',
+                    'мой протеин: вкус сожаления',
+                    'абонемент в зал: 5000/мес, посещений: 3',
+                    'когда рекорд наконец побит',
+                    'тренер: "ещё один подход" уже 2 часа',
+                    'спортивный напиток: дорогая цветная вода',
+                    'до соревнований: загрузка углями = ем всё',
+                    'после соревнований: почему всё болит',
+                    'главная тренировка: дойти до зала',
+                    'фитнес-блогеры: образец для подражания'
+                ]
+            },
+            {
+                id: 'accountant',
+                name: '📊 Бухгалтер',
+                icon: '📊',
+                basePrompt: 'accountant, bookkeeper',
+                humor: [
+                    'баланс: должен быть ноль (никогда)',
+                    'отчётность: 100500 страниц',
+                    'когда налоговая пришла',
+                    'дедлайн сдачи отчётов: завтра',
+                    'Excel - моя жизнь',
+                    'цифры сходятся? значит я ошибся',
+                    'зарплата: посчитай сам',
+                    'когда нашли ошибку за прошлый год',
+                    'первичка: вечно теряется',
+                    'аудит: веселье с проверяющими'
+                ]
             }
         ];
 
@@ -1690,7 +2106,7 @@
             if (generateBtn) generateBtn.classList.toggle('premium', pack === 'premium');
         };
 
-        // ========== ГЕНЕРАЦИЯ PNG (Recraft V4) ==========
+        // ========== ГЕНЕРАЦИЯ PNG (Recraft V4) С ТЕКСТОМ ==========
         async function generateRecraftPNG(prompt) {
             addDebugLog('info', `🖼️ [V4] Запрос PNG: ${prompt.substring(0, 100)}...`);
             
@@ -1740,7 +2156,7 @@
             }
         }
 
-        // ========== ГЕНЕРАЦИЯ SVG (Recraft V4 VECTOR) - ТОЛЬКО ДЛЯ TGS! ==========
+        // ========== ГЕНЕРАЦИЯ SVG (Recraft V4 VECTOR) - БЕЗ ТЕКСТА ==========
         async function generateRecraftSVG(prompt) {
             addDebugLog('info', `🎨 [V4 VECTOR] Запрос SVG: ${prompt.substring(0, 100)}...`);
             
@@ -1862,28 +2278,17 @@
             }
         }
 
-        // ========== TGS ГЕНЕРАЦИЯ ==========
-        async function compressToTGS(lottieJson) {
-            lottieJson.tgs = 1;
-            const compressed = pako.gzip(JSON.stringify(lottieJson));
-            const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-            
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
-            });
-        }
-
-        // Конвертация SVG в Lottie с сохранением слоёв
+        // ========== КОНВЕРТАЦИЯ SVG В LOTTIE (60 FPS) ==========
         async function convertSvgToLottie(svgString) {
             const lottieJson = {
+                tgs: 1,
                 v: "5.5.2",
-                fr: 30,
+                fr: 60,  // 60 FPS - требование Telegram!
                 ip: 0,
-                op: 90,
+                op: 180, // 3 секунды × 60 fps = 180 кадров
                 w: 512,
                 h: 512,
+                ddd: 0,
                 layers: []
             };
             
@@ -1896,7 +2301,7 @@
                     const layer = {
                         ddd: 0,
                         ind: index + 1,
-                        ty: 4,
+                        ty: 4,  // shape layer (вектор)
                         nm: group.getAttribute('id') || `layer_${index}`,
                         sr: 1,
                         ks: {
@@ -1908,7 +2313,7 @@
                         },
                         ao: 0,
                         ip: 0,
-                        op: 90,
+                        op: 180, // синхронизируем с общей длительностью
                         st: 0,
                         bm: 0
                     };
@@ -1921,54 +2326,58 @@
             return lottieJson;
         }
 
-        // 5-слойная анимация на основе MediaPipe
+        // ========== 5-СЛОЙНАЯ АНИМАЦИЯ (60 FPS) ==========
         function applyPoseAnimation(lottieJson, poseData) {
             if (!poseData) return lottieJson;
             
             lottieJson.layers.forEach((layer, index) => {
+                // Анимация для лица/головы (вращение)
                 if (index === 0 && poseData.hasFace) {
                     layer.ks.r = {
                         a: 1,
                         k: [
                             { t: 0, s: [0] },
-                            { t: 30, s: [5] },
-                            { t: 60, s: [-3] },
-                            { t: 90, s: [0] }
+                            { t: 60, s: [5] },    // 1 секунда при 60 fps
+                            { t: 120, s: [-3] },   // 2 секунды
+                            { t: 180, s: [0] }     // 3 секунды
                         ]
                     };
                 }
                 
+                // Анимация для рук (движение X)
                 if (index === 1 && poseData.hasArms) {
                     layer.ks.p = {
                         a: 1,
                         k: [
                             { t: 0, s: [256, 256, 0] },
-                            { t: 30, s: [266, 256, 0] },
-                            { t: 60, s: [246, 256, 0] },
-                            { t: 90, s: [256, 256, 0] }
+                            { t: 60, s: [266, 256, 0] },
+                            { t: 120, s: [246, 256, 0] },
+                            { t: 180, s: [256, 256, 0] }
                         ]
                     };
                 }
                 
+                // Анимация для ног (движение Y)
                 if (index === 2 && poseData.hasLegs) {
                     layer.ks.p = {
                         a: 1,
                         k: [
                             { t: 0, s: [256, 256, 0] },
-                            { t: 30, s: [256, 266, 0] },
-                            { t: 60, s: [256, 246, 0] },
-                            { t: 90, s: [256, 256, 0] }
+                            { t: 60, s: [256, 266, 0] },
+                            { t: 120, s: [256, 246, 0] },
+                            { t: 180, s: [256, 256, 0] }
                         ]
                     };
                 }
                 
+                // Пульсация для всех слоёв
                 layer.ks.s = {
                     a: 1,
                     k: [
                         { t: 0, s: [100, 100, 100] },
-                        { t: 30, s: [105, 105, 100] },
-                        { t: 60, s: [95, 95, 100] },
-                        { t: 90, s: [100, 100, 100] }
+                        { t: 60, s: [105, 105, 100] },
+                        { t: 120, s: [95, 95, 100] },
+                        { t: 180, s: [100, 100, 100] }
                     ]
                 };
             });
@@ -1976,41 +2385,32 @@
             return lottieJson;
         }
 
-        // Добавление текста с юмором
-        function addTextLayer(lottieJson, text) {
-            const textLayer = {
-                ddd: 0,
-                ind: lottieJson.layers.length + 1,
-                ty: 5,
-                nm: "humor_text",
-                sr: 1,
-                ks: {
-                    o: { a: 0, k: 100 },
-                    r: { a: 0, k: 0 },
-                    p: { a: 0, k: [256, 400, 0] },
-                    a: { a: 0, k: [0, 0, 0] },
-                    s: { a: 0, k: [100, 100, 100] }
-                },
-                t: {
-                    d: {
-                        k: [{
-                            t: 0,
-                            s: {
-                                t: text,
-                                s: 24,
-                                f: "Arial",
-                                fc: [0, 0, 0, 1],
-                                j: 2
-                            }
-                        }]
-                    }
-                },
-                ip: 0,
-                op: lottieJson.op || 90
-            };
+        // ========== КОМПРЕССИЯ В TGS ==========
+        async function compressToTGS(lottieJson) {
+            // Убеждаемся, что есть все обязательные поля
+            lottieJson.tgs = 1;
+            lottieJson.fr = 60;  // жестко фиксируем 60 fps
+            lottieJson.op = 180; // жестко фиксируем 180 кадров (3 сек)
             
-            lottieJson.layers.push(textLayer);
-            return lottieJson;
+            // Проверяем размер JSON
+            const jsonString = JSON.stringify(lottieJson);
+            console.log('JSON size before compression:', jsonString.length, 'bytes');
+            
+            // Сжимаем GZIP с максимальным уровнем
+            const compressed = pako.gzip(jsonString, { level: 9 });
+            console.log('Compressed TGS size:', compressed.length, 'bytes');
+            
+            if (compressed.length > 64 * 1024) {
+                console.warn('⚠️ TGS file exceeds 64KB limit!');
+            }
+            
+            const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+            
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+            });
         }
 
         // ========== MEDIAPIPE АНАЛИЗ ==========
@@ -2065,8 +2465,14 @@
                     const useHumor = Math.random() < 0.7;
                     const humorText = useHumor ? profession.humor[Math.floor(Math.random() * profession.humor.length)] : null;
                     
-                    // ==== 1. ГЕНЕРАЦИЯ PNG (ДЛЯ БАЗОВОГО НАБОРА) ====
-                    const pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
+                    // ==== 1. ГЕНЕРАЦИЯ PNG С ЮМОРОМ ====
+                    let pngPrompt;
+                    if (humorText) {
+                        // Добавляем текст с юмором прямо в промпт
+                        pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, with Russian text saying "${humorText}" in a speech bubble`;
+                    } else {
+                        pngPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}`;
+                    }
                     let pngImage = await generateRecraftPNG(pngPrompt);
                     
                     // ==== 2. MEDIAPIPE АНАЛИЗ (по PNG) ====
@@ -2089,39 +2495,31 @@
                         });
                     }
                     
-                    // ==== 4. ГЕНЕРАЦИЯ TGS - ТОЛЬКО ИЗ SVG, НЕ ИЗ PNG! ====
+                    // ==== 4. ГЕНЕРАЦИЯ TGS - БЕЗ ТЕКСТОВОГО СЛОЯ ====
                     if (selectedPack === 'premium') {
                         try {
-                            // Векторный промпт для SVG
+                            // Векторный промпт БЕЗ ТЕКСТА (текст уже в PNG)
                             const vectorPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, flat design, clean lines, white background`;
                             
-                            // ПОЛУЧАЕМ SVG ОТ RECRAFT V4 VECTOR
                             const svgData = await generateRecraftSVG(vectorPrompt);
                             
                             if (svgData) {
-                                // Конвертируем SVG в Lottie с сохранением слоёв
                                 let lottieJson = await convertSvgToLottie(svgData);
-                                
-                                // Применяем 5-слойную анимацию
                                 lottieJson = applyPoseAnimation(lottieJson, poseData);
                                 
-                                // Добавляем юмор
-                                if (humorText) {
-                                    lottieJson = addTextLayer(lottieJson, humorText);
-                                }
+                                // ❌ НЕ ДОБАВЛЯЕМ ТЕКСТ - он запрещен в TGS!
                                 
-                                // Сжимаем в TGS
                                 const tgsData = await compressToTGS(lottieJson);
                                 
                                 generatedTGS.push({
                                     emotion: emotion,
                                     profession: profession.name,
-                                    humor: humorText,
+                                    humor: humorText, // сохраняем для отображения в интерфейсе
                                     dataUrl: tgsData,
                                     filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
                                 });
                                 
-                                addDebugLog('success', `✅ TGS создан из V4 Vector для ${emotion.name}`);
+                                addDebugLog('success', `✅ TGS создан (60 fps) для ${emotion.name}`);
                             } else {
                                 addDebugLog('error', `❌ Не удалось получить SVG для ${emotion.name}`);
                             }
