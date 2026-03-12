@@ -3337,54 +3337,105 @@ window.debugTGS = async function() {
     
     console.log('✅ Файл test5.tgs создан!');
 } 
+
+        async function testFinal() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#667eea';
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 48px Arial';
+    ctx.fillText('FINAL', 150, 256);
+    
+    const pngData = canvas.toDataURL('image/png');
+    const tgsData = await convertPngToTgs(pngData, null, 0);
+    
+    const link = document.createElement('a');
+    link.download = 'final.tgs';
+    link.href = tgsData;
+    link.click();
+    console.log('✅ final.tgs создан');
+}
         
         async function convertPngToTgs(pngDataUrl, poseData, index) {
     try {
-        // 1. ВЫЗЫВАЕМ ВАШУ ФУНКЦИЮ - ВСЁ ВАШЕ СОХРАНЯЕТСЯ!
-        const lottieJson = createAnimationFromPose(pngDataUrl, poseData, index);
+        const base64Data = pngDataUrl.split(',')[1];
         
-        // 2. ДОБАВЛЯЕМ ОБЯЗАТЕЛЬНОЕ ПОЛЕ ДЛЯ TELEGRAM
-        lottieJson.tgs = 1;
+        // СОЗДАЁМ ТОЧНО ТАКУЮ ЖЕ СТРУКТУРУ, КАК В РАБОЧЕМ TGS
+        const tgsJson = {
+            tgs: 1,
+            v: "5.5.2",
+            fr: 30,
+            ip: 0,
+            op: 30,
+            w: 512,
+            h: 512,
+            nm: "",
+            ddd: 0,
+            assets: [{
+                id: "image_0",
+                w: 512,
+                h: 512,
+                u: "",
+                p: base64Data,
+                e: 1
+            }],
+            layers: [{
+                ddd: 0,
+                ind: 1,
+                ty: 2,
+                nm: "",
+                refId: "image_0",
+                sr: 1,
+                ks: {
+                    o: { a: 0, k: 100 },
+                    r: { a: 0, k: 0 },
+                    p: { a: 0, k: [256, 256, 0] },
+                    a: { a: 0, k: [256, 256, 0] },
+                    s: { a: 0, k: [100, 100, 100] }
+                },
+                ao: 0,
+                ip: 0,
+                op: 30,
+                st: 0,
+                bm: 0
+            }]
+        };
         
-        // 3. ИСПРАВЛЯЕМ ФОРМАТ ASSETS
-        if (lottieJson.assets && lottieJson.assets.length > 0) {
-            const asset = lottieJson.assets[0];
+        // ТЕПЕРЬ ДОБАВЛЯЕМ ВАШУ АНИМАЦИЮ, НЕ ЛОМАЯ СТРУКТУРУ
+        if (poseData && poseData.landmarks) {
+            const layer = tgsJson.layers[0];
             
-            // Извлекаем чистый base64 без префикса data:image
-            if (asset.p && asset.p.includes('base64,')) {
-                asset.p = asset.p.split(',')[1];
+            // Простейшая анимация для теста
+            layer.ks.s = {
+                a: 1,
+                k: [
+                    { t: 0, s: [100, 100, 100] },
+                    { t: 15, s: [105, 105, 100] },
+                    { t: 30, s: [100, 100, 100] }
+                ]
+            };
+            
+            // ЗДЕСЬ ВЫ МОЖЕТЕ ВСТАВИТЬ ВАШУ СЛОЖНУЮ ЛОГИКУ
+            // Например, разные анимации для разных частей тела
+            if (poseData.hasFace) {
+                // ваша анимация для лица
             }
-            
-            // Добавляем необходимые поля для Telegram
-            asset.u = "";      // пустой путь
-            asset.e = 1;       // embedded image
+            if (poseData.hasArms) {
+                // ваша анимация для рук
+            }
+            if (poseData.hasLegs) {
+                // ваша анимация для ног
+            }
         }
         
-        // 4. ДОБАВЛЯЕМ НЕДОСТАЮЩИЕ ПОЛЯ ВО ВСЕ СЛОИ
-        if (lottieJson.layers && Array.isArray(lottieJson.layers)) {
-            lottieJson.layers.forEach(layer => {
-                // Служебные поля, которые ожидает Telegram
-                if (!layer.hasOwnProperty('ddd')) layer.ddd = 0;
-                if (!layer.hasOwnProperty('ao')) layer.ao = 0;
-                if (!layer.hasOwnProperty('bm')) layer.bm = 0;
-                if (!layer.hasOwnProperty('sr')) layer.sr = 1;
-                if (!layer.hasOwnProperty('st')) layer.st = 0;
-                
-                // ВАШИ ПОЛЯ (ind, ty, nm, refId, ks, ip, op, parent) ОСТАЮТСЯ!
-            });
-        }
-        
-        // 5. ДОБАВЛЯЕМ ПОЛЕ ip, если его нет (начальный кадр)
-        if (!lottieJson.hasOwnProperty('ip')) lottieJson.ip = 0;
-        
-        // 6. СЖИМАЕМ GZIP
-        const jsonString = JSON.stringify(lottieJson);
-        const compressed = pako.gzip(jsonString, { level: 9 });
-        
-        // 7. СОЗДАЁМ BLOB С ПРАВИЛЬНЫМ MIME-TYPE
+        // СЖИМАЕМ
+        const jsonString = JSON.stringify(tgsJson);
+        const compressed = pako.gzip(jsonString);
         const tgsBlob = new Blob([compressed], { type: 'application/x-tgsticker' });
         
-        // 8. ВОЗВРАЩАЕМ ДЛЯ СКАЧИВАНИЯ
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
