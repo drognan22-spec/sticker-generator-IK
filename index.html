@@ -2397,6 +2397,29 @@
         let generatedPNG = [];
         let generatedTGS = [];
         let generationHistory = [];
+        // ========== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА "О ПРОЕКТЕ" ==========
+function openProjectInfo() {
+    document.getElementById('projectModal').classList.add('active');
+}
+
+function closeProjectInfo() {
+    document.getElementById('projectModal').classList.remove('active');
+}
+
+// Закрытие по клику вне модального окна
+window.onclick = function(event) {
+    const modal = document.getElementById('projectModal');
+    if (event.target === modal) {
+        modal.classList.remove('active');
+    }
+};
+
+// Закрытие по ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('projectModal').classList.remove('active');
+    }
+});
 
         // ========== ФУНКЦИИ ИНТЕРФЕЙСА ==========
         function renderProfessions() {
