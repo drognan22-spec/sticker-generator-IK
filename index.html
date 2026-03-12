@@ -2211,6 +2211,70 @@
                 return null;
             }
         }
+		
+		// ========== ДИАГНОСТИКА SVG ==========
+async function debugSVG(prompt) {
+    addDebugLog('info', `🔍 Диагностика SVG для промпта: ${prompt.substring(0, 100)}...`);
+    
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000);
+        
+        const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${RECRAFT_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: prompt,
+                n: 1,
+                size: '1024x1024',
+                model: 'recraftv4_vector',
+                style: 'vector_illustration'
+            }),
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            addDebugLog('error', `❌ Диагностика SVG ошибка: ${response.status}`);
+            return;
+        }
+        
+        const data = await response.json();
+        addDebugLog('info', `📦 Ответ Recraft:`, data);
+        
+        if (data.data && data.data[0] && data.data[0].url) {
+            addDebugLog('success', `✅ SVG URL получен: ${data.data[0].url}`);
+            
+            const svgResponse = await fetch(data.data[0].url);
+            const svgText = await svgResponse.text();
+            
+            addDebugLog('info', `📄 SVG содержимое (первые 500 символов):`);
+            console.log(svgText.substring(0, 500));
+            
+            addDebugLog('info', `📊 Размер SVG: ${svgText.length} символов`);
+            
+            // Проверяем, есть ли в SVG реальные данные
+            if (svgText.includes('<svg') && svgText.includes('</svg>')) {
+                const hasPaths = svgText.includes('<path') || svgText.includes('<circle') || svgText.includes('<rect');
+                if (hasPaths) {
+                    addDebugLog('success', `✅ SVG содержит векторные данные`);
+                } else {
+                    addDebugLog('error', `❌ SVG не содержит векторных данных (пустой)`);
+                }
+            } else {
+                addDebugLog('error', `❌ Получен не SVG формат`);
+            }
+        } else {
+            addDebugLog('error', `❌ Неожиданный формат ответа: нет URL`);
+        }
+    } catch (e) {
+        addDebugLog('error', `❌ Диагностика ошибка: ${e.message}`);
+    }
+}
 
         function resizeImageTo512(base64Image) {
             return new Promise((resolve) => {
