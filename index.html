@@ -122,6 +122,36 @@
             color: #854d0e;
         }
 
+        .debug-panel {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #e2e8f0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .debug-panel .timestamp {
+            color: #fbbf24;
+            margin-right: 10px;
+        }
+
+        .debug-panel .error {
+            color: #ef4444;
+        }
+
+        .debug-panel .success {
+            color: #4ade80;
+        }
+
+        .debug-panel .info {
+            color: #38bdf8;
+        }
+
         .input-group {
             margin-bottom: 30px;
         }
@@ -659,6 +689,18 @@
                 </div>
             </div>
 
+            <button onclick="toggleDebug()" style="margin-bottom: 20px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 40px; cursor: pointer;">
+                🐛 Показать логи API
+            </button>
+
+            <div id="debugPanel" class="debug-panel">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <strong>📋 Логи Roboflow API</strong>
+                    <button onclick="clearDebug()" style="background: none; border: none; color: #fbbf24; cursor: pointer;">Очистить</button>
+                </div>
+                <div id="debugLogs"></div>
+            </div>
+
             <div class="input-group">
                 <label>📝 Персонаж</label>
                 <input type="text" id="characterPrompt" placeholder="например: милый кот, программист, панда..." value="милый кот">
@@ -676,9 +718,6 @@
                 <div class="style-tag selected" data-style="3d render, pixar style, volumetric">✨ 3D мультяшный</div>
                 <div class="style-tag" data-style="flat vector, minimalism, bright colors">🎯 Плоский</div>
                 <div class="style-tag" data-style="kawaii, chibi, big eyes, anime">🌸 Кавайный</div>
-                <div class="style-tag" data-style="pixel art, 8bit, retro games">👾 Пиксельный</div>
-                <div class="style-tag" data-style="watercolor, hand painted, artistic">🎨 Акварельный</div>
-                <div class="style-tag" data-style="sketch, pencil drawing, black and white">✏️ Скетч</div>
             </div>
 
             <div class="pack-selector">
@@ -739,10 +778,10 @@
         const ROBOFLOW_API_KEY = 'rf_KLBpuPIa1CVLhJiUj27P9fOBWjt2';
         
         // ========== КОНСТАНТЫ ROBOFLOW ==========
-        // Правильные endpoints для Roboflow API
         const ROBOFLOW_ENDPOINTS = [
             'https://detect.roboflow.com',
-            'https://outline.roboflow.com'
+            'https://outline.roboflow.com',
+            'https://api.roboflow.com' // добавил еще один
         ];
         const ROBOFLOW_MODEL = 'yolo11n-pose/1';
         
@@ -796,6 +835,50 @@
         let recraftAvailable = true;
         let roboflowAvailable = true;
         let activeRoboflowEndpoint = null;
+
+        // Функции для отладки
+        function toggleDebug() {
+            const panel = document.getElementById('debugPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function clearDebug() {
+            document.getElementById('debugLogs').innerHTML = '';
+        }
+
+        function addDebugLog(type, message, data = null) {
+            const logs = document.getElementById('debugLogs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.style.marginBottom = '8px';
+            logEntry.style.borderBottom = '1px solid #334155';
+            logEntry.style.paddingBottom = '4px';
+            
+            let icon = 'ℹ️';
+            let colorClass = 'info';
+            if (type === 'error') {
+                icon = '❌';
+                colorClass = 'error';
+            } else if (type === 'success') {
+                icon = '✅';
+                colorClass = 'success';
+            } else if (type === 'request') {
+                icon = '📤';
+                colorClass = 'info';
+            } else if (type === 'response') {
+                icon = '📥';
+                colorClass = 'success';
+            }
+            
+            logEntry.innerHTML = `
+                <span class="timestamp">${timestamp}</span>
+                <span class="${colorClass}">${icon} ${message}</span>
+                ${data ? `<pre style="margin-top: 4px; font-size: 10px; color: #94a3b8; white-space: pre-wrap;">${JSON.stringify(data, null, 2).substring(0, 200)}${JSON.stringify(data, null, 2).length > 200 ? '...' : ''}</pre>` : ''}
+            `;
+            
+            logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
+        }
 
         // Заполняем эмоции
         function renderEmotions() {
@@ -860,47 +943,29 @@
             document.getElementById('generateBtn').classList.toggle('premium', pack === 'premium');
         };
 
-        // ========== ROBOFLOW API ЗАПРОС (ИСПРАВЛЕННЫЙ) ==========
+        // ========== ROBOFLOW API ЗАПРОС С ДЕТАЛЬНЫМ ЛОГИРОВАНИЕМ ==========
         async function analyzeImageWithRoboflow(imageBase64) {
+            addDebugLog('request', 'Начинаем анализ изображения через Roboflow...');
+            
             if (!roboflowAvailable) {
-                console.log('Roboflow API not available, using default keypoints');
+                addDebugLog('error', 'Roboflow API помечен как недоступный, используем стандартные точки');
                 return generateDefaultKeypoints();
             }
 
             try {
-                console.log('Sending to Roboflow API...');
-                
                 // Извлекаем только данные base64 без префикса
                 const base64Data = imageBase64.split(',')[1];
-                
-                // Если уже знаем рабочий endpoint, используем его
-                if (activeRoboflowEndpoint) {
-                    try {
-                        const response = await fetch(`${activeRoboflowEndpoint}/${ROBOFLOW_MODEL}?api_key=${ROBOFLOW_API_KEY}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: base64Data
-                        });
-
-                        if (response.ok) {
-                            const data = await response.json();
-                            console.log('Roboflow response:', data);
-                            return processRoboflowResponse(data);
-                        }
-                    } catch (e) {
-                        console.warn(`Endpoint ${activeRoboflowEndpoint} failed, trying others...`);
-                        activeRoboflowEndpoint = null;
-                    }
-                }
+                addDebugLog('info', `Размер изображения: ${Math.round(base64Data.length * 0.75)} байт`);
                 
                 // Пробуем все endpoints по очереди
                 for (const endpoint of ROBOFLOW_ENDPOINTS) {
+                    const url = `${endpoint}/${ROBOFLOW_MODEL}?api_key=${ROBOFLOW_API_KEY}`;
+                    addDebugLog('request', `Пробуем endpoint: ${endpoint}/${ROBOFLOW_MODEL}`);
+                    
                     try {
-                        console.log(`Trying endpoint: ${endpoint}`);
+                        const startTime = Date.now();
                         
-                        const response = await fetch(`${endpoint}/${ROBOFLOW_MODEL}?api_key=${ROBOFLOW_API_KEY}`, {
+                        const response = await fetch(url, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -908,37 +973,62 @@
                             body: base64Data
                         });
 
+                        const responseTime = Date.now() - startTime;
+                        addDebugLog('info', `Время ответа: ${responseTime}ms, Статус: ${response.status}`);
+
                         if (response.ok) {
                             const data = await response.json();
-                            console.log(`✅ Success with endpoint: ${endpoint}`);
+                            addDebugLog('success', `✅ Успешный ответ от ${endpoint}`, {
+                                predictions: data.predictions?.length || 0,
+                                image_size: data.image?.width ? `${data.image.width}x${data.image.height}` : 'unknown'
+                            });
+                            
+                            // Логируем первые несколько предсказаний
+                            if (data.predictions && data.predictions.length > 0) {
+                                const pred = data.predictions[0];
+                                addDebugLog('info', 'Детали предсказания:', {
+                                    class: pred.class,
+                                    confidence: pred.confidence,
+                                    has_keypoints: !!pred.keypoints,
+                                    keypoints_count: pred.keypoints?.length || 0,
+                                    has_keypoints_xy: !!pred.keypoints_xy,
+                                    keypoints_xy_count: pred.keypoints_xy?.length || 0
+                                });
+                            }
+                            
                             activeRoboflowEndpoint = endpoint;
+                            roboflowAvailable = true;
                             
                             // Обновляем статус
                             document.getElementById('roboflowStatus').className = 'api-status roboflow';
                             document.getElementById('roboflowStatus').innerHTML = '<span class="status-icon">✅</span><span>Roboflow API: Подключен</span>';
                             
-                            return processRoboflowResponse(data);
+                            const keypoints = processRoboflowResponse(data);
+                            addDebugLog('success', `Обработано ключевых точек: ${keypoints.length}`);
+                            return keypoints;
+                            
                         } else {
                             const errorText = await response.text();
-                            console.warn(`❌ Endpoint ${endpoint} failed: ${response.status} - ${errorText}`);
+                            addDebugLog('error', `Ошибка ${response.status} от ${endpoint}`, { error: errorText.substring(0, 200) });
                         }
                     } catch (e) {
-                        console.warn(`❌ Endpoint ${endpoint} error:`, e.message);
+                        addDebugLog('error', `Сетевая ошибка для ${endpoint}: ${e.message}`);
                     }
                 }
                 
-                throw new Error('All Roboflow endpoints failed');
+                throw new Error('Все Roboflow endpoints не ответили успешно');
                 
             } catch (error) {
-                console.error('Roboflow API error:', error);
+                addDebugLog('error', 'Критическая ошибка Roboflow API:', { error: error.message });
                 roboflowAvailable = false;
                 
-                // Показываем ошибку
                 document.getElementById('roboflowStatus').className = 'api-status roboflow error';
                 document.getElementById('roboflowStatus').innerHTML = 
                     `<span class="status-icon">❌</span><span>Roboflow API: ${error.message}</span>`;
                 
-                return generateDefaultKeypoints();
+                const defaultKeypoints = generateDefaultKeypoints();
+                addDebugLog('info', `Используем стандартные ключевые точки (${defaultKeypoints.length})`);
+                return defaultKeypoints;
             }
         }
 
@@ -948,28 +1038,27 @@
             if (data.predictions && data.predictions.length > 0) {
                 const prediction = data.predictions[0];
                 
-                // Проверяем наличие ключевых точек в разных форматах
-                if (prediction.keypoints) {
-                    // Формат с keypoints массивом
+                // Формат 1: keypoints массив
+                if (prediction.keypoints && Array.isArray(prediction.keypoints)) {
                     prediction.keypoints.forEach((kp, index) => {
-                        if (kp.confidence > 0.3) {
+                        if (kp.confidence > 0.3 && index < COCO_KEYPOINTS.length) {
                             keypoints.push({
-                                name: COCO_KEYPOINTS[index] || `keypoint_${index}`,
+                                name: COCO_KEYPOINTS[index],
                                 x: kp.x,
                                 y: kp.y,
-                                confidence: kp.confidence || 0.7,
-                                part: getBodyPart(COCO_KEYPOINTS[index] || '')
+                                confidence: kp.confidence,
+                                part: getBodyPart(COCO_KEYPOINTS[index])
                             });
                         }
                     });
                 }
                 
-                // Альтернативный формат - keypoints_xy и keypoints_conf
-                if (prediction.keypoints_xy && prediction.keypoints_xy.length > 0) {
+                // Формат 2: keypoints_xy и keypoints_conf
+                if (prediction.keypoints_xy && prediction.keypoints_conf) {
                     for (let i = 0; i < prediction.keypoints_xy.length; i += 2) {
                         const pointIndex = Math.floor(i / 2);
                         if (pointIndex < COCO_KEYPOINTS.length) {
-                            const confidence = prediction.keypoints_conf ? prediction.keypoints_conf[pointIndex] : 0.7;
+                            const confidence = prediction.keypoints_conf[pointIndex];
                             if (confidence > 0.3) {
                                 keypoints.push({
                                     name: COCO_KEYPOINTS[pointIndex],
@@ -984,14 +1073,7 @@
                 }
             }
             
-            // Если ключевых точек мало, добавляем стандартные
-            if (keypoints.length < 5) {
-                console.log('Not enough keypoints from API, using defaults');
-                return generateDefaultKeypoints();
-            }
-            
-            console.log(`Processed ${keypoints.length} keypoints from API`);
-            return keypoints;
+            return keypoints.length > 0 ? keypoints : generateDefaultKeypoints();
         }
 
         function getBodyPart(keypointName) {
@@ -1014,7 +1096,7 @@
             return 'body';
         }
 
-        // Запасные ключевые точки на случай ошибки API
+        // Запасные ключевые точки
         function generateDefaultKeypoints() {
             const keypoints = [];
             COCO_KEYPOINTS.forEach((name, index) => {
@@ -1031,11 +1113,10 @@
             return keypoints;
         }
 
-        // ========== СОЗДАНИЕ АНИМАЦИИ НА ОСНОВЕ КЛЮЧЕВЫХ ТОЧЕК ==========
+        // ========== СОЗДАНИЕ АНИМАЦИИ ==========
         function createAnimationFromKeypoints(pngBase64, keypoints, emotionIndex) {
             const base64Data = pngBase64.split(',')[1];
             
-            // Группируем ключевые точки по частям тела 
             const bodyParts = {
                 head: keypoints.filter(k => k.part === 'head'),
                 shoulders: keypoints.filter(k => k.part === 'shoulders'),
@@ -1063,10 +1144,8 @@
                 layers: []
             };
 
-            // Создаем слои для каждой части тела
             let layerIndex = 1;
             
-            // Голова - кивки и повороты
             if (bodyParts.head.length > 0) {
                 lottieJson.layers.push({
                     ind: layerIndex++,
@@ -1085,7 +1164,6 @@
                 });
             }
 
-            // Плечи - покачивания
             if (bodyParts.shoulders.length > 0) {
                 lottieJson.layers.push({
                     ind: layerIndex++,
@@ -1105,7 +1183,6 @@
                 });
             }
 
-            // Руки - махи
             if (bodyParts.arms.length > 0) {
                 lottieJson.layers.push({
                     ind: layerIndex++,
@@ -1125,7 +1202,6 @@
                 });
             }
 
-            // Кисти рук - мелкие движения
             if (bodyParts.hands.length > 0) {
                 lottieJson.layers.push({
                     ind: layerIndex++,
@@ -1145,7 +1221,6 @@
                 });
             }
 
-            // Ноги - шаги
             if (bodyParts.legs.length > 0 || bodyParts.feet.length > 0) {
                 lottieJson.layers.push({
                     ind: layerIndex++,
@@ -1165,7 +1240,6 @@
                 });
             }
 
-            // Если нет слоев, добавляем базовый
             if (lottieJson.layers.length === 0) {
                 lottieJson.layers.push({
                     ind: 1,
@@ -1421,7 +1495,6 @@
                         document.getElementById('loadingProgress').textContent = 
                             `Roboflow анализ ${i+1}: ${emotion.name}`;
                         
-                        // Анализируем изображение через Roboflow API 
                         const keypoints = await analyzeImageWithRoboflow(pngImage);
                         
                         document.getElementById('loadingProgress').textContent = 
@@ -1513,7 +1586,6 @@
                     const card = document.createElement('div');
                     card.className = 'sticker-card premium';
                     
-                    // Добавляем визуализацию ключевых точек
                     const keypointDots = (s.keypoints || []).map(k => {
                         const confClass = k.confidence > 0.8 ? 'conf-high' : (k.confidence > 0.6 ? 'conf-medium' : 'conf-low');
                         return `<div class="keypoint-dot ${confClass}" style="left:${(k.x/512)*100}%; top:${(k.y/512)*100}%;"></div>`;
@@ -1583,11 +1655,9 @@
             const statusDiv = document.getElementById('roboflowStatus');
             
             try {
-                // Тестовое изображение 1x1 пиксель
                 const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
                 const base64Data = testImage.split(',')[1];
                 
-                // Проверяем все endpoints
                 for (const endpoint of ROBOFLOW_ENDPOINTS) {
                     try {
                         const response = await fetch(`${endpoint}/${ROBOFLOW_MODEL}?api_key=${ROBOFLOW_API_KEY}`, {
@@ -1605,7 +1675,7 @@
                             return;
                         }
                     } catch (e) {
-                        // Продолжаем проверять следующий endpoint
+                        // Продолжаем
                     }
                 }
                 
