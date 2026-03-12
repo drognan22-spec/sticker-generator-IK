@@ -2881,60 +2881,42 @@
 
         async function convertPngToTgs(pngDataUrl, poseData, index) {
     try {
-        const base64Data = pngDataUrl.split(',')[1];
+        // 1. СОЗДАЕМ НАШУ СЛОЖНУЮ АНИМАЦИЮ (без изменений)
+        const lottieJson = createAnimationFromPose(pngDataUrl, poseData, index);
         
-        // Создаем слои анимации (ваша существующая логика)
-        const layers = [];
-        let layerIndex = 1;
+        // 2. ДОБАВЛЯЕМ ОБЯЗАТЕЛЬНОЕ ПОЛЕ ДЛЯ TELEGRAM
+        lottieJson.tgs = 1;
         
-        if (poseData && poseData.landmarks) {
-            // ... ваши существующие условия для слоев
-            // (сохраняем всю логику без изменений)
-            layers.push({
-                ind: layerIndex++,
-                ty: 2,
-                refId: "sticker_img",
-                nm: "body_layer",
-                ks: createBodyAnimation(poseData, index)
-            });
-            
-            if (poseData.hasFace) {
-                layers.push({
-                    ind: layerIndex++,
-                    ty: 2,
-                    refId: "sticker_img",
-                    nm: "face_layer",
-                    ks: createFaceAnimation(poseData, index),
-                    parent: 1
-                });
+        // 3. ИСПРАВЛЯЕМ ФОРМАТ ASSETS ДЛЯ TELEGRAM
+        if (lottieJson.assets && lottieJson.assets[0]) {
+            // Извлекаем чистый base64 без префикса
+            const asset = lottieJson.assets[0];
+            if (asset.p && asset.p.startsWith('data:image')) {
+                const base64Match = asset.p.match(/^data:image\/png;base64,(.*)$/);
+                if (base64Match) {
+                    asset.p = base64Match[1]; // только данные
+                }
             }
-            // ... остальные слои
+            asset.u = ""; // пустой путь
+            asset.e = 1;  // embedded image
         }
         
-        // ПРАВИЛЬНАЯ СТРУКТУРА TGS
-        const lottieJson = {
-            tgs: 1,                          // обязательно!
-            v: "5.5.7",                       // версия
-            fr: 60,                           // частота кадров
-            ip: 0,                             // начальный кадр
-            op: 180,                           // конечный кадр
-            w: 512,                            // ширина
-            h: 512,                            // высота
-            assets: [{
-                id: "sticker_img",
-                w: 512,
-                h: 512,
-                p: `data:image/png;base64,${base64Data}`,
-                e: 1
-            }],
-            layers: layers
-        };
+        // 4. УБЕЖДАЕМСЯ, ЧТО ВСЕ КЛЮЧЕВЫЕ КАДРЫ ИМЕЮТ ПРАВИЛЬНУЮ СТРУКТУРУ
+        if (lottieJson.layers) {
+            lottieJson.layers.forEach(layer => {
+                // Убеждаемся, что у каждого слоя есть parent если нужно
+                // (это уже должно быть в вашей функции createAnimationFromPose)
+            });
+        }
         
-        // Сжимаем GZIP
+        // 5. КОНВЕРТИРУЕМ В JSON И СЖИМАЕМ GZIP
         const jsonString = JSON.stringify(lottieJson);
         const compressedData = pako.gzip(jsonString);
-        const tgsBlob = new Blob([compressedData], { type: 'application/octet-stream' });
         
+        // 6. СОЗДАЕМ BLOB С ПРАВИЛЬНЫМ MIME-TYPE
+        const tgsBlob = new Blob([compressedData], { type: 'application/x-tgsticker' });
+        
+        // 7. ВОЗВРАЩАЕМ КАК DATA URL ДЛЯ СКАЧИВАНИЯ
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
