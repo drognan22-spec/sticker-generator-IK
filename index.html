@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TGS - АНИМАЦИЯ РАБОТАЕТ</title>
+    <title>TGS - РАБОЧАЯ АНИМАЦИЯ</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,14 +29,6 @@
             padding: 40px;
             color: #1a1f2e;
         }
-        .status {
-            padding: 15px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            background: #f0f9ff;
-            border: 2px solid #38bdf8;
-            font-weight: bold;
-        }
         .button-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -44,22 +36,18 @@
             margin: 20px 0;
         }
         button {
-            padding: 15px;
+            padding: 20px;
             border: none;
             border-radius: 30px;
-            font-size: 1.1em;
+            font-size: 1.2em;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
+            background: #667eea;
+            color: white;
         }
         button:hover {
             transform: scale(1.05);
         }
-        .btn-red { background: #ef4444; color: white; }
-        .btn-blue { background: #3b82f6; color: white; }
-        .btn-green { background: #10b981; color: white; }
-        .btn-yellow { background: #f59e0b; color: white; }
-        .btn-purple { background: #8b5cf6; color: white; }
         .debug {
             background: #1e293b;
             border-radius: 16px;
@@ -67,40 +55,24 @@
             color: #e2e8f0;
             font-family: monospace;
             font-size: 12px;
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
             margin-top: 20px;
         }
         .success { color: #4ade80; }
-        .error { color: #ef4444; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>🎯 TGS FIXED</h1>
+        <h1>🎯 TGS WORKING</h1>
         
         <div class="card">
-            <div class="status" id="status">
-                ✅ Выберите тип анимации для теста
-            </div>
-            
             <div class="button-grid">
-                <button class="btn-red" onclick="testStatic()">1. Статика (база)</button>
-                <button class="btn-blue" onclick="testScale()">2. Scale (пульсация)</button>
-                <button class="btn-green" onclick="testPosition()">3. Position (движение)</button>
-                <button class="btn-yellow" onclick="testRotation()">4. Rotation (вращение)</button>
-                <button class="btn-purple" onclick="testOpacity()">5. Opacity (прозрачность)</button>
-                <button class="btn-red" onclick="testAll()">6. ВСЁ ВМЕСТЕ</button>
-            </div>
-            
-            <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 16px;">
-                <p><strong>📊 Результаты предыдущих тестов:</strong></p>
-                <p>✅ Тест 1: Красный круг (работает)</p>
-                <p>✅ Тест 3: Зеленый круг (работает)</p>
-                <p>✅ Тест 4: Желтый квадрат (работает)</p>
-                <p>❌ Тест 2: Синий круг (пустой)</p>
-                <p>❌ Тест 5: Фиолетовый (пустой)</p>
+                <button onclick="testSimple()">1. Простая пульсация</button>
+                <button onclick="testBounce()">2. Прыгающий мяч</button>
+                <button onclick="testSpin()">3. Вращение</button>
+                <button onclick="testBlink()">4. Мигание</button>
             </div>
             
             <div class="debug" id="debug"></div>
@@ -108,392 +80,346 @@
     </div>
 
     <script>
-        function log(msg, type = 'info') {
+        function log(msg) {
             const debug = document.getElementById('debug');
             const timestamp = new Date().toLocaleTimeString();
-            const color = type === 'success' ? '#4ade80' : (type === 'error' ? '#ef4444' : '#94a3b8');
-            debug.innerHTML += `<div><span style="color: #fbbf24;">[${timestamp}]</span> <span style="color: ${color};">${msg}</span></div>`;
+            debug.innerHTML += `<div><span style="color: #fbbf24;">[${timestamp}]</span> <span style="color: #4ade80;">${msg}</span></div>`;
             debug.scrollTop = debug.scrollHeight;
-            
-            document.getElementById('status').innerHTML = `🔄 ${msg}`;
         }
 
-        // ========== ТЕСТ 1: СТАТИКА (БАЗА) ==========
-        async function testStatic() {
-            log('🔴 Тест 1: Статичный красный круг');
+        // ========== ТЕСТ 1: ПРОСТАЯ ПУЛЬСАЦИЯ ==========
+        async function testSimple() {
+            log('📏 Тест 1: Пульсация');
             
             const lottie = {
-                tgs: 1,
-                v: "5.5.2",
-                fr: 60,
-                ip: 0,
-                op: 60,
-                w: 512,
-                h: 512,
-                ddd: 0,
-                layers: [{
-                    ddd: 0,
-                    ind: 1,
-                    ty: 4,
-                    nm: "static_circle",
-                    sr: 1,
-                    ks: {
-                        o: { a: 0, k: 100 },
-                        r: { a: 0, k: 0 },
-                        p: { a: 0, k: [256, 256, 0] },
-                        a: { a: 0, k: [128, 128, 0] }, // Важно! Anchor point в центре
-                        s: { a: 0, k: [100, 100, 100] }
-                    },
-                    shapes: [{
-                        ty: "gr",
-                        it: [
-                            {
-                                ty: "el",
-                                p: { a: 0, k: [0, 0] },
-                                s: { a: 0, k: [200, 200] }
-                            },
-                            {
-                                ty: "fl",
-                                c: { a: 0, k: [1, 0, 0, 1] },
-                                o: { a: 0, k: 100 }
+                "tgs": 1,
+                "v": "5.5.2",
+                "fr": 30,
+                "ip": 0,
+                "op": 90,
+                "w": 512,
+                "h": 512,
+                "nm": "Pulse",
+                "ddd": 0,
+                "assets": [],
+                "layers": [
+                    {
+                        "ddd": 0,
+                        "ind": 1,
+                        "ty": 4,
+                        "nm": "Circle",
+                        "sr": 1,
+                        "ks": {
+                            "o": { "a": 0, "k": 100 },
+                            "r": { "a": 0, "k": 0 },
+                            "p": { "a": 0, "k": [256, 256, 0] },
+                            "a": { "a": 0, "k": [0, 0, 0] },
+                            "s": {
+                                "a": 1,
+                                "k": [
+                                    {
+                                        "t": 0,
+                                        "s": [100, 100, 100]
+                                    },
+                                    {
+                                        "t": 30,
+                                        "s": [150, 150, 100]
+                                    },
+                                    {
+                                        "t": 60,
+                                        "s": [100, 100, 100]
+                                    },
+                                    {
+                                        "t": 90,
+                                        "s": [100, 100, 100]
+                                    }
+                                ]
                             }
-                        ]
-                    }],
-                    ip: 0,
-                    op: 60
-                }]
+                        },
+                        "shapes": [
+                            {
+                                "ty": "gr",
+                                "it": [
+                                    {
+                                        "ty": "el",
+                                        "p": { "a": 0, "k": [0, 0] },
+                                        "s": { "a": 0, "k": [200, 200] }
+                                    },
+                                    {
+                                        "ty": "fl",
+                                        "c": { "a": 0, "k": [1, 0, 0, 1] },
+                                        "o": { "a": 0, "k": 100 }
+                                    }
+                                ]
+                            }
+                        ],
+                        "ip": 0,
+                        "op": 90
+                    }
+                ]
             };
             
-            await saveTGS(lottie, 'test1_static.tgs');
+            await saveTGS(lottie, 'test1_pulse.tgs');
         }
 
-        // ========== ТЕСТ 2: SCALE (ПУЛЬСАЦИЯ) - ИСПРАВЛЕНО ==========
-        async function testScale() {
-            log('📏 Тест 2: Scale анимация (пульсация)');
+        // ========== ТЕСТ 2: ПРЫГАЮЩИЙ МЯЧ ==========
+        async function testBounce() {
+            log('🏀 Тест 2: Прыгающий мяч');
             
             const lottie = {
-                tgs: 1,
-                v: "5.5.2",
-                fr: 30,  // Уменьшаем FPS для надежности
-                ip: 0,
-                op: 90,
-                w: 512,
-                h: 512,
-                ddd: 0,
-                layers: [{
-                    ddd: 0,
-                    ind: 1,
-                    ty: 4,
-                    nm: "scale_circle",
-                    sr: 1,
-                    ks: {
-                        o: { a: 0, k: 100 },
-                        r: { a: 0, k: 0 },
-                        p: { a: 0, k: [256, 256, 0] },
-                        a: { a: 0, k: [128, 128, 0] }, // Anchor в центре
-                        s: { 
-                            a: 1,
-                            k: [
-                                { t: 0, e: [100, 100, 100] }, // e = end value
-                                { t: 30, e: [150, 150, 100] },
-                                { t: 60, e: [100, 100, 100] },
-                                { t: 90, e: [100, 100, 100] }
-                            ]
-                        }
-                    },
-                    shapes: [{
-                        ty: "gr",
-                        it: [
-                            {
-                                ty: "el",
-                                p: { a: 0, k: [0, 0] },
-                                s: { a: 0, k: [200, 200] }
+                "tgs": 1,
+                "v": "5.5.2",
+                "fr": 30,
+                "ip": 0,
+                "op": 90,
+                "w": 512,
+                "h": 512,
+                "nm": "Bounce",
+                "ddd": 0,
+                "assets": [],
+                "layers": [
+                    {
+                        "ddd": 0,
+                        "ind": 1,
+                        "ty": 4,
+                        "nm": "Ball",
+                        "sr": 1,
+                        "ks": {
+                            "o": { "a": 0, "k": 100 },
+                            "r": { "a": 0, "k": 0 },
+                            "p": {
+                                "a": 1,
+                                "k": [
+                                    {
+                                        "t": 0,
+                                        "s": [256, 100, 0]
+                                    },
+                                    {
+                                        "t": 30,
+                                        "s": [256, 356, 0]
+                                    },
+                                    {
+                                        "t": 60,
+                                        "s": [256, 100, 0]
+                                    },
+                                    {
+                                        "t": 90,
+                                        "s": [256, 100, 0]
+                                    }
+                                ]
                             },
-                            {
-                                ty: "fl",
-                                c: { a: 0, k: [0, 0, 1, 1] }, // Синий
-                                o: { a: 0, k: 100 }
+                            "a": { "a": 0, "k": [0, 0, 0] },
+                            "s": {
+                                "a": 1,
+                                "k": [
+                                    {
+                                        "t": 0,
+                                        "s": [100, 100, 100]
+                                    },
+                                    {
+                                        "t": 30,
+                                        "s": [120, 80, 100]
+                                    },
+                                    {
+                                        "t": 60,
+                                        "s": [100, 100, 100]
+                                    }
+                                ]
                             }
-                        ]
-                    }],
-                    ip: 0,
-                    op: 90
-                }]
+                        },
+                        "shapes": [
+                            {
+                                "ty": "gr",
+                                "it": [
+                                    {
+                                        "ty": "el",
+                                        "p": { "a": 0, "k": [0, 0] },
+                                        "s": { "a": 0, "k": [150, 150] }
+                                    },
+                                    {
+                                        "ty": "fl",
+                                        "c": { "a": 0, "k": [0, 0, 1, 1] },
+                                        "o": { "a": 0, "k": 100 }
+                                    }
+                                ]
+                            }
+                        ],
+                        "ip": 0,
+                        "op": 90
+                    }
+                ]
             };
             
-            await saveTGS(lottie, 'test2_scale.tgs');
+            await saveTGS(lottie, 'test2_bounce.tgs');
         }
 
-        // ========== ТЕСТ 3: POSITION (ДВИЖЕНИЕ) ==========
-        async function testPosition() {
-            log('↗️ Тест 3: Position анимация (движение)');
+        // ========== ТЕСТ 3: ВРАЩЕНИЕ ==========
+        async function testSpin() {
+            log('🔄 Тест 3: Вращение');
             
             const lottie = {
-                tgs: 1,
-                v: "5.5.2",
-                fr: 30,
-                ip: 0,
-                op: 120,
-                w: 512,
-                h: 512,
-                ddd: 0,
-                layers: [{
-                    ddd: 0,
-                    ind: 1,
-                    ty: 4,
-                    nm: "move_circle",
-                    sr: 1,
-                    ks: {
-                        o: { a: 0, k: 100 },
-                        r: { a: 0, k: 0 },
-                        p: {
-                            a: 1,
-                            k: [
-                                { t: 0, e: [256, 256, 0] },
-                                { t: 30, e: [356, 256, 0] },
-                                { t: 60, e: [256, 356, 0] },
-                                { t: 90, e: [156, 256, 0] },
-                                { t: 120, e: [256, 256, 0] }
-                            ]
-                        },
-                        a: { a: 0, k: [128, 128, 0] },
-                        s: { a: 0, k: [100, 100, 100] }
-                    },
-                    shapes: [{
-                        ty: "gr",
-                        it: [
-                            {
-                                ty: "el",
-                                p: { a: 0, k: [0, 0] },
-                                s: { a: 0, k: [150, 150] }
+                "tgs": 1,
+                "v": "5.5.2",
+                "fr": 30,
+                "ip": 0,
+                "op": 120,
+                "w": 512,
+                "h": 512,
+                "nm": "Spin",
+                "ddd": 0,
+                "assets": [],
+                "layers": [
+                    {
+                        "ddd": 0,
+                        "ind": 1,
+                        "ty": 4,
+                        "nm": "Spinner",
+                        "sr": 1,
+                        "ks": {
+                            "o": { "a": 0, "k": 100 },
+                            "r": {
+                                "a": 1,
+                                "k": [
+                                    {
+                                        "t": 0,
+                                        "s": [0]
+                                    },
+                                    {
+                                        "t": 60,
+                                        "s": [180]
+                                    },
+                                    {
+                                        "t": 120,
+                                        "s": [360]
+                                    }
+                                ]
                             },
+                            "p": { "a": 0, "k": [256, 256, 0] },
+                            "a": { "a": 0, "k": [128, 128, 0] },
+                            "s": { "a": 0, "k": [100, 100, 100] }
+                        },
+                        "shapes": [
                             {
-                                ty: "fl",
-                                c: { a: 0, k: [0, 1, 0, 1] }, // Зеленый
-                                o: { a: 0, k: 100 }
+                                "ty": "gr",
+                                "it": [
+                                    {
+                                        "ty": "rc",
+                                        "s": { "a": 0, "k": [200, 200] },
+                                        "p": { "a": 0, "k": [0, 0] },
+                                        "r": { "a": 0, "k": 30 }
+                                    },
+                                    {
+                                        "ty": "fl",
+                                        "c": { "a": 0, "k": [1, 1, 0, 1] },
+                                        "o": { "a": 0, "k": 100 }
+                                    }
+                                ]
                             }
-                        ]
-                    }],
-                    ip: 0,
-                    op: 120
-                }]
+                        ],
+                        "ip": 0,
+                        "op": 120
+                    }
+                ]
             };
             
-            await saveTGS(lottie, 'test3_position.tgs');
+            await saveTGS(lottie, 'test3_spin.tgs');
         }
 
-        // ========== ТЕСТ 4: ROTATION (ВРАЩЕНИЕ) ==========
-        async function testRotation() {
-            log('🔄 Тест 4: Rotation анимация (вращение)');
+        // ========== ТЕСТ 4: МИГАНИЕ ==========
+        async function testBlink() {
+            log('👁️ Тест 4: Мигание');
             
             const lottie = {
-                tgs: 1,
-                v: "5.5.2",
-                fr: 30,
-                ip: 0,
-                op: 120,
-                w: 512,
-                h: 512,
-                ddd: 0,
-                layers: [{
-                    ddd: 0,
-                    ind: 1,
-                    ty: 4,
-                    nm: "rotate_square",
-                    sr: 1,
-                    ks: {
-                        o: { a: 0, k: 100 },
-                        r: {
-                            a: 1,
-                            k: [
-                                { t: 0, e: [0] },
-                                { t: 30, e: [90] },
-                                { t: 60, e: [180] },
-                                { t: 90, e: [270] },
-                                { t: 120, e: [360] }
-                            ]
-                        },
-                        p: { a: 0, k: [256, 256, 0] },
-                        a: { a: 0, k: [128, 128, 0] },
-                        s: { a: 0, k: [100, 100, 100] }
-                    },
-                    shapes: [{
-                        ty: "gr",
-                        it: [
-                            {
-                                ty: "rc",
-                                s: { a: 0, k: [200, 200] },
-                                p: { a: 0, k: [0, 0] },
-                                r: { a: 0, k: 0 }
+                "tgs": 1,
+                "v": "5.5.2",
+                "fr": 30,
+                "ip": 0,
+                "op": 90,
+                "w": 512,
+                "h": 512,
+                "nm": "Blink",
+                "ddd": 0,
+                "assets": [],
+                "layers": [
+                    {
+                        "ddd": 0,
+                        "ind": 1,
+                        "ty": 4,
+                        "nm": "Blinker",
+                        "sr": 1,
+                        "ks": {
+                            "o": {
+                                "a": 1,
+                                "k": [
+                                    {
+                                        "t": 0,
+                                        "s": [100]
+                                    },
+                                    {
+                                        "t": 15,
+                                        "s": [0]
+                                    },
+                                    {
+                                        "t": 30,
+                                        "s": [100]
+                                    },
+                                    {
+                                        "t": 45,
+                                        "s": [0]
+                                    },
+                                    {
+                                        "t": 60,
+                                        "s": [100]
+                                    },
+                                    {
+                                        "t": 75,
+                                        "s": [0]
+                                    },
+                                    {
+                                        "t": 90,
+                                        "s": [100]
+                                    }
+                                ]
                             },
+                            "r": { "a": 0, "k": 0 },
+                            "p": { "a": 0, "k": [256, 256, 0] },
+                            "a": { "a": 0, "k": [0, 0, 0] },
+                            "s": { "a": 0, "k": [100, 100, 100] }
+                        },
+                        "shapes": [
                             {
-                                ty: "fl",
-                                c: { a: 0, k: [1, 1, 0, 1] }, // Желтый
-                                o: { a: 0, k: 100 }
+                                "ty": "gr",
+                                "it": [
+                                    {
+                                        "ty": "el",
+                                        "p": { "a": 0, "k": [0, 0] },
+                                        "s": { "a": 0, "k": [200, 200] }
+                                    },
+                                    {
+                                        "ty": "fl",
+                                        "c": { "a": 0, "k": [0, 1, 0, 1] },
+                                        "o": { "a": 0, "k": 100 }
+                                    }
+                                ]
                             }
-                        ]
-                    }],
-                    ip: 0,
-                    op: 120
-                }]
+                        ],
+                        "ip": 0,
+                        "op": 90
+                    }
+                ]
             };
             
-            await saveTGS(lottie, 'test4_rotation.tgs');
+            await saveTGS(lottie, 'test4_blink.tgs');
         }
 
-        // ========== ТЕСТ 5: OPACITY (ПРОЗРАЧНОСТЬ) ==========
-        async function testOpacity() {
-            log('👁️ Тест 5: Opacity анимация (мигание)');
-            
-            const lottie = {
-                tgs: 1,
-                v: "5.5.2",
-                fr: 30,
-                ip: 0,
-                op: 90,
-                w: 512,
-                h: 512,
-                ddd: 0,
-                layers: [{
-                    ddd: 0,
-                    ind: 1,
-                    ty: 4,
-                    nm: "opacity_circle",
-                    sr: 1,
-                    ks: {
-                        o: {
-                            a: 1,
-                            k: [
-                                { t: 0, e: [100] },
-                                { t: 15, e: [0] },
-                                { t: 30, e: [100] },
-                                { t: 45, e: [0] },
-                                { t: 60, e: [100] },
-                                { t: 75, e: [0] },
-                                { t: 90, e: [100] }
-                            ]
-                        },
-                        r: { a: 0, k: 0 },
-                        p: { a: 0, k: [256, 256, 0] },
-                        a: { a: 0, k: [128, 128, 0] },
-                        s: { a: 0, k: [100, 100, 100] }
-                    },
-                    shapes: [{
-                        ty: "gr",
-                        it: [
-                            {
-                                ty: "el",
-                                p: { a: 0, k: [0, 0] },
-                                s: { a: 0, k: [200, 200] }
-                            },
-                            {
-                                ty: "fl",
-                                c: { a: 0, k: [0.5, 0, 0.5, 1] }, // Фиолетовый
-                                o: { a: 0, k: 100 }
-                            }
-                        ]
-                    }],
-                    ip: 0,
-                    op: 90
-                }]
-            };
-            
-            await saveTGS(lottie, 'test5_opacity.tgs');
-        }
-
-        // ========== ТЕСТ 6: ВСЁ ВМЕСТЕ ==========
-        async function testAll() {
-            log('✨ Тест 6: Комбинированная анимация');
-            
-            const lottie = {
-                tgs: 1,
-                v: "5.5.2",
-                fr: 30,
-                ip: 0,
-                op: 180,
-                w: 512,
-                h: 512,
-                ddd: 0,
-                layers: [{
-                    ddd: 0,
-                    ind: 1,
-                    ty: 4,
-                    nm: "combo",
-                    sr: 1,
-                    ks: {
-                        o: {
-                            a: 1,
-                            k: [
-                                { t: 0, e: [100] },
-                                { t: 90, e: [50] },
-                                { t: 180, e: [100] }
-                            ]
-                        },
-                        r: {
-                            a: 1,
-                            k: [
-                                { t: 0, e: [0] },
-                                { t: 180, e: [360] }
-                            ]
-                        },
-                        p: {
-                            a: 1,
-                            k: [
-                                { t: 0, e: [256, 256, 0] },
-                                { t: 60, e: [356, 256, 0] },
-                                { t: 120, e: [156, 256, 0] },
-                                { t: 180, e: [256, 256, 0] }
-                            ]
-                        },
-                        a: { a: 0, k: [128, 128, 0] },
-                        s: {
-                            a: 1,
-                            k: [
-                                { t: 0, e: [100, 100, 100] },
-                                { t: 90, e: [150, 150, 100] },
-                                { t: 180, e: [100, 100, 100] }
-                            ]
-                        }
-                    },
-                    shapes: [{
-                        ty: "gr",
-                        it: [
-                            {
-                                ty: "el",
-                                p: { a: 0, k: [0, 0] },
-                                s: { a: 0, k: [150, 150] }
-                            },
-                            {
-                                ty: "fl",
-                                c: { a: 0, k: [1, 0, 0, 1] },
-                                o: { a: 0, k: 100 }
-                            }
-                        ]
-                    }],
-                    ip: 0,
-                    op: 180
-                }]
-            };
-            
-            await saveTGS(lottie, 'test6_combo.tgs');
-        }
-
-        // ========== СОХРАНЕНИЕ ==========
         async function saveTGS(lottieJson, filename) {
             try {
-                log(`📦 JSON: ${JSON.stringify(lottieJson).length} байт`);
-                
-                // Проверяем наличие анимации
-                let animCount = 0;
-                ['s', 'p', 'r', 'o'].forEach(prop => {
-                    if (lottieJson.layers[0].ks[prop]?.a === 1) animCount++;
-                });
-                log(`🎬 Анимированных свойств: ${animCount}`);
+                log(`📦 JSON размер: ${JSON.stringify(lottieJson).length} байт`);
                 
                 // Сжимаем
                 const jsonString = JSON.stringify(lottieJson);
                 const compressed = pako.gzip(jsonString, { level: 9 });
-                log(`✅ Сжато: ${jsonString.length} → ${compressed.length} байт`, 'success');
+                log(`✅ Сжато: ${jsonString.length} → ${compressed.length} байт`);
                 
                 // Сохраняем
                 const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
@@ -504,16 +430,15 @@
                 link.click();
                 URL.revokeObjectURL(url);
                 
-                log(`✅ Файл сохранен: ${filename}`, 'success');
+                log(`✅ Файл сохранен: ${filename}`);
                 
             } catch (e) {
-                log(`❌ Ошибка: ${e.message}`, 'error');
+                log(`❌ Ошибка: ${e.message}`);
             }
         }
 
-        log('✅ TGS тестер загружен');
-        log('Тестируйте каждый тип анимации отдельно:');
-        log('Scale, Position, Rotation, Opacity');
+        log('✅ TGS тестер готов');
+        log('Нажимайте кнопки и проверяйте в Telegram');
     </script>
 </body>
 </html>
