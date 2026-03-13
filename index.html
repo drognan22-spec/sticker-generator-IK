@@ -3,409 +3,551 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TGS - 100% РАБОЧАЯ ВЕРСИЯ</title>
+    <title>🎬 Sticker Animator PRO - WEBM</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
             background: linear-gradient(145deg, #0B1120 0%, #192132 100%);
             min-height: 100vh;
             padding: 30px 20px;
             color: white;
         }
+
         .container {
-            max-width: 800px;
+            max-width: 1400px;
             margin: 0 auto;
         }
-        h1 {
+
+        .header {
             text-align: center;
-            font-size: 3em;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: 800;
             background: linear-gradient(145deg, #fff, #e2e8f0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .card {
+
+        .badge {
+            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            color: #1a1f2e;
+            padding: 10px 30px;
+            border-radius: 40px;
+            display: inline-block;
+            font-weight: 800;
+            margin-top: 10px;
+        }
+
+        .creator-card {
             background: rgba(255, 255, 255, 0.97);
             border-radius: 48px;
             padding: 40px;
             color: #1a1f2e;
+            margin-bottom: 30px;
         }
-        button {
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .input-group input, .input-group select {
             width: 100%;
-            padding: 20px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 30px;
-            font-size: 1.2em;
-            font-weight: bold;
+            padding: 20px 25px;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            font-size: 1.1em;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .professions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 20px 0 30px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 24px;
+        }
+
+        .profession-item {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 15px;
             cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profession-item:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .profession-item.selected {
             background: linear-gradient(145deg, #667eea, #764ba2);
             color: white;
-            transition: transform 0.2s;
         }
-        button:hover {
-            transform: scale(1.02);
+
+        .animation-controls {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 25px;
+            margin: 30px 0;
         }
-        .debug {
+
+        .slider-group {
+            margin: 20px 0;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 10px;
+            border-radius: 10px;
+            background: #e2e8f0;
+        }
+
+        .preview-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .preview-box {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .preview-canvas {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 25px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            font-weight: 800;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        .price-tag {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: #fbbf24;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 24px;
+            color: white;
+        }
+
+        .debug-panel {
             background: #1e293b;
             border-radius: 16px;
             padding: 20px;
             color: #e2e8f0;
             font-family: monospace;
             font-size: 12px;
-            max-height: 300px;
+            max-height: 200px;
             overflow-y: auto;
             margin-top: 20px;
         }
-        .note {
-            background: #fef9c3;
-            border-left: 4px solid #fbbf24;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>⚡ TGS WORKING</h1>
-        
-        <div class="card">
-            <div class="note">
-                <strong>📌 Важно!</strong> Загружайте в @Stickers бота и смотрите превью
+        <div class="header">
+            <h1>🎬 Sticker Animator PRO</h1>
+            <div class="badge">WEBM • 60 FPS • 5-слойная анимация</div>
+        </div>
+
+        <div class="creator-card">
+            <div class="input-group">
+                <label>📝 Персонаж</label>
+                <input type="text" id="character" value="милый кот" placeholder="например: милый кот, программист, панда...">
             </div>
-            
-            <button onclick="testWorking()">✅ ТЕСТ 1: РАБОЧАЯ АНИМАЦИЯ</button>
-            <button onclick="testScale()">📏 ТЕСТ 2: Scale (пульсация)</button>
-            <button onclick="testPosition()">📍 ТЕСТ 3: Position (движение)</button>
-            <button onclick="testRotation()">🔄 ТЕСТ 4: Rotation (вращение)</button>
-            <button onclick="testOpacity()">👁️ ТЕСТ 5: Opacity (мигание)</button>
-            
-            <div class="debug" id="debug"></div>
+
+            <div class="input-group">
+                <label>💼 Профессия</label>
+                <select id="profession">
+                    <option value="programmer">👨‍💻 Программист</option>
+                    <option value="zoomer">📱 Зумер</option>
+                    <option value="doctor">👨‍⚕️ Доктор</option>
+                    <option value="teacher">👩‍🏫 Учитель</option>
+                    <option value="chef">👨‍🍳 Шеф-повар</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>😊 Эмоция</label>
+                <select id="emotion">
+                    <option value="happy">😊 Счастье</option>
+                    <option value="sad">😢 Грусть</option>
+                    <option value="angry">😠 Злость</option>
+                    <option value="surprised">😮 Удивление</option>
+                    <option value="laughing">😂 Смех</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>💬 Шутка</label>
+                <input type="text" id="humor" value="на моей машине работает" placeholder="текст для стикера">
+            </div>
+
+            <div class="animation-controls">
+                <h3>🎮 Настройки анимации</h3>
+                
+                <div class="slider-group">
+                    <label>📏 Пульсация <span id="scaleValue">50%</span></label>
+                    <input type="range" id="scaleIntensity" min="0" max="100" value="50">
+                </div>
+
+                <div class="slider-group">
+                    <label>↗️ Движение <span id="moveValue">30%</span></label>
+                    <input type="range" id="moveIntensity" min="0" max="100" value="30">
+                </div>
+
+                <div class="slider-group">
+                    <label>🔄 Вращение <span id="rotateValue">20%</span></label>
+                    <input type="range" id="rotateIntensity" min="0" max="100" value="20">
+                </div>
+            </div>
+
+            <div class="price-tag">
+                💎 499 ₽ за стикер
+            </div>
+
+            <button class="generate-btn" onclick="generateAnimatedSticker()">
+                🚀 Создать анимированный стикер
+            </button>
+
+            <div class="preview-area">
+                <div class="preview-box">
+                    <h3>🖼️ PNG оригинал</h3>
+                    <div class="preview-canvas">
+                        <canvas id="pngCanvas" width="512" height="512"></canvas>
+                    </div>
+                </div>
+                <div class="preview-box">
+                    <h3>🎬 WEBM анимация</h3>
+                    <div class="preview-canvas">
+                        <canvas id="webmCanvas" width="512" height="512"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="debug-panel" id="debug"></div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div style="font-size: 2em;">🎨</div>
+                <h3>Recraft V4 PNG</h3>
+                <p>Высокое качество изображения</p>
+            </div>
+            <div class="feature">
+                <div style="font-size: 2em;">🔍</div>
+                <h3>MediaPipe Pose</h3>
+                <p>33 точки для анимации</p>
+            </div>
+            <div class="feature">
+                <div style="font-size: 2em;">🎬</div>
+                <h3>WEBM 60 FPS</h3>
+                <p>Плавная анимация</p>
+            </div>
         </div>
     </div>
 
     <script>
-        function log(msg, type = 'info') {
+        const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
+        
+        let pngImage = null;
+        let animationFrame = null;
+        let mediaPipePose = null;
+
+        function log(msg) {
             const debug = document.getElementById('debug');
-            const timestamp = new Date().toLocaleTimeString();
-            debug.innerHTML += `<div><span style="color: #fbbf24;">[${timestamp}]</span> <span style="color: #4ade80;">${msg}</span></div>`;
+            debug.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
             debug.scrollTop = debug.scrollHeight;
         }
 
-        // ========== ТЕСТ 1: ГАРАНТИРОВАННО РАБОЧАЯ АНИМАЦИЯ ==========
-        async function testWorking() {
-            log('🎬 Тест 1: Базовая рабочая анимация');
+        // Инициализация MediaPipe
+        async function initMediaPipe() {
+            if (mediaPipePose) return;
             
-            // Минимальная структура, которая ТОЧНО работает
-            const tgs = {
-                "v": "5.5.2",
-                "fr": 30,
-                "ip": 0,
-                "op": 60,
-                "w": 512,
-                "h": 512,
-                "nm": "Test",
-                "ddd": 0,
-                "assets": [],
-                "layers": [{
-                    "ddd": 0,
-                    "ind": 1,
-                    "ty": 4,
-                    "nm": "Circle",
-                    "sr": 1,
-                    "ks": {
-                        "o": { "a": 0, "k": 100 },
-                        "r": { "a": 0, "k": 0 },
-                        "p": { "a": 0, "k": [256, 256, 0] },
-                        "a": { "a": 0, "k": [128, 128, 0] },
-                        "s": {
-                            "a": 1,
-                            "k": [{
-                                "t": 0,
-                                "s": [100, 100, 100]
-                            }, {
-                                "t": 30,
-                                "s": [200, 200, 100]
-                            }, {
-                                "t": 60,
-                                "s": [100, 100, 100]
-                            }]
-                        }
-                    },
-                    "shapes": [{
-                        "ty": "gr",
-                        "it": [{
-                            "ty": "el",
-                            "p": { "a": 0, "k": [0, 0] },
-                            "s": { "a": 0, "k": [200, 200] }
-                        }, {
-                            "ty": "fl",
-                            "c": { "a": 0, "k": [1, 0, 0, 1] },
-                            "o": { "a": 0, "k": 100 }
-                        }]
-                    }],
-                    "ip": 0,
-                    "op": 60
-                }]
-            };
-            
-            await saveTGS(tgs, 'test1_working.tgs');
-        }
-
-        // ========== ТЕСТ 2: SCALE АНИМАЦИЯ ==========
-        async function testScale() {
-            log('📏 Тест 2: Scale анимация');
-            
-            const tgs = {
-                "v": "5.5.2",
-                "fr": 30,
-                "ip": 0,
-                "op": 90,
-                "w": 512,
-                "h": 512,
-                "nm": "Scale",
-                "ddd": 0,
-                "assets": [],
-                "layers": [{
-                    "ddd": 0,
-                    "ind": 1,
-                    "ty": 4,
-                    "nm": "Pulse",
-                    "sr": 1,
-                    "ks": {
-                        "o": { "a": 0, "k": 100 },
-                        "r": { "a": 0, "k": 0 },
-                        "p": { "a": 0, "k": [256, 256, 0] },
-                        "a": { "a": 0, "k": [128, 128, 0] },
-                        "s": {
-                            "a": 1,
-                            "k": [
-                                { "t": 0, "s": [100, 100, 100] },
-                                { "t": 30, "s": [150, 150, 100] },
-                                { "t": 60, "s": [100, 100, 100] },
-                                { "t": 90, "s": [100, 100, 100] }
-                            ]
-                        }
-                    },
-                    "shapes": [{
-                        "ty": "gr",
-                        "it": [{
-                            "ty": "el",
-                            "p": { "a": 0, "k": [0, 0] },
-                            "s": { "a": 0, "k": [200, 200] }
-                        }, {
-                            "ty": "fl",
-                            "c": { "a": 0, "k": [0, 0, 1, 1] },
-                            "o": { "a": 0, "k": 100 }
-                        }]
-                    }],
-                    "ip": 0,
-                    "op": 90
-                }]
-            };
-            
-            await saveTGS(tgs, 'test2_scale.tgs');
-        }
-
-        // ========== ТЕСТ 3: POSITION АНИМАЦИЯ ==========
-        async function testPosition() {
-            log('📍 Тест 3: Position анимация');
-            
-            const tgs = {
-                "v": "5.5.2",
-                "fr": 30,
-                "ip": 0,
-                "op": 120,
-                "w": 512,
-                "h": 512,
-                "nm": "Move",
-                "ddd": 0,
-                "assets": [],
-                "layers": [{
-                    "ddd": 0,
-                    "ind": 1,
-                    "ty": 4,
-                    "nm": "Moving",
-                    "sr": 1,
-                    "ks": {
-                        "o": { "a": 0, "k": 100 },
-                        "r": { "a": 0, "k": 0 },
-                        "p": {
-                            "a": 1,
-                            "k": [
-                                { "t": 0, "s": [256, 100, 0] },
-                                { "t": 30, "s": [256, 400, 0] },
-                                { "t": 60, "s": [256, 100, 0] },
-                                { "t": 90, "s": [256, 400, 0] },
-                                { "t": 120, "s": [256, 100, 0] }
-                            ]
-                        },
-                        "a": { "a": 0, "k": [128, 128, 0] },
-                        "s": { "a": 0, "k": [100, 100, 100] }
-                    },
-                    "shapes": [{
-                        "ty": "gr",
-                        "it": [{
-                            "ty": "el",
-                            "p": { "a": 0, "k": [0, 0] },
-                            "s": { "a": 0, "k": [150, 150] }
-                        }, {
-                            "ty": "fl",
-                            "c": { "a": 0, "k": [0, 1, 0, 1] },
-                            "o": { "a": 0, "k": 100 }
-                        }]
-                    }],
-                    "ip": 0,
-                    "op": 120
-                }]
-            };
-            
-            await saveTGS(tgs, 'test3_position.tgs');
-        }
-
-        // ========== ТЕСТ 4: ROTATION АНИМАЦИЯ ==========
-        async function testRotation() {
-            log('🔄 Тест 4: Rotation анимация');
-            
-            const tgs = {
-                "v": "5.5.2",
-                "fr": 30,
-                "ip": 0,
-                "op": 120,
-                "w": 512,
-                "h": 512,
-                "nm": "Rotate",
-                "ddd": 0,
-                "assets": [],
-                "layers": [{
-                    "ddd": 0,
-                    "ind": 1,
-                    "ty": 4,
-                    "nm": "Spinning",
-                    "sr": 1,
-                    "ks": {
-                        "o": { "a": 0, "k": 100 },
-                        "r": {
-                            "a": 1,
-                            "k": [
-                                { "t": 0, "s": [0] },
-                                { "t": 60, "s": [360] },
-                                { "t": 120, "s": [720] }
-                            ]
-                        },
-                        "p": { "a": 0, "k": [256, 256, 0] },
-                        "a": { "a": 0, "k": [128, 128, 0] },
-                        "s": { "a": 0, "k": [100, 100, 100] }
-                    },
-                    "shapes": [{
-                        "ty": "gr",
-                        "it": [{
-                            "ty": "rc",
-                            "s": { "a": 0, "k": [200, 200] },
-                            "p": { "a": 0, "k": [0, 0] },
-                            "r": { "a": 0, "k": 20 }
-                        }, {
-                            "ty": "fl",
-                            "c": { "a": 0, "k": [1, 1, 0, 1] },
-                            "o": { "a": 0, "k": 100 }
-                        }]
-                    }],
-                    "ip": 0,
-                    "op": 120
-                }]
-            };
-            
-            await saveTGS(tgs, 'test4_rotation.tgs');
-        }
-
-        // ========== ТЕСТ 5: OPACITY АНИМАЦИЯ ==========
-        async function testOpacity() {
-            log('👁️ Тест 5: Opacity анимация');
-            
-            const tgs = {
-                "v": "5.5.2",
-                "fr": 30,
-                "ip": 0,
-                "op": 90,
-                "w": 512,
-                "h": 512,
-                "nm": "Blink",
-                "ddd": 0,
-                "assets": [],
-                "layers": [{
-                    "ddd": 0,
-                    "ind": 1,
-                    "ty": 4,
-                    "nm": "Blinking",
-                    "sr": 1,
-                    "ks": {
-                        "o": {
-                            "a": 1,
-                            "k": [
-                                { "t": 0, "s": [100] },
-                                { "t": 15, "s": [0] },
-                                { "t": 30, "s": [100] },
-                                { "t": 45, "s": [0] },
-                                { "t": 60, "s": [100] },
-                                { "t": 75, "s": [0] },
-                                { "t": 90, "s": [100] }
-                            ]
-                        },
-                        "r": { "a": 0, "k": 0 },
-                        "p": { "a": 0, "k": [256, 256, 0] },
-                        "a": { "a": 0, "k": [128, 128, 0] },
-                        "s": { "a": 0, "k": [100, 100, 100] }
-                    },
-                    "shapes": [{
-                        "ty": "gr",
-                        "it": [{
-                            "ty": "el",
-                            "p": { "a": 0, "k": [0, 0] },
-                            "s": { "a": 0, "k": [200, 200] }
-                        }, {
-                            "ty": "fl",
-                            "c": { "a": 0, "k": [1, 0, 1, 1] },
-                            "o": { "a": 0, "k": 100 }
-                        }]
-                    }],
-                    "ip": 0,
-                    "op": 90
-                }]
-            };
-            
-            await saveTGS(tgs, 'test5_opacity.tgs');
-        }
-
-        async function saveTGS(tgsJson, filename) {
             try {
-                log(`📦 JSON: ${JSON.stringify(tgsJson).length} байт`);
+                const pose = new Pose({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
+                });
                 
-                // Добавляем tgs флаг если нет
-                tgsJson.tgs = 1;
+                pose.setOptions({
+                    modelComplexity: 1,
+                    smoothLandmarks: true
+                });
                 
-                const jsonString = JSON.stringify(tgsJson);
-                const compressed = pako.gzip(jsonString, { level: 9 });
-                
-                log(`✅ Сжато: ${jsonString.length} → ${compressed.length} байт`);
-                
-                const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = filename;
-                link.click();
-                URL.revokeObjectURL(url);
-                
-                log(`✅ Файл сохранен: ${filename}`);
-                
+                await pose.initialize();
+                mediaPipePose = pose;
+                log('✅ MediaPipe готов');
             } catch (e) {
-                log(`❌ Ошибка: ${e.message}`);
+                log('❌ MediaPipe ошибка: ' + e.message);
             }
         }
 
-        log('⚡ TGS генератор готов');
-        log('Нажмите ТЕСТ 1 для проверки');
+        // Генерация PNG через Recraft
+        async function generatePNG() {
+            const character = document.getElementById('character').value;
+            const profession = document.getElementById('profession').value;
+            const emotion = document.getElementById('emotion').value;
+            const humor = document.getElementById('humor').value;
+
+            const professions = {
+                programmer: 'programmer, software developer, coder',
+                zoomer: 'Gen Z teenager, zoomer',
+                doctor: 'doctor, medical professional',
+                teacher: 'teacher, educator',
+                chef: 'chef, cook'
+            };
+
+            const emotions = {
+                happy: 'happy, smiling, joyful',
+                sad: 'sad, crying',
+                angry: 'angry, mad',
+                surprised: 'surprised, shocked',
+                laughing: 'laughing, laughing hard'
+            };
+
+            const prompt = `${character}, ${professions[profession]}, ${emotions[emotion]}, with text: "${humor}" in speech bubble, 3d render, pixar style, high quality`;
+
+            log(`🎨 Генерация PNG: ${prompt.substring(0, 100)}...`);
+
+            try {
+                const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${RECRAFT_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        n: 1,
+                        size: '1024x1024',
+                        model: 'recraftv4',
+                        response_format: 'b64_json'
+                    })
+                });
+
+                if (!response.ok) throw new Error('API error');
+                
+                const data = await response.json();
+                const base64 = data.data[0].b64_json;
+                
+                // Загружаем в canvas
+                const img = new Image();
+                await new Promise((resolve) => {
+                    img.onload = resolve;
+                    img.src = `data:image/png;base64,${base64}`;
+                });
+                
+                const canvas = document.getElementById('pngCanvas');
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 512, 512);
+                
+                pngImage = img;
+                log('✅ PNG готов');
+                
+                return img;
+            } catch (e) {
+                log('❌ Ошибка: ' + e.message);
+                return null;
+            }
+        }
+
+        // Анализ позы через MediaPipe
+        async function analyzePose(imageElement) {
+            if (!mediaPipePose) return null;
+            
+            try {
+                const results = await new Promise((resolve) => {
+                    mediaPipePose.onResults(resolve);
+                    mediaPipePose.send({ image: imageElement });
+                });
+                
+                if (results.poseLandmarks) {
+                    log('✅ Поза проанализирована');
+                    return results.poseLandmarks;
+                }
+            } catch (e) {
+                log('❌ Ошибка анализа: ' + e.message);
+            }
+            return null;
+        }
+
+        // Создание анимации на canvas
+        function startAnimation(landmarks) {
+            const canvas = document.getElementById('webmCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            const scaleIntensity = document.getElementById('scaleIntensity').value / 100;
+            const moveIntensity = document.getElementById('moveIntensity').value / 100;
+            const rotateIntensity = document.getElementById('rotateIntensity').value / 100;
+            
+            let frame = 0;
+            
+            function animate() {
+                ctx.clearRect(0, 0, 512, 512);
+                
+                if (!pngImage) return;
+                
+                ctx.save();
+                
+                // Центр изображения
+                ctx.translate(256, 256);
+                
+                // 1. Пульсация (scale)
+                const scale = 1 + Math.sin(frame * 0.1) * 0.1 * scaleIntensity;
+                ctx.scale(scale, scale);
+                
+                // 2. Вращение (rotation)
+                const rotation = Math.sin(frame * 0.05) * 0.1 * rotateIntensity;
+                ctx.rotate(rotation);
+                
+                // 3. Движение (position) на основе MediaPipe
+                if (landmarks) {
+                    const headY = (landmarks[0]?.y - 0.5) * 200 * moveIntensity;
+                    const headX = (landmarks[0]?.x - 0.5) * 200 * moveIntensity;
+                    ctx.translate(headX * Math.sin(frame * 0.1), headY * Math.cos(frame * 0.1));
+                }
+                
+                ctx.drawImage(pngImage, -256, -256, 512, 512);
+                ctx.restore();
+                
+                frame++;
+                animationFrame = requestAnimationFrame(animate);
+            }
+            
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+            animate();
+        }
+
+        // Сохранение WEBM
+        function saveWEBM() {
+            const canvas = document.getElementById('webmCanvas');
+            
+            // Настройки для высокого качества
+            const stream = canvas.captureStream(60);
+            const mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'video/webm;codecs=vp9',
+                videoBitsPerSecond: 5000000 // 5 Mbps для качества
+            });
+            
+            const chunks = [];
+            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sticker_${Date.now()}.webm`;
+                a.click();
+                URL.revokeObjectURL(url);
+                log('✅ WEBM сохранен');
+            };
+            
+            // Записываем 3 секунды анимации
+            mediaRecorder.start();
+            setTimeout(() => mediaRecorder.stop(), 3000);
+        }
+
+        // Основная функция
+        async function generateAnimatedSticker() {
+            log('🚀 Начинаем генерацию...');
+            
+            await initMediaPipe();
+            
+            // 1. Генерируем PNG
+            const img = await generatePNG();
+            if (!img) return;
+            
+            // 2. Анализируем позу
+            const landmarks = await analyzePose(img);
+            
+            // 3. Запускаем анимацию
+            startAnimation(landmarks);
+            
+            // 4. Сохраняем WEBM через 3 секунды
+            setTimeout(saveWEBM, 3500);
+        }
+
+        // Обновление значений слайдеров
+        document.getElementById('scaleIntensity').oninput = (e) => {
+            document.getElementById('scaleValue').textContent = e.target.value + '%';
+        };
+        document.getElementById('moveIntensity').oninput = (e) => {
+            document.getElementById('moveValue').textContent = e.target.value + '%';
+        };
+        document.getElementById('rotateIntensity').oninput = (e) => {
+            document.getElementById('rotateValue').textContent = e.target.value + '%';
+        };
+
+        log('✅ Sticker Animator PRO готов');
     </script>
 </body>
 </html>
