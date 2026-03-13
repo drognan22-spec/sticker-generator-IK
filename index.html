@@ -2445,134 +2445,182 @@ function initStyles() {
             }
         }
 
-        // ========== 5-СЛОЙНАЯ АНИМАЦИЯ НА 33 ТОЧКАХ ==========
-        function startPremiumAnimation(landmarks) {
-            const canvas = document.getElementById('webmCanvas');
-            const ctx = canvas.getContext('2d');
+  // ========== СУПЕР-СЛОЖНАЯ 5-СЛОЙНАЯ АНИМАЦИЯ НА 33 ТОЧКАХ MEDIAPIPE ==========
+function startPremiumAnimation(landmarks) {
+    const canvas = document.getElementById('webmCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!pngImage) {
+        addDebugLog('error', '❌ Нет изображения для анимации');
+        return;
+    }
+    
+    const pulseIntensity = document.getElementById('pulseIntensity').value / 100;
+    const moveIntensity = document.getElementById('moveIntensity').value / 100;
+    const rotateIntensity = document.getElementById('rotateIntensity').value / 100;
+    
+    let frame = 0;
+    let lastTime = performance.now();
+    let fps = 0;
+    
+    function animate() {
+        // Расчет FPS
+        const now = performance.now();
+        const delta = now - lastTime;
+        fps = 1000 / delta;
+        lastTime = now;
+        
+        ctx.clearRect(0, 0, 512, 512);
+        ctx.save();
+        ctx.translate(256, 256); // Центр для анимации
+        
+        if (landmarks && landmarks.length > 0) {
+            // ===== СЛОЙ 1: ДЫХАНИЕ (на основе движения грудной клетки) =====
+            // Точки 11-12 (плечи) и 23-24 (бедра) определяют ритм дыхания
+            if (landmarks[11] && landmarks[12]) {
+                const chestHeight = Math.abs(landmarks[11].y - landmarks[12].y);
+                const breathScaleY = 1 + Math.sin(frame * 0.1) * 0.03 * pulseIntensity * chestHeight;
+                const breathScaleX = 1 + Math.cos(frame * 0.1) * 0.01 * pulseIntensity;
+                ctx.scale(breathScaleX, breathScaleY);
+            }
             
-            const pulseIntensity = document.getElementById('pulseIntensity').value / 100;
-            const moveIntensity = document.getElementById('moveIntensity').value / 100;
-            const rotateIntensity = document.getElementById('rotateIntensity').value / 100;
-            
-            let frame = 0;
-            let lastTime = performance.now();
-            let fps = 0;
-            
-            function animate() {
-                const now = performance.now();
-                const delta = now - lastTime;
-                fps = 1000 / delta;
-                lastTime = now;
+            // ===== СЛОЙ 2: ДВИЖЕНИЕ ГОЛОВЫ (точки 0-4) =====
+            if (landmarks[0]) {
+                // Основное движение головы (нос - точка 0)
+                const headX = (landmarks[0].x - 0.5) * 150 * moveIntensity;
+                const headY = (landmarks[0].y - 0.5) * 150 * moveIntensity;
                 
-                ctx.clearRect(0, 0, 512, 512);
-                ctx.save();
-                ctx.translate(256, 256);
+                // Наклон головы (используем глаза для определения)
+                const headRotate = landmarks[2] && landmarks[3]
+                    ? (landmarks[2].y - landmarks[3].y) * 50 * rotateIntensity
+                    : Math.sin(frame * 0.05) * 0.1 * rotateIntensity;
                 
-                if (pngImage) {
-                    if (landmarks && landmarks.length > 0) {
-                        // ===== СЛОЙ 1: ДЫХАНИЕ =====
-                        const chestMovement = landmarks[11] && landmarks[12] 
-                            ? Math.abs(landmarks[11].y - landmarks[12].y) * 2 
-                            : 1;
-                        
-                        const breathScale = 1 + Math.sin(frame * 0.1) * 0.02 * pulseIntensity * chestMovement;
-                        ctx.scale(breathScale, breathScale);
-                        
-                        // ===== СЛОЙ 2: ДВИЖЕНИЕ ГОЛОВЫ =====
-                        if (landmarks[0]) {
-                            const headX = (landmarks[0].x - 0.5) * 120 * moveIntensity;
-                            const headY = (landmarks[0].y - 0.5) * 120 * moveIntensity;
-                            
-                            const headRotate = landmarks[2] && landmarks[3]
-                                ? (landmarks[2].y - landmarks[3].y) * 30 * rotateIntensity
-                                : Math.sin(frame * 0.05) * 0.05 * rotateIntensity;
-                            
-                            ctx.translate(headX, headY);
-                            ctx.rotate(headRotate);
-                        }
-                        
-                        // ===== СЛОЙ 3: АНИМАЦИЯ РУК =====
-                        if (landmarks[15] && landmarks[16]) {
-                            const leftHandX = Math.sin(frame * 0.15) * 25 * moveIntensity;
-                            const leftHandY = Math.cos(frame * 0.2) * 20 * moveIntensity;
-                            
-                            const rightHandX = Math.sin(frame * 0.15 + Math.PI) * 25 * moveIntensity;
-                            const rightHandY = Math.cos(frame * 0.2 + Math.PI) * 20 * moveIntensity;
-                            
-                            if (landmarks[15].visibility > 0.5) {
-                                ctx.translate(leftHandX, leftHandY);
-                            }
-                            if (landmarks[16].visibility > 0.5) {
-                                ctx.translate(rightHandX * 0.5, rightHandY * 0.5);
-                            }
-                        }
-                        
-                        // ===== СЛОЙ 4: ПОВОРОТЫ КОРПУСА =====
-                        if (landmarks[11] && landmarks[12]) {
-                            const shoulderTilt = (landmarks[11].y - landmarks[12].y) * 40 * rotateIntensity;
-                            const bodyTwist = Math.sin(frame * 0.08) * 0.06 * rotateIntensity;
-                            
-                            ctx.rotate(shoulderTilt + bodyTwist);
-                            
-                            if (landmarks[23] && landmarks[24]) {
-                                const hipTilt = (landmarks[23].y - landmarks[24].y) * 20 * moveIntensity;
-                                ctx.transform(1, hipTilt, 0, 1, 0, 0);
-                            }
-                        }
-                        
-                        // ===== СЛОЙ 5: ДИНАМИКА НОГ =====
-                        if (landmarks[25] && landmarks[26]) {
-                            const stepPhase = Math.sin(frame * 0.2);
-                            const stepHeight = Math.abs(stepPhase) * 30 * moveIntensity;
-                            const stepShift = Math.sin(frame * 0.25) * 15 * moveIntensity;
-                            
-                            ctx.translate(stepShift, -stepHeight);
-                            
-                            if (landmarks[27] && landmarks[28]) {
-                                const heelBounce = (landmarks[27].y + landmarks[28].y) * 10 * pulseIntensity;
-                                ctx.scale(1, 1 + Math.sin(frame * 0.3) * 0.01 * heelBounce);
-                            }
-                        }
-                        
-                        // Дополнительно: тряска для смеха
-                        if (currentEmotion?.id === 'laughing' || currentEmotion?.id === 'happy') {
-                            const shakeX = (Math.random() - 0.5) * 3;
-                            const shakeY = (Math.random() - 0.5) * 3;
-                            ctx.translate(shakeX, shakeY);
-                        }
-                        
-                        if (frame % 30 === 0) {
-                            addDebugLog('info', `🎬 Кадр ${frame}, FPS: ${Math.round(fps)}`);
-                        }
-                        
-                    } else {
-                        // Демо-анимация если нет точек
-                        const demoScale = 1 + Math.sin(frame * 0.1) * 0.02;
-                        const demoRotate = Math.sin(frame * 0.05) * 0.02;
-                        const demoBounce = Math.abs(Math.sin(frame * 0.2)) * 10;
-                        
-                        ctx.scale(demoScale, demoScale);
-                        ctx.rotate(demoRotate);
-                        ctx.translate(0, -demoBounce);
-                    }
-                    
-                    // Рисуем PNG с текстом
-                    ctx.drawImage(pngImage, -256, -256, 512, 512);
+                ctx.translate(headX, headY);
+                ctx.rotate(headRotate);
+            }
+            
+            // ===== СЛОЙ 3: АНИМАЦИЯ РУК (точки 11-22) =====
+            if (landmarks[15] && landmarks[16]) {
+                // Левая рука (15 - запястье)
+                const leftHandX = Math.sin(frame * 0.15) * 30 * moveIntensity;
+                const leftHandY = Math.cos(frame * 0.2) * 25 * moveIntensity;
+                
+                // Правая рука (16 - запястье) - противофаза
+                const rightHandX = Math.sin(frame * 0.15 + Math.PI) * 30 * moveIntensity;
+                const rightHandY = Math.cos(frame * 0.2 + Math.PI) * 25 * moveIntensity;
+                
+                // Комбинируем движение обеих рук
+                if (landmarks[15].visibility > 0.5) {
+                    ctx.translate(leftHandX, leftHandY);
                 }
-                
-                ctx.restore();
-                
-                frame++;
-                animationFrame = requestAnimationFrame(animate);
+                if (landmarks[16].visibility > 0.5) {
+                    ctx.translate(rightHandX * 0.7, rightHandY * 0.7);
+                }
             }
             
-            if (animationFrame) {
-                cancelAnimationFrame(animationFrame);
+            // ===== СЛОЙ 4: ПОВОРОТЫ КОРПУСА (точки 11-14, 23-26) =====
+            if (landmarks[11] && landmarks[12] && landmarks[23] && landmarks[24]) {
+                // Поворот корпуса на основе плеч и бедер
+                const shoulderAngle = Math.atan2(
+                    landmarks[12].y - landmarks[11].y,
+                    landmarks[12].x - landmarks[11].x
+                );
+                const hipAngle = Math.atan2(
+                    landmarks[24].y - landmarks[23].y,
+                    landmarks[24].x - landmarks[23].x
+                );
+                
+                const bodyTwist = (shoulderAngle - hipAngle) * 2 * rotateIntensity;
+                const waveTwist = Math.sin(frame * 0.08) * 0.08 * rotateIntensity;
+                
+                ctx.rotate(bodyTwist + waveTwist);
+                
+                // Наклон корпуса
+                const bodyLean = (landmarks[11].y - landmarks[23].y) * 0.5 * moveIntensity;
+                ctx.transform(1, bodyLean, 0, 1, 0, 0);
             }
             
-            animate();
-            addDebugLog('success', '🎬 Анимация запущена');
+            // ===== СЛОЙ 5: ДИНАМИКА НОГ (точки 23-32) =====
+            if (landmarks[25] && landmarks[26] && landmarks[27] && landmarks[28]) {
+                // Ходьба/подпрыгивание на основе коленей и пяток
+                const stepPhase = Math.sin(frame * 0.2);
+                const stepHeight = Math.abs(stepPhase) * 35 * moveIntensity;
+                const stepShift = Math.sin(frame * 0.25) * 20 * moveIntensity;
+                
+                ctx.translate(stepShift, -stepHeight);
+                
+                // Пружинистость на основе пяток
+                if (landmarks[27] && landmarks[28]) {
+                    const heelBounce = (landmarks[27].y + landmarks[28].y) * 15 * pulseIntensity;
+                    ctx.scale(1, 1 + Math.sin(frame * 0.3) * 0.02 * heelBounce);
+                }
+            }
+            
+            // ===== ДОПОЛНИТЕЛЬНО: МИМИКА И ЭМОЦИИ =====
+            if (currentEmotion) {
+                switch(currentEmotion.id) {
+                    case 'laughing':
+                    case 'happy':
+                        // Тряска от смеха
+                        const shakeX = (Math.random() - 0.5) * 5;
+                        const shakeY = (Math.random() - 0.5) * 3;
+                        ctx.translate(shakeX, shakeY);
+                        break;
+                    case 'sad':
+                    case 'crying':
+                        // Опущенные плечи
+                        ctx.translate(0, 5 * pulseIntensity);
+                        break;
+                    case 'angry':
+                        // Резкие движения
+                        const jerkX = Math.sin(frame * 0.3) * 8;
+                        const jerkY = Math.cos(frame * 0.3) * 8;
+                        ctx.translate(jerkX, jerkY);
+                        break;
+                    case 'surprised':
+                        // Замирание и увеличение
+                        ctx.scale(1 + Math.abs(Math.sin(frame * 0.1)) * 0.05, 1);
+                        break;
+                }
+            }
+            
+            // Логируем каждые 30 кадров для отладки
+            if (frame % 30 === 0) {
+                addDebugLog('info', `🎬 Анимация: кадр ${frame}, FPS: ${Math.round(fps)}`);
+            }
+        } else {
+            // Демо-режим если нет точек MediaPipe
+            const demoScale = 1 + Math.sin(frame * 0.1) * 0.02;
+            const demoRotate = Math.sin(frame * 0.05) * 0.02;
+            const demoBounce = Math.abs(Math.sin(frame * 0.2)) * 10;
+            
+            ctx.scale(demoScale, demoScale);
+            ctx.rotate(demoRotate);
+            ctx.translate(0, -demoBounce);
+            
+            addDebugLog('info', `🎬 Демо-анимация: кадр ${frame}`);
         }
+        
+        // Рисуем PNG со ВСЕМ ТЕКСТОМ внутри
+        ctx.drawImage(pngImage, -256, -256, 512, 512);
+        ctx.restore();
+        
+        frame++;
+        animationFrame = requestAnimationFrame(animate);
+    }
+    
+    // Останавливаем предыдущую анимацию
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+    }
+    
+    // Запускаем новую
+    animate();
+    addDebugLog('success', '🎬 Супер-сложная 5-слойная анимация запущена');
+    
+    // Возвращаем функцию для возможности остановки
+    return () => cancelAnimationFrame(animationFrame);
+}
 
         // ========== ЗАПУСК АНИМАЦИИ С ИЗОБРАЖЕНИЕМ ==========
         async function startAnimationWithImage(pngDataUrl, emotion) {
