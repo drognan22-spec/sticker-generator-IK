@@ -2291,280 +2291,173 @@
             }
         }
 
-        // ========== КОНВЕРТАЦИЯ SVG В LOTTIE - ИСПРАВЛЕННАЯ ВЕРСИЯ ==========
-        async function convertSvgToLottie(svgString) {
-            addDebugLog('info', `🔄 Конвертация SVG в Lottie, размер: ${svgString.length} символов`);
-            
-            // Проверяем, что SVG не пустой
-            if (!svgString || svgString.length < 100) {
-                addDebugLog('error', '❌ SVG пустой или слишком маленький');
-                return null;
-            }
-            
-            // Базовая структура Lottie с правильными полями для TGS
-            const lottieJson = {
-                tgs: 1,
-                v: "5.5.2",
-                fr: 60,
-                ip: 0,
-                op: 180,
-                w: 512,
-                h: 512,
-                ddd: 0,
-                layers: [],
-                markers: []
-            };
-            
+        // ========== КОНВЕРТАЦИЯ SVG В LOTTIE С ДОБАВЛЕНИЕМ ТЕКСТА ==========
+async function convertSvgToLottie(svgString, humorText = null) {
+    addDebugLog('info', `🔄 Конвертация SVG в Lottie, размер: ${svgString.length} символов`);
+    
+    if (!svgString || svgString.length < 100) {
+        addDebugLog('error', '❌ SVG пустой или слишком маленький');
+        return null;
+    }
+    
+    const lottieJson = {
+        tgs: 1,
+        v: "5.5.2",
+        fr: 60,
+        ip: 0,
+        op: 180,
+        w: 512,
+        h: 512,
+        ddd: 0,
+        layers: [],
+        markers: []
+    };
+    
+    try {
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+        
+        const parserError = svgDoc.querySelector('parsererror');
+        if (parserError) {
+            addDebugLog('error', `❌ Ошибка парсинга SVG: ${parserError.textContent}`);
+            return null;
+        }
+        
+        const elements = svgDoc.querySelectorAll('path, circle, rect, ellipse, line, polygon, polyline');
+        addDebugLog('info', `📊 Найдено элементов: ${elements.length}`);
+        
+        if (elements.length === 0) {
+            addDebugLog('error', '❌ Нет графических элементов в SVG');
+            return null;
+        }
+        
+        // Создаем слои для каждого элемента
+        elements.forEach((el, index) => {
             try {
-                const parser = new DOMParser();
-                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-                
-                // Проверяем ошибки парсинга
-                const parserError = svgDoc.querySelector('parsererror');
-                if (parserError) {
-                    addDebugLog('error', `❌ Ошибка парсинга SVG: ${parserError.textContent}`);
-                    return null;
+                const layer = createLayerFromElement(el, index);
+                if (layer) {
+                    lottieJson.layers.push(layer);
                 }
-                
-                // Получаем корневой SVG элемент
-                const svgRoot = svgDoc.documentElement;
-                
-                // Получаем все графические элементы
-                const elements = svgDoc.querySelectorAll('path, circle, rect, ellipse, line, polygon, polyline');
-                addDebugLog('info', `📊 Найдено элементов: ${elements.length}`);
-                
-                if (elements.length === 0) {
-                    addDebugLog('error', '❌ Нет графических элементов в SVG');
-                    return null;
-                }
-                
-                // Создаем слои для каждого элемента
-                elements.forEach((el, index) => {
-                    try {
-                        const layer = createLayerFromElement(el, index);
-                        if (layer) {
-                            lottieJson.layers.push(layer);
-                        }
-                    } catch (e) {
-                        addDebugLog('error', `❌ Ошибка создания слоя ${index}: ${e.message}`);
-                    }
-                });
-                
-                addDebugLog('success', `✅ Создано Lottie слоев: ${lottieJson.layers.length}`);
-                
-                if (lottieJson.layers.length === 0) {
-                    addDebugLog('error', '❌ Не удалось создать ни одного слоя');
-                    return null;
-                }
-                
             } catch (e) {
-                addDebugLog('error', `❌ Ошибка конвертации: ${e.message}`);
-                return null;
+                addDebugLog('error', `❌ Ошибка создания слоя ${index}: ${e.message}`);
             }
+        });
+        
+        // ===== ДОБАВЛЯЕМ ТЕКСТ ВЕКТОРОМ (если есть) =====
+        if (humorText) {
+            addDebugLog('info', `📝 Добавляем текст вектором: "${humorText}"`);
             
-            return lottieJson;
+            // Создаем слой для текста
+            const textLayer = createTextLayer(humorText, elements.length);
+            if (textLayer) {
+                lottieJson.layers.push(textLayer);
+                addDebugLog('success', `✅ Текст добавлен как векторный слой`);
+            }
         }
+        
+        addDebugLog('success', `✅ Создано Lottie слоев: ${lottieJson.layers.length}`);
+        
+        if (lottieJson.layers.length === 0) {
+            addDebugLog('error', '❌ Не удалось создать ни одного слоя');
+            return null;
+        }
+        
+    } catch (e) {
+        addDebugLog('error', `❌ Ошибка конвертации: ${e.message}`);
+        return null;
+    }
+    
+    return lottieJson;
+}
 
-        // Вспомогательная функция для создания слоя из элемента
-        function createLayerFromElement(el, index) {
-            const tagName = el.tagName.toLowerCase();
-            
-            // Получаем атрибуты заливки и обводки
-            const fill = el.getAttribute('fill') || 'rgb(0,0,0)';
-            const stroke = el.getAttribute('stroke');
-            const strokeWidth = el.getAttribute('stroke-width');
-            const opacity = parseFloat(el.getAttribute('opacity') || '1');
-            
-            // Парсим цвет заливки
-            let fillR = 0, fillG = 0, fillB = 0, fillA = opacity;
-            
-            // Проверяем разные форматы цветов
-            if (fill.startsWith('rgb(')) {
-                const rgbMatch = fill.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-                if (rgbMatch) {
-                    fillR = parseInt(rgbMatch[1]) / 255;
-                    fillG = parseInt(rgbMatch[2]) / 255;
-                    fillB = parseInt(rgbMatch[3]) / 255;
-                }
-            } else if (fill.startsWith('#')) {
-                const hex = fill.substring(1);
-                if (hex.length === 6) {
-                    fillR = parseInt(hex.substring(0, 2), 16) / 255;
-                    fillG = parseInt(hex.substring(2, 4), 16) / 255;
-                    fillB = parseInt(hex.substring(4, 6), 16) / 255;
-                } else if (hex.length === 3) {
-                    fillR = parseInt(hex[0] + hex[0], 16) / 255;
-                    fillG = parseInt(hex[1] + hex[1], 16) / 255;
-                    fillB = parseInt(hex[2] + hex[2], 16) / 255;
-                }
-            } else if (fill === 'none') {
-                fillA = 0;
-            }
-            
-            // Парсим цвет обводки
-            let strokeR = 0, strokeG = 0, strokeB = 0, strokeA = opacity;
-            if (stroke && stroke !== 'none') {
-                if (stroke.startsWith('rgb(')) {
-                    const rgbMatch = stroke.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-                    if (rgbMatch) {
-                        strokeR = parseInt(rgbMatch[1]) / 255;
-                        strokeG = parseInt(rgbMatch[2]) / 255;
-                        strokeB = parseInt(rgbMatch[3]) / 255;
+// ===== НОВАЯ ФУНКЦИЯ: создает векторный текст =====
+function createTextLayer(text, layerIndex) {
+    // Ограничиваем длину текста
+    const shortText = text.length > 30 ? text.substring(0, 27) + '...' : text;
+    
+    // Создаем path для текста (упрощенно - прямоугольник с текстовым эффектом)
+    // В реальном проекте здесь нужно использовать шрифтовые глифы
+    return {
+        ddd: 0,
+        ind: layerIndex + 1,
+        ty: 5, // Тип 5 = текстовый слой в Lottie
+        nm: "text_layer",
+        sr: 1,
+        ks: {
+            o: { a: 0, k: 100 },
+            r: { a: 0, k: 0 },
+            p: { a: 0, k: [256, 400, 0] }, // Позиция внизу стикера
+            a: { a: 0, k: [0, 0, 0] },
+            s: { a: 0, k: [100, 100, 100] }
+        },
+        ao: 0,
+        t: {
+            d: {
+                k: [{
+                    t: 0,
+                    s: {
+                        f: "Inter", // Шрифт
+                        s: 36, // Размер
+                        fc: [0, 0, 0, 1], // Черный цвет
+                        j: 2, // Выравнивание по центру
+                        tr: 0,
+                        lh: 40,
+                        ls: 0,
+                        fc: [0, 0, 0, 1],
+                        t: shortText // Сам текст
                     }
-                } else if (stroke.startsWith('#')) {
-                    const hex = stroke.substring(1);
-                    if (hex.length === 6) {
-                        strokeR = parseInt(hex.substring(0, 2), 16) / 255;
-                        strokeG = parseInt(hex.substring(2, 4), 16) / 255;
-                        strokeB = parseInt(hex.substring(4, 6), 16) / 255;
-                    }
-                }
+                }]
             }
+        },
+        ip: 0,
+        op: 180,
+        st: 0,
+        bm: 0
+    };
+}
+
+// ===== ОБНОВЛЕННАЯ ФУНКЦИЯ ГЕНЕРАЦИИ =====
+// В основном цикле генерации:
+
+// ==== 4. ГЕНЕРАЦИЯ TGS - ВЕКТОР С ТЕКСТОМ ====
+if (selectedPack === 'premium') {
+    try {
+        addDebugLog('info', `🎬 Создание TGS для ${emotion.name} с текстом...`);
+        
+        // Промпт для вектора (БЕЗ ТЕКСТА в картинке)
+        const svgPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, no text, no speech bubble, no letters, clean vector art`;
+        
+        // Получаем SVG из Recraft
+        const svg = await generateRecraftSVG(svgPrompt);
+        
+        if (svg) {
+            // Конвертируем SVG в Lottie и ДОБАВЛЯЕМ ТЕКСТ
+            let lottie = await convertSvgToLottie(svg, humorText);
             
-            // Создаем базовый слой
-            const layer = {
-                ddd: 0,
-                ind: index + 1,
-                ty: 4, // Тип - shape layer
-                nm: `${tagName}_${index}`,
-                sr: 1,
-                ks: {
-                    o: { a: 0, k: 100 },
-                    r: { a: 0, k: 0 },
-                    p: { a: 0, k: [256, 256, 0] },
-                    a: { a: 0, k: [0, 0, 0] },
-                    s: { a: 0, k: [100, 100, 100] }
-                },
-                ao: 0,
-                shapes: [{
-                    ty: "gr",
-                    it: [],
-                    nm: `group_${index}`,
-                    mn: "",
-                    hd: false
-                }],
-                ip: 0,
-                op: 180,
-                st: 0,
-                bm: 0
-            };
-            
-            // Добавляем заливку если есть
-            if (fillA > 0) {
-                layer.shapes[0].it.push({
-                    ty: "fl",
-                    nm: "fill",
-                    mn: "",
-                    c: { a: 0, k: [fillR, fillG, fillB] },
-                    o: { a: 0, k: fillA * 100 },
-                    r: 1
-                });
-            }
-            
-            // Добавляем обводку если есть
-            if (stroke && stroke !== 'none' && strokeWidth) {
-                layer.shapes[0].it.push({
-                    ty: "st",
-                    nm: "stroke",
-                    mn: "",
-                    c: { a: 0, k: [strokeR, strokeG, strokeB] },
-                    o: { a: 0, k: strokeA * 100 },
-                    w: { a: 0, k: parseFloat(strokeWidth) },
-                    lc: 1,
-                    lj: 1,
-                    ml: 4
-                });
-            }
-            
-            // Добавляем path в зависимости от типа элемента
-            if (tagName === 'path') {
-                const d = el.getAttribute('d');
-                if (d) {
-                    // Упрощенный парсинг path - для сложных path нужен полноценный парсер
-                    const simplifiedPath = simplifySvgPath(d);
-                    if (simplifiedPath) {
-                        layer.shapes[0].it.push({
-                            ty: "sh",
-                            ks: {
-                                a: 0,
-                                k: simplifiedPath
-                            },
-                            nm: `path_${index}`,
-                            mn: "",
-                            hd: false
-                        });
-                    }
-                }
-            } else if (tagName === 'circle') {
-                const cx = parseFloat(el.getAttribute('cx') || '256');
-                const cy = parseFloat(el.getAttribute('cy') || '256');
-                const r = parseFloat(el.getAttribute('r') || '100');
+            if (lottie) {
+                // Применяем анимацию на основе MediaPipe
+                lottie = applyPoseAnimation(lottie, poseData);
                 
-                layer.shapes[0].it.push({
-                    ty: "el",
-                    nm: `circle_${index}`,
-                    mn: "",
-                    p: { a: 0, k: [cx, cy] },
-                    s: { a: 0, k: [r*2, r*2] }
-                });
-            } else if (tagName === 'rect') {
-                const x = parseFloat(el.getAttribute('x') || '0');
-                const y = parseFloat(el.getAttribute('y') || '0');
-                const width = parseFloat(el.getAttribute('width') || '100');
-                const height = parseFloat(el.getAttribute('height') || '100');
-                const rx = parseFloat(el.getAttribute('rx') || '0');
+                // Сжимаем в TGS
+                const tgsData = await compressToTGS(lottie);
                 
-                if (rx > 0) {
-                    layer.shapes[0].it.push({
-                        ty: "rc",
-                        nm: `rect_${index}`,
-                        mn: "",
-                        p: { a: 0, k: [x + width/2, y + height/2] },
-                        s: { a: 0, k: [width, height] },
-                        r: { a: 0, k: rx }
+                if (tgsData) {
+                    generatedTGS.push({
+                        emotion: emotion,
+                        profession: profession.name,
+                        humor: humorText,
+                        dataUrl: tgsData,
+                        filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`,
+                        hasHumor: useHumor
                     });
-                } else {
-                    // Для обычного прямоугольника используем path
-                    const path = createRectPath(x, y, width, height);
-                    layer.shapes[0].it.push({
-                        ty: "sh",
-                        ks: {
-                            a: 0,
-                            k: path
-                        },
-                        nm: `rect_path_${index}`,
-                        mn: "",
-                        hd: false
-                    });
+                    addDebugLog('success', `✅ TGS создан для ${emotion.name} с текстом: "${humorText}"`);
                 }
             }
-            
-            return layer;
         }
-
-        // Упрощенный парсер SVG path (для демо)
-        function simplifySvgPath(d) {
-            // В реальном проекте здесь должен быть полноценный парсер
-            // Для демо возвращаем квадрат
-            return {
-                v: [[[0,0], [512,0], [512,512], [0,512], [0,0]]],
-                i: [[[0,0], [0,0], [0,0], [0,0], [0,0]]],
-                o: [[[0,0], [0,0], [0,0], [0,0], [0,0]]],
-                c: true
-            };
-        }
-
-        // Создает path для прямоугольника
-        function createRectPath(x, y, width, height) {
-            return {
-                v: [
-                    [[x, y], [x+width, y], [x+width, y+height], [x, y+height], [x, y]]
-                ],
-                i: [[[0,0], [0,0], [0,0], [0,0], [0,0]]],
-                o: [[[0,0], [0,0], [0,0], [0,0], [0,0]]],
-                c: true
-            };
-        }
+    } catch (e) {
+        addDebugLog('error', `❌ TGS error: ${e.message}`);
+    }
+}
 
         // ========== 5-СЛОЙНАЯ АНИМАЦИЯ (60 FPS) ==========
         function applyPoseAnimation(lottieJson, poseData) {
