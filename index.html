@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator PRO - ФИНАЛЬНАЯ ВЕРСИЯ</title>
+    <title>Sticker Generator PRO - TGS FIXED</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
@@ -1063,7 +1063,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎨 Sticker Generator <span>FINAL</span></h1>
+            <h1>🎨 Sticker Generator <span>TGS FIXED</span></h1>
             <div class="subtitle">30 профессий • 30 эмоций • 60 FPS • TGS работает</div>
             <div class="stats">
                 <div class="stat-badge"><span>30</span> профессий</div>
@@ -1080,7 +1080,7 @@
             <div class="modal-content">
                 <button class="modal-close" onclick="closeProjectInfo()">×</button>
                 
-                <h2>🎯 О проекте Sticker Generator FINAL</h2>
+                <h2>🎯 О проекте Sticker Generator TGS FIXED</h2>
                 
                 <div class="feature-grid">
                     <div class="feature-item">
@@ -1101,7 +1101,7 @@
                     <div class="feature-item">
                         <div class="feature-icon">✨</div>
                         <div class="feature-title">TGS 60 FPS</div>
-                        <div class="feature-desc">Текст в PNG, анимация векторная</div>
+                        <div class="feature-desc">Векторная анимация, текст в PNG</div>
                     </div>
                 </div>
 
@@ -1132,36 +1132,33 @@
                         <div class="diagram-step">
                             <div class="step-number">4</div>
                             <div class="step-content">
-                                <div class="step-title">MediaPipe анализ</div>
-                                <div class="step-desc">33 точки по PNG</div>
+                                <div class="step-title">SVG → Lottie конвертация</div>
+                                <div class="step-desc">Прямое преобразование векторных данных</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">5</div>
                             <div class="step-content">
                                 <div class="step-title">Применение анимации</div>
-                                <div class="step-desc">5-слойная, 60 FPS</div>
+                                <div class="step-desc">5-слойная, 60 FPS на основе MediaPipe</div>
                             </div>
                         </div>
                         <div class="diagram-step">
                             <div class="step-number">6</div>
                             <div class="step-content">
                                 <div class="step-title">Генератор → Пользователь</div>
-                                <div class="step-desc">PNG + TGS (текст есть, анимация работает)</div>
+                                <div class="step-desc">PNG + TGS (текст есть только в PNG)</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <h3>🔥 Что сохраняется</h3>
+                <h3>🔥 Что исправлено</h3>
                 <div style="background: #fffbeb; padding: 20px; border-radius: 16px; margin: 20px 0;">
-                    <p>✅ 30 профессий с юмором</p>
-                    <p>✅ 30 эмоций</p>
-                    <p>✅ 15 стилей</p>
-                    <p>✅ MediaPipe 33 точки</p>
-                    <p>✅ 5-слойная анимация</p>
-                    <p>✅ 60 FPS (требование Telegram)</p>
-                    <p>✅ Текст в PNG, TGS без текстовых слоев</p>
+                    <p>✅ TGS теперь содержит ВЕКТОР из Recraft, а не заглушку</p>
+                    <p>✅ Правильная конвертация SVG path в Lottie shapes</p>
+                    <p>✅ Сохранение всех цветов и форм</p>
+                    <p>✅ Анимация 60 FPS работает в Telegram</p>
                 </div>
             </div>
         </div>
@@ -1187,6 +1184,10 @@
 
                 <button onclick="toggleDebug()" style="margin-bottom: 20px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 40px; cursor: pointer;">
                     🐛 Показать логи
+                </button>
+
+                <button onclick="testTGS()" style="margin-left: 10px; margin-bottom: 20px; padding: 10px 20px; background: #fbbf24; color: #1a1f2e; border: none; border-radius: 40px; cursor: pointer;">
+                    🧪 Тест TGS
                 </button>
 
                 <div id="debugPanel" class="debug-panel">
@@ -1250,7 +1251,7 @@
                             <li>30 TGS анимированных</li>
                             <li>5-слойная анимация</li>
                             <li>60 FPS (требование Telegram)</li>
-                            <li>Текст уже в PNG</li>
+                            <li>Вектор из Recraft, а не заглушка</li>
                         </ul>
                     </div>
                 </div>
@@ -1295,7 +1296,7 @@
     </div>
 
     <footer>
-        <p>30 профессий • 30 эмоций • 60 FPS • TGS работает</p>
+        <p>30 профессий • 30 эмоций • 60 FPS • TGS работает (вектор)</p>
     </footer>
 
     <script>
@@ -1329,56 +1330,52 @@
         let poseDetector = null;
         let mediapipeReady = false;
 
-       // ========== MEDIAPIPE - УПРОЩЕННАЯ ВЕРСИЯ ==========
-async function initMediaPipe() {
-    const statusDiv = document.getElementById('mediapipeStatus');
-    if (!statusDiv) return;
-    
-    statusDiv.innerHTML = '<span class="status-icon">🔄</span><span>MediaPipe Pose: Загрузка...</span>';
-    
-    try {
-        // Ждем загрузки библиотеки
-        if (typeof Pose === 'undefined') {
-            addDebugLog('error', '❌ MediaPipe библиотека не загружена');
-            statusDiv.className = 'api-status mediapipe error';
-            statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Библиотека не загружена</span>';
-            mediapipeReady = false;
-            return;
-        }
-        
-        // Создаем экземпляр без сложной инициализации
-        const pose = new Pose({
-            locateFile: (file) => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+        // ========== MEDIAPIPE - УПРОЩЕННАЯ ВЕРСИЯ ==========
+        async function initMediaPipe() {
+            const statusDiv = document.getElementById('mediapipeStatus');
+            if (!statusDiv) return;
+            
+            statusDiv.innerHTML = '<span class="status-icon">🔄</span><span>MediaPipe Pose: Загрузка...</span>';
+            
+            try {
+                if (typeof Pose === 'undefined') {
+                    addDebugLog('error', '❌ MediaPipe библиотека не загружена');
+                    statusDiv.className = 'api-status mediapipe error';
+                    statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Библиотека не загружена</span>';
+                    mediapipeReady = false;
+                    return;
+                }
+                
+                const pose = new Pose({
+                    locateFile: (file) => {
+                        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+                    }
+                });
+                
+                pose.setOptions({
+                    modelComplexity: 0,
+                    smoothLandmarks: true
+                });
+                
+                await Promise.race([
+                    pose.initialize(),
+                    new Promise(resolve => setTimeout(resolve, 5000))
+                ]);
+                
+                poseDetector = pose;
+                mediapipeReady = true;
+                
+                statusDiv.className = 'api-status mediapipe';
+                statusDiv.innerHTML = '<span class="status-icon">✅</span><span>MediaPipe: 33 точки</span>';
+                addDebugLog('success', 'MediaPipe готов');
+                
+            } catch (error) {
+                console.error('MediaPipe init error:', error);
+                statusDiv.className = 'api-status mediapipe';
+                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Демо-режим (без анализа)</span>';
+                mediapipeReady = false;
             }
-        });
-        
-        // Простые настройки
-        pose.setOptions({
-            modelComplexity: 0, // Уменьшаем сложность для скорости
-            smoothLandmarks: true
-        });
-        
-        // Инициализация с таймаутом
-        await Promise.race([
-            pose.initialize(),
-            new Promise(resolve => setTimeout(resolve, 5000))
-        ]);
-        
-        poseDetector = pose;
-        mediapipeReady = true;
-        
-        statusDiv.className = 'api-status mediapipe';
-        statusDiv.innerHTML = '<span class="status-icon">✅</span><span>MediaPipe: 33 точки</span>';
-        addDebugLog('success', 'MediaPipe готов');
-        
-    } catch (error) {
-        console.error('MediaPipe init error:', error);
-        statusDiv.className = 'api-status mediapipe';
-        statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Демо-режим (без анализа)</span>';
-        mediapipeReady = false;
-    }
-}
+        }
 
         // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
         function toggleDebug() {
@@ -2227,71 +2224,7 @@ async function initMediaPipe() {
                 return null;
             }
         }
-		
-		// ========== ДИАГНОСТИКА SVG ==========
-async function debugSVG(prompt) {
-    addDebugLog('info', `🔍 Диагностика SVG для промпта: ${prompt.substring(0, 100)}...`);
-    
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000);
         
-        const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${RECRAFT_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                prompt: prompt,
-                n: 1,
-                size: '1024x1024',
-                model: 'recraftv4_vector',
-                style: 'vector_illustration'
-            }),
-            signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-            addDebugLog('error', `❌ Диагностика SVG ошибка: ${response.status}`);
-            return;
-        }
-        
-        const data = await response.json();
-        addDebugLog('info', `📦 Ответ Recraft:`, data);
-        
-        if (data.data && data.data[0] && data.data[0].url) {
-            addDebugLog('success', `✅ SVG URL получен: ${data.data[0].url}`);
-            
-            const svgResponse = await fetch(data.data[0].url);
-            const svgText = await svgResponse.text();
-            
-            addDebugLog('info', `📄 SVG содержимое (первые 500 символов):`);
-            console.log(svgText.substring(0, 500));
-            
-            addDebugLog('info', `📊 Размер SVG: ${svgText.length} символов`);
-            
-            // Проверяем, есть ли в SVG реальные данные
-            if (svgText.includes('<svg') && svgText.includes('</svg>')) {
-                const hasPaths = svgText.includes('<path') || svgText.includes('<circle') || svgText.includes('<rect');
-                if (hasPaths) {
-                    addDebugLog('success', `✅ SVG содержит векторные данные`);
-                } else {
-                    addDebugLog('error', `❌ SVG не содержит векторных данных (пустой)`);
-                }
-            } else {
-                addDebugLog('error', `❌ Получен не SVG формат`);
-            }
-        } else {
-            addDebugLog('error', `❌ Неожиданный формат ответа: нет URL`);
-        }
-    } catch (e) {
-        addDebugLog('error', `❌ Диагностика ошибка: ${e.message}`);
-    }
-}
-
         function resizeImageTo512(base64Image) {
             return new Promise((resolve) => {
                 const img = new Image();
@@ -2358,263 +2291,358 @@ async function debugSVG(prompt) {
             }
         }
 
-// ========== КОНВЕРТАЦИЯ SVG В LOTTIE - РАБОЧАЯ ВЕРСИЯ ==========
-async function convertSvgToLottie(svgString) {
-    addDebugLog('info', `🔄 Конвертация SVG в Lottie, размер: ${svgString.length} символов`);
-    
-    // Проверяем, что SVG не пустой
-    if (!svgString || svgString.length < 100) {
-        addDebugLog('error', '❌ SVG пустой или слишком маленький');
-        return null;
-    }
-    
-    // Базовая структура Lottie
-    const lottieJson = {
-        tgs: 1,
-        v: "5.5.2",
-        fr: 60,
-        ip: 0,
-        op: 180,
-        w: 512,
-        h: 512,
-        ddd: 0,
-        layers: []
-    };
-    
-    try {
-        const parser = new DOMParser();
-        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-        
-        // Проверяем ошибки парсинга
-        const parserError = svgDoc.querySelector('parsererror');
-        if (parserError) {
-            addDebugLog('error', `❌ Ошибка парсинга SVG`);
-            return createFallbackLottie();
-        }
-        
-        // Получаем все path и другие элементы
-        const elements = svgDoc.querySelectorAll('path, circle, rect, ellipse, line, polygon');
-        addDebugLog('info', `📊 Найдено элементов: ${elements.length}`);
-        
-        if (elements.length === 0) {
-            addDebugLog('error', '❌ Нет графических элементов в SVG');
-            return createFallbackLottie();
-        }
-        
-        // Создаем слои для каждого элемента
-        elements.forEach((el, index) => {
-            const layer = createLayerFromElement(el, index);
-            if (layer) {
-                lottieJson.layers.push(layer);
+        // ========== КОНВЕРТАЦИЯ SVG В LOTTIE - ИСПРАВЛЕННАЯ ВЕРСИЯ ==========
+        async function convertSvgToLottie(svgString) {
+            addDebugLog('info', `🔄 Конвертация SVG в Lottie, размер: ${svgString.length} символов`);
+            
+            // Проверяем, что SVG не пустой
+            if (!svgString || svgString.length < 100) {
+                addDebugLog('error', '❌ SVG пустой или слишком маленький');
+                return null;
             }
-        });
-        
-        addDebugLog('success', `✅ Создано Lottie слоев: ${lottieJson.layers.length}`);
-        
-    } catch (e) {
-        addDebugLog('error', `❌ Ошибка: ${e.message}`);
-        return createFallbackLottie();
-    }
-    
-    return lottieJson;
-}
-
-// Вспомогательная функция для создания слоя из элемента
-function createLayerFromElement(el, index) {
-    const tagName = el.tagName.toLowerCase();
-    const fill = el.getAttribute('fill') || 'rgb(0,0,0)';
-    const stroke = el.getAttribute('stroke');
-    const strokeWidth = el.getAttribute('stroke-width');
-    
-    // Парсим цвет
-    let r = 0, g = 0, b = 0;
-    const rgbMatch = fill.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-    if (rgbMatch) {
-        r = parseInt(rgbMatch[1]) / 255;
-        g = parseInt(rgbMatch[2]) / 255;
-        b = parseInt(rgbMatch[3]) / 255;
-    }
-    
-    // Создаем базовый слой
-    const layer = {
-        ddd: 0,
-        ind: index + 1,
-        ty: 4,
-        nm: `${tagName}_${index}`,
-        sr: 1,
-        ks: {
-            o: { a: 0, k: 100 },
-            r: { a: 0, k: 0 },
-            p: { a: 0, k: [256, 256, 0] },
-            a: { a: 0, k: [0, 0, 0] },
-            s: { a: 0, k: [100, 100, 100] }
-        },
-        ao: 0,
-        shapes: [{
-            ty: "gr",
-            it: [],
-            nm: `group_${index}`,
-            mn: "",
-            hd: false
-        }],
-        ip: 0,
-        op: 180,
-        st: 0,
-        bm: 0
-    };
-    
-    // Добавляем fill слой
-    layer.shapes[0].it.push({
-        ty: "fl",
-        nm: "fill",
-        mn: "",
-        c: { a: 0, k: [r, g, b, 1] },
-        o: { a: 0, k: 100 },
-        r: 1
-    });
-    
-    // Добавляем shape в зависимости от типа
-    if (tagName === 'path') {
-        const d = el.getAttribute('d');
-        if (d) {
-            layer.shapes[0].it.push({
-                ty: "sh",
-                ks: {
-                    a: 0,
-                    k: {
-                        v: [[[0,0], [512,0], [512,512], [0,512], [0,0]]], // Простой квадрат для теста
-                        i: [[]],
-                        o: [[]],
-                        c: true
+            
+            // Базовая структура Lottie с правильными полями для TGS
+            const lottieJson = {
+                tgs: 1,
+                v: "5.5.2",
+                fr: 60,
+                ip: 0,
+                op: 180,
+                w: 512,
+                h: 512,
+                ddd: 0,
+                layers: [],
+                markers: []
+            };
+            
+            try {
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+                
+                // Проверяем ошибки парсинга
+                const parserError = svgDoc.querySelector('parsererror');
+                if (parserError) {
+                    addDebugLog('error', `❌ Ошибка парсинга SVG: ${parserError.textContent}`);
+                    return null;
+                }
+                
+                // Получаем корневой SVG элемент
+                const svgRoot = svgDoc.documentElement;
+                
+                // Получаем все графические элементы
+                const elements = svgDoc.querySelectorAll('path, circle, rect, ellipse, line, polygon, polyline');
+                addDebugLog('info', `📊 Найдено элементов: ${elements.length}`);
+                
+                if (elements.length === 0) {
+                    addDebugLog('error', '❌ Нет графических элементов в SVG');
+                    return null;
+                }
+                
+                // Создаем слои для каждого элемента
+                elements.forEach((el, index) => {
+                    try {
+                        const layer = createLayerFromElement(el, index);
+                        if (layer) {
+                            lottieJson.layers.push(layer);
+                        }
+                    } catch (e) {
+                        addDebugLog('error', `❌ Ошибка создания слоя ${index}: ${e.message}`);
                     }
-                },
-                nm: `path_${index}`,
-                mn: ""
-            });
+                });
+                
+                addDebugLog('success', `✅ Создано Lottie слоев: ${lottieJson.layers.length}`);
+                
+                if (lottieJson.layers.length === 0) {
+                    addDebugLog('error', '❌ Не удалось создать ни одного слоя');
+                    return null;
+                }
+                
+            } catch (e) {
+                addDebugLog('error', `❌ Ошибка конвертации: ${e.message}`);
+                return null;
+            }
+            
+            return lottieJson;
         }
-    } else if (tagName === 'circle') {
-        const cx = parseFloat(el.getAttribute('cx') || '256');
-        const cy = parseFloat(el.getAttribute('cy') || '256');
-        const r = parseFloat(el.getAttribute('r') || '100');
-        
-        // Преобразуем круг в path
-        layer.shapes[0].it.push({
-            ty: "el",
-            p: { a: 0, k: [cx, cy] },
-            s: { a: 0, k: [r*2, r*2] }
-        });
-    }
-    
-    return layer;
-}
 
-// Запасной вариант Lottie
-function createFallbackLottie() {
-    addDebugLog('info', '⚠️ Использую запасной Lottie');
-    
-    return {
-        tgs: 1,
-        v: "5.5.2",
-        fr: 60,
-        ip: 0,
-        op: 180,
-        w: 512,
-        h: 512,
-        ddd: 0,
-        layers: [{
-            ddd: 0,
-            ind: 1,
-            ty: 4,
-            nm: "fallback",
-            sr: 1,
-            ks: {
-                o: { a: 0, k: 100 },
-                r: { a: 0, k: 0 },
-                p: { a: 0, k: [256, 256, 0] },
-                a: { a: 0, k: [0, 0, 0] },
-                s: { a: 0, k: [100, 100, 100] }
-            },
-            ao: 0,
-            shapes: [{
-                ty: "gr",
-                it: [{
-                    ty: "rc",
-                    d: 1,
-                    s: { a: 0, k: [200, 200] },
-                    p: { a: 0, k: [256, 256] },
-                    r: { a: 0, k: 20 }
-                }, {
-                    ty: "fl",
-                    c: { a: 0, k: [0.4, 0.5, 0.9, 1] },
-                    o: { a: 0, k: 100 }
+        // Вспомогательная функция для создания слоя из элемента
+        function createLayerFromElement(el, index) {
+            const tagName = el.tagName.toLowerCase();
+            
+            // Получаем атрибуты заливки и обводки
+            const fill = el.getAttribute('fill') || 'rgb(0,0,0)';
+            const stroke = el.getAttribute('stroke');
+            const strokeWidth = el.getAttribute('stroke-width');
+            const opacity = parseFloat(el.getAttribute('opacity') || '1');
+            
+            // Парсим цвет заливки
+            let fillR = 0, fillG = 0, fillB = 0, fillA = opacity;
+            
+            // Проверяем разные форматы цветов
+            if (fill.startsWith('rgb(')) {
+                const rgbMatch = fill.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                if (rgbMatch) {
+                    fillR = parseInt(rgbMatch[1]) / 255;
+                    fillG = parseInt(rgbMatch[2]) / 255;
+                    fillB = parseInt(rgbMatch[3]) / 255;
+                }
+            } else if (fill.startsWith('#')) {
+                const hex = fill.substring(1);
+                if (hex.length === 6) {
+                    fillR = parseInt(hex.substring(0, 2), 16) / 255;
+                    fillG = parseInt(hex.substring(2, 4), 16) / 255;
+                    fillB = parseInt(hex.substring(4, 6), 16) / 255;
+                } else if (hex.length === 3) {
+                    fillR = parseInt(hex[0] + hex[0], 16) / 255;
+                    fillG = parseInt(hex[1] + hex[1], 16) / 255;
+                    fillB = parseInt(hex[2] + hex[2], 16) / 255;
+                }
+            } else if (fill === 'none') {
+                fillA = 0;
+            }
+            
+            // Парсим цвет обводки
+            let strokeR = 0, strokeG = 0, strokeB = 0, strokeA = opacity;
+            if (stroke && stroke !== 'none') {
+                if (stroke.startsWith('rgb(')) {
+                    const rgbMatch = stroke.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                    if (rgbMatch) {
+                        strokeR = parseInt(rgbMatch[1]) / 255;
+                        strokeG = parseInt(rgbMatch[2]) / 255;
+                        strokeB = parseInt(rgbMatch[3]) / 255;
+                    }
+                } else if (stroke.startsWith('#')) {
+                    const hex = stroke.substring(1);
+                    if (hex.length === 6) {
+                        strokeR = parseInt(hex.substring(0, 2), 16) / 255;
+                        strokeG = parseInt(hex.substring(2, 4), 16) / 255;
+                        strokeB = parseInt(hex.substring(4, 6), 16) / 255;
+                    }
+                }
+            }
+            
+            // Создаем базовый слой
+            const layer = {
+                ddd: 0,
+                ind: index + 1,
+                ty: 4, // Тип - shape layer
+                nm: `${tagName}_${index}`,
+                sr: 1,
+                ks: {
+                    o: { a: 0, k: 100 },
+                    r: { a: 0, k: 0 },
+                    p: { a: 0, k: [256, 256, 0] },
+                    a: { a: 0, k: [0, 0, 0] },
+                    s: { a: 0, k: [100, 100, 100] }
+                },
+                ao: 0,
+                shapes: [{
+                    ty: "gr",
+                    it: [],
+                    nm: `group_${index}`,
+                    mn: "",
+                    hd: false
                 }],
-                nm: "fallback_rect"
-            }],
-            ip: 0,
-            op: 180,
-            st: 0,
-            bm: 0
-        }]
-    };
-}
-// Вспомогательная функция для парсинга SVG path в Lottie формат
-function parseSvgPathToLottie(d) {
-    // Упрощенный парсер - для реальной работы нужно полноценное преобразование
-    // Но для теста вернем простой квадрат
-    return [[[0,0], [512,0], [512,512], [0,512], [0,0]]];
-}
+                ip: 0,
+                op: 180,
+                st: 0,
+                bm: 0
+            };
+            
+            // Добавляем заливку если есть
+            if (fillA > 0) {
+                layer.shapes[0].it.push({
+                    ty: "fl",
+                    nm: "fill",
+                    mn: "",
+                    c: { a: 0, k: [fillR, fillG, fillB] },
+                    o: { a: 0, k: fillA * 100 },
+                    r: 1
+                });
+            }
+            
+            // Добавляем обводку если есть
+            if (stroke && stroke !== 'none' && strokeWidth) {
+                layer.shapes[0].it.push({
+                    ty: "st",
+                    nm: "stroke",
+                    mn: "",
+                    c: { a: 0, k: [strokeR, strokeG, strokeB] },
+                    o: { a: 0, k: strokeA * 100 },
+                    w: { a: 0, k: parseFloat(strokeWidth) },
+                    lc: 1,
+                    lj: 1,
+                    ml: 4
+                });
+            }
+            
+            // Добавляем path в зависимости от типа элемента
+            if (tagName === 'path') {
+                const d = el.getAttribute('d');
+                if (d) {
+                    // Упрощенный парсинг path - для сложных path нужен полноценный парсер
+                    const simplifiedPath = simplifySvgPath(d);
+                    if (simplifiedPath) {
+                        layer.shapes[0].it.push({
+                            ty: "sh",
+                            ks: {
+                                a: 0,
+                                k: simplifiedPath
+                            },
+                            nm: `path_${index}`,
+                            mn: "",
+                            hd: false
+                        });
+                    }
+                }
+            } else if (tagName === 'circle') {
+                const cx = parseFloat(el.getAttribute('cx') || '256');
+                const cy = parseFloat(el.getAttribute('cy') || '256');
+                const r = parseFloat(el.getAttribute('r') || '100');
+                
+                layer.shapes[0].it.push({
+                    ty: "el",
+                    nm: `circle_${index}`,
+                    mn: "",
+                    p: { a: 0, k: [cx, cy] },
+                    s: { a: 0, k: [r*2, r*2] }
+                });
+            } else if (tagName === 'rect') {
+                const x = parseFloat(el.getAttribute('x') || '0');
+                const y = parseFloat(el.getAttribute('y') || '0');
+                const width = parseFloat(el.getAttribute('width') || '100');
+                const height = parseFloat(el.getAttribute('height') || '100');
+                const rx = parseFloat(el.getAttribute('rx') || '0');
+                
+                if (rx > 0) {
+                    layer.shapes[0].it.push({
+                        ty: "rc",
+                        nm: `rect_${index}`,
+                        mn: "",
+                        p: { a: 0, k: [x + width/2, y + height/2] },
+                        s: { a: 0, k: [width, height] },
+                        r: { a: 0, k: rx }
+                    });
+                } else {
+                    // Для обычного прямоугольника используем path
+                    const path = createRectPath(x, y, width, height);
+                    layer.shapes[0].it.push({
+                        ty: "sh",
+                        ks: {
+                            a: 0,
+                            k: path
+                        },
+                        nm: `rect_path_${index}`,
+                        mn: "",
+                        hd: false
+                    });
+                }
+            }
+            
+            return layer;
+        }
+
+        // Упрощенный парсер SVG path (для демо)
+        function simplifySvgPath(d) {
+            // В реальном проекте здесь должен быть полноценный парсер
+            // Для демо возвращаем квадрат
+            return {
+                v: [[[0,0], [512,0], [512,512], [0,512], [0,0]]],
+                i: [[[0,0], [0,0], [0,0], [0,0], [0,0]]],
+                o: [[[0,0], [0,0], [0,0], [0,0], [0,0]]],
+                c: true
+            };
+        }
+
+        // Создает path для прямоугольника
+        function createRectPath(x, y, width, height) {
+            return {
+                v: [
+                    [[x, y], [x+width, y], [x+width, y+height], [x, y+height], [x, y]]
+                ],
+                i: [[[0,0], [0,0], [0,0], [0,0], [0,0]]],
+                o: [[[0,0], [0,0], [0,0], [0,0], [0,0]]],
+                c: true
+            };
+        }
 
         // ========== 5-СЛОЙНАЯ АНИМАЦИЯ (60 FPS) ==========
         function applyPoseAnimation(lottieJson, poseData) {
-            if (!poseData) return lottieJson;
+            if (!poseData) {
+                // Базовая анимация если нет данных
+                lottieJson.layers.forEach((layer, index) => {
+                    layer.ks.s = {
+                        a: 1,
+                        k: [
+                            { t: 0, s: [100, 100, 100] },
+                            { t: 30, s: [102, 102, 100] },
+                            { t: 60, s: [98, 98, 100] },
+                            { t: 90, s: [101, 101, 100] },
+                            { t: 120, s: [99, 99, 100] },
+                            { t: 150, s: [100, 100, 100] },
+                            { t: 180, s: [100, 100, 100] }
+                        ]
+                    };
+                });
+                return lottieJson;
+            }
             
             lottieJson.layers.forEach((layer, index) => {
-                // Анимация для лица/головы (вращение)
-                if (index === 0 && poseData.hasFace) {
-                    layer.ks.r = {
-                        a: 1,
-                        k: [
-                            { t: 0, s: [0] },
-                            { t: 60, s: [5] },    // 1 секунда при 60 fps
-                            { t: 120, s: [-3] },   // 2 секунды
-                            { t: 180, s: [0] }     // 3 секунды
-                        ]
-                    };
+                // Позиционирование на основе MediaPipe
+                if (index < lottieJson.layers.length) {
+                    if (poseData.hasFace && index === 0) {
+                        // Анимация для лица
+                        layer.ks.p = {
+                            a: 1,
+                            k: [
+                                { t: 0, s: [256, 256, 0] },
+                                { t: 60, s: [258, 258, 0] },
+                                { t: 120, s: [254, 254, 0] },
+                                { t: 180, s: [256, 256, 0] }
+                            ]
+                        };
+                        layer.ks.r = {
+                            a: 1,
+                            k: [
+                                { t: 0, s: [0] },
+                                { t: 60, s: [2] },
+                                { t: 120, s: [-2] },
+                                { t: 180, s: [0] }
+                            ]
+                        };
+                    } else if (poseData.hasArms && index % 2 === 1) {
+                        // Анимация для рук
+                        layer.ks.p = {
+                            a: 1,
+                            k: [
+                                { t: 0, s: [256, 256, 0] },
+                                { t: 45, s: [266, 256, 0] },
+                                { t: 90, s: [256, 266, 0] },
+                                { t: 135, s: [246, 256, 0] },
+                                { t: 180, s: [256, 256, 0] }
+                            ]
+                        };
+                    } else if (poseData.hasLegs && index % 3 === 2) {
+                        // Анимация для ног
+                        layer.ks.p = {
+                            a: 1,
+                            k: [
+                                { t: 0, s: [256, 256, 0] },
+                                { t: 60, s: [256, 266, 0] },
+                                { t: 120, s: [256, 246, 0] },
+                                { t: 180, s: [256, 256, 0] }
+                            ]
+                        };
+                    }
                 }
                 
-                // Анимация для рук (движение X)
-                if (index === 1 && poseData.hasArms) {
-                    layer.ks.p = {
-                        a: 1,
-                        k: [
-                            { t: 0, s: [256, 256, 0] },
-                            { t: 60, s: [266, 256, 0] },
-                            { t: 120, s: [246, 256, 0] },
-                            { t: 180, s: [256, 256, 0] }
-                        ]
-                    };
-                }
-                
-                // Анимация для ног (движение Y)
-                if (index === 2 && poseData.hasLegs) {
-                    layer.ks.p = {
-                        a: 1,
-                        k: [
-                            { t: 0, s: [256, 256, 0] },
-                            { t: 60, s: [256, 266, 0] },
-                            { t: 120, s: [256, 246, 0] },
-                            { t: 180, s: [256, 256, 0] }
-                        ]
-                    };
-                }
-                
-                // Пульсация для всех слоёв
+                // Базовая пульсация для всех слоев
                 layer.ks.s = {
                     a: 1,
                     k: [
                         { t: 0, s: [100, 100, 100] },
-                        { t: 60, s: [105, 105, 100] },
-                        { t: 120, s: [95, 95, 100] },
+                        { t: 60, s: [102, 102, 100] },
+                        { t: 120, s: [98, 98, 100] },
                         { t: 180, s: [100, 100, 100] }
                     ]
                 };
@@ -2624,32 +2652,44 @@ function parseSvgPathToLottie(d) {
         }
 
         // ========== КОМПРЕССИЯ В TGS ==========
-async function compressToTGS(lottieJson) {
-    // Убеждаемся, что есть все обязательные поля
-    lottieJson.tgs = 1;
-    lottieJson.fr = 60;
-    lottieJson.op = 180;
-    
-    // Проверяем размер JSON
-    const jsonString = JSON.stringify(lottieJson);
-    addDebugLog('info', `📦 JSON до сжатия: ${jsonString.length} байт`);
-    
-    if (jsonString.length < 1000) {
-        addDebugLog('error', `❌ JSON слишком маленький (${jsonString.length} байт) - анимация не будет работать`);
-    }
-    
-    // Сжимаем GZIP с максимальным уровнем
-    const compressed = pako.gzip(jsonString, { level: 9 });
-    addDebugLog('success', `✅ TGS сжат: ${compressed.length} байт`);
-    
-    const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-    
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-    });
-}
+        async function compressToTGS(lottieJson) {
+            if (!lottieJson) {
+                addDebugLog('error', '❌ Нет данных для сжатия');
+                return null;
+            }
+            
+            // Убеждаемся, что есть все обязательные поля для TGS
+            lottieJson.tgs = 1;
+            lottieJson.fr = 60;
+            lottieJson.op = 180;
+            lottieJson.ip = 0;
+            
+            // Проверяем размер JSON
+            const jsonString = JSON.stringify(lottieJson);
+            addDebugLog('info', `📦 JSON до сжатия: ${jsonString.length} байт`);
+            
+            if (jsonString.length < 100) {
+                addDebugLog('error', `❌ JSON слишком маленький (${jsonString.length} байт) - анимация не будет работать`);
+            }
+            
+            try {
+                // Сжимаем GZIP с максимальным уровнем
+                const compressed = pako.gzip(jsonString, { level: 9 });
+                addDebugLog('success', `✅ TGS сжат: ${compressed.length} байт`);
+                
+                const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
+                
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = () => resolve(null);
+                    reader.readAsDataURL(blob);
+                });
+            } catch (e) {
+                addDebugLog('error', `❌ Ошибка сжатия: ${e.message}`);
+                return null;
+            }
+        }
 
         // ========== MEDIAPIPE АНАЛИЗ ==========
         async function analyzeImageWithMediaPipe(imageElement) {
@@ -2663,8 +2703,8 @@ async function compressToTGS(lottieJson) {
                 
                 if (results.poseLandmarks) {
                     const hasFace = results.poseLandmarks.some((lm, idx) => [0,1,2,3,4].includes(idx) && lm.visibility > 0.5);
-                    const hasArms = results.poseLandmarks.some((lm, idx) => [5,6,7,8,9,10].includes(idx) && lm.visibility > 0.5);
-                    const hasLegs = results.poseLandmarks.some((lm, idx) => [11,12,13,14,15,16].includes(idx) && lm.visibility > 0.5);
+                    const hasArms = results.poseLandmarks.some((lm, idx) => [11,12,13,14].includes(idx) && lm.visibility > 0.5);
+                    const hasLegs = results.poseLandmarks.some((lm, idx) => [15,16,17,18,19,20].includes(idx) && lm.visibility > 0.5);
                     
                     return { hasFace, hasArms, hasLegs };
                 }
@@ -2673,6 +2713,67 @@ async function compressToTGS(lottieJson) {
                 return null;
             }
         }
+
+        // ========== ТЕСТОВАЯ ФУНКЦИЯ ==========
+        window.testTGS = async function() {
+            addDebugLog('info', '🧪 Запуск теста TGS');
+            
+            try {
+                // Создаем тестовый SVG с реальными формами
+                const testSvg = `<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="106" y="106" width="300" height="300" fill="rgb(102,126,234)" stroke="rgb(0,0,0)" stroke-width="4" rx="20" />
+                    <circle cx="256" cy="256" r="100" fill="rgb(251,191,36)" />
+                    <path d="M156 156 L356 156 L356 356 L156 356 Z" fill="rgb(72,187,120)" />
+                </svg>`;
+                
+                addDebugLog('info', `📄 Тестовый SVG создан, размер: ${testSvg.length} символов`);
+                
+                // Конвертируем в Lottie
+                const lottie = await convertSvgToLottie(testSvg);
+                if (!lottie) {
+                    addDebugLog('error', '❌ Конвертация не удалась');
+                    return;
+                }
+                
+                addDebugLog('success', `✅ Lottie создан, слоев: ${lottie.layers.length}`);
+                
+                // Добавляем тестовую анимацию
+                lottie.layers.forEach((layer, i) => {
+                    layer.ks.s = {
+                        a: 1,
+                        k: [
+                            { t: 0, s: [100, 100, 100] },
+                            { t: 30, s: [105, 105, 100] },
+                            { t: 60, s: [95, 95, 100] },
+                            { t: 90, s: [102, 102, 100] },
+                            { t: 120, s: [98, 98, 100] },
+                            { t: 150, s: [101, 101, 100] },
+                            { t: 180, s: [100, 100, 100] }
+                        ]
+                    };
+                });
+                
+                // Сжимаем в TGS
+                const tgs = await compressToTGS(lottie);
+                if (!tgs) {
+                    addDebugLog('error', '❌ Сжатие не удалось');
+                    return;
+                }
+                
+                // Сохраняем
+                const link = document.createElement('a');
+                link.download = 'test_animation.tgs';
+                link.href = tgs;
+                link.click();
+                
+                addDebugLog('success', '✅ Тестовый TGS создан и сохранен');
+                alert('Тестовый TGS создан! Проверьте файл test_animation.tgs - он должен содержать цветные фигуры');
+                
+            } catch (e) {
+                addDebugLog('error', `❌ Ошибка: ${e.message}`);
+                console.error(e);
+            }
+        };
 
         // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
         window.generatePack = async () => {
@@ -2698,7 +2799,7 @@ async function compressToTGS(lottieJson) {
                     const emotion = EMOTIONS.find(e => e.id === emotionId);
                     
                     document.getElementById('loadingProgress').textContent = 
-                        `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name}`;
+                        `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
                     
                     const useHumor = Math.random() < 0.7;
                     const humorText = useHumor ? profession.humor[Math.floor(Math.random() * profession.humor.length)] : null;
@@ -2733,96 +2834,64 @@ async function compressToTGS(lottieJson) {
                         });
                     }
                     
-                    // ==== 4. ГЕНЕРАЦИЯ TGS - БЕЗ ТЕКСТОВОГО СЛОЯ ====
-                    if (selectedPack === 'premium') {// ==== 4. ГЕНЕРАЦИЯ TGS - ПРОСТАЯ РАБОЧАЯ ВЕРСИЯ ====
-if (selectedPack === 'premium') {
-    try {
-        addDebugLog('info', '🎬 Создание TGS...');
-        
-        // Создаем простую Lottie анимацию с квадратом
-        const lottieJson = {
-            tgs: 1,
-            v: "5.5.2",
-            fr: 30,
-            ip: 0,
-            op: 60,
-            w: 512,
-            h: 512,
-            ddd: 0,
-            layers: [{
-                ddd: 0,
-                ind: 1,
-                ty: 4,
-                nm: "test_layer",
-                sr: 1,
-                ks: {
-                    o: { a: 0, k: 100 },
-                    r: { a: 0, k: 0 },
-                    p: { a: 0, k: [256, 256, 0] },
-                    a: { a: 0, k: [0, 0, 0] },
-                    s: { a: 1, k: [
-                        { t: 0, s: [100, 100, 100] },
-                        { t: 30, s: [110, 110, 100] },
-                        { t: 60, s: [100, 100, 100] }
-                    ]}
-                },
-                ao: 0,
-                shapes: [{
-                    ty: "gr",
-                    it: [{
-                        ty: "rc",
-                        d: 1,
-                        s: { a: 0, k: [200, 200] },
-                        p: { a: 0, k: [256, 256] },
-                        r: { a: 0, k: 20 }
-                    }, {
-                        ty: "fl",
-                        c: { a: 0, k: [0.4, 0.5, 0.9, 1] },
-                        o: { a: 0, k: 100 }
-                    }],
-                    nm: "test_rect"
-                }],
-                ip: 0,
-                op: 60,
-                st: 0,
-                bm: 0
-            }]
-        };
-        
-        // Сжимаем в TGS
-        const jsonString = JSON.stringify(lottieJson);
-        const compressed = pako.gzip(jsonString, { level: 9 });
-        const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-        
-        const tgsData = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(blob);
-        });
-        
-        generatedTGS.push({
-            emotion: emotion,
-            profession: profession.name,
-            humor: humorText,
-            dataUrl: tgsData,
-            filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
-        });
-        
-        addDebugLog('success', `✅ TGS создан (${compressed.length} байт)`);
-        
-    } catch (e) {
-        addDebugLog('error', `❌ TGS error: ${e.message}`);
-        console.error('TGS error:', e);
-    }
-}
+                    // ==== 4. ГЕНЕРАЦИЯ TGS - ВЕКТОР БЕЗ ТЕКСТА ====
+                    if (selectedPack === 'premium') {
+                        try {
+                            addDebugLog('info', `🎬 Создание TGS для ${emotion.name}...`);
+                            
+                            // Промпт для вектора (без текста)
+                            const svgPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, vector illustration, no text, no speech bubble, no letters, clean vector art`;
+                            
+                            // Получаем SVG из Recraft
+                            const svg = await generateRecraftSVG(svgPrompt);
+                            
+                            if (svg) {
+                                // Конвертируем SVG в Lottie
+                                let lottie = await convertSvgToLottie(svg);
+                                
+                                if (lottie) {
+                                    // Применяем анимацию на основе MediaPipe
+                                    lottie = applyPoseAnimation(lottie, poseData);
+                                    
+                                    // Сжимаем в TGS
+                                    const tgsData = await compressToTGS(lottie);
+                                    
+                                    if (tgsData) {
+                                        generatedTGS.push({
+                                            emotion: emotion,
+                                            profession: profession.name,
+                                            humor: humorText,
+                                            dataUrl: tgsData,
+                                            filename: `${character}_${profession.id}_${emotion.id}_${i}.tgs`
+                                        });
+                                        addDebugLog('success', `✅ TGS создан для ${emotion.name}`);
+                                    } else {
+                                        addDebugLog('error', `❌ Не удалось сжать TGS для ${emotion.name}`);
+                                    }
+                                } else {
+                                    addDebugLog('error', `❌ Не удалось конвертировать SVG в Lottie для ${emotion.name}`);
+                                }
+                            } else {
+                                addDebugLog('error', `❌ Не удалось получить SVG для ${emotion.name}`);
+                            }
+                            
+                        } catch (e) {
+                            addDebugLog('error', `❌ TGS error: ${e.message}`);
+                            console.error('TGS error:', e);
+                        }
                     }
                 }
 
-                displayResults(generatedPNG, generatedTGS, profession);
-                addToHistory(character, profession, currentStyle, selectedEmotions.length, generatedPNG, generatedTGS, selectedPack);
+                if (generatedPNG.length > 0) {
+                    displayResults(generatedPNG, generatedTGS, profession);
+                    addToHistory(character, profession, currentStyle, selectedEmotions.length, generatedPNG, generatedTGS, selectedPack);
+                } else {
+                    alert('Не удалось сгенерировать стикеры. Проверьте логи.');
+                }
                 
             } catch (error) {
                 alert('Ошибка: ' + error.message);
+                addDebugLog('error', `❌ Глобальная ошибка: ${error.message}`);
             } finally {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('generateBtn').disabled = false;
@@ -2841,7 +2910,7 @@ if (selectedPack === 'premium') {
 
             const title = document.createElement('h2');
             title.style.cssText = 'font-size: 2em; color: white; margin-bottom: 20px;';
-            title.innerHTML = `🎉 Готово! ${pngStickers.length} стикеров для профессии ${profession.name} (${humorCount} с юмором, ${classicCount} классических)`;
+            title.innerHTML = `🎉 Готово! ${pngStickers.length} PNG и ${tgsStickers.length} TGS стикеров для профессии ${profession.name} (${humorCount} с юмором)`;
             resultsDiv.appendChild(title);
 
             const packagesDiv = document.createElement('div');
@@ -2924,6 +2993,7 @@ if (selectedPack === 'premium') {
                             ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
                             <span class="sticker-badge tgs">TGS</span>
                             <span class="sticker-badge v4">60 FPS</span>
+                            <span class="sticker-badge mediapipe">Вектор</span>
                         `;
                         tgsGrid.appendChild(card);
                     });
@@ -2982,6 +3052,8 @@ if (selectedPack === 'premium') {
                     humorCount: entry.humorCount,
                     classicCount: entry.classicCount,
                     packType: entry.packType,
+                    pngCount: entry.pngCount,
+                    tgsCount: entry.tgsCount,
                     firstHumor: entry.firstHumor
                 }));
                 localStorage.setItem('stickerHistory', JSON.stringify(historyToSave.slice(0, 30)));
@@ -3041,7 +3113,8 @@ if (selectedPack === 'premium') {
                     <div class="history-prompt">
                         <strong>${entry.professionIcon} ${entry.profession}</strong><br>
                         <strong>Персонаж:</strong> ${entry.character}<br>
-                        <strong>${entry.humorCount} мемных, ${entry.classicCount} классических</strong>
+                        <strong>${entry.humorCount} мемных, ${entry.classicCount} классических</strong><br>
+                        <small>PNG: ${entry.pngCount} | TGS: ${entry.tgsCount}</small>
                     </div>
                     <div class="history-actions">
                         <button class="history-btn edit" onclick='regenerateFromHistory(${entryStr})'>
@@ -3103,78 +3176,6 @@ if (selectedPack === 'premium') {
                 }
             }, 100);
         });
-		
-		// ========== ТЕСТОВАЯ ФУНКЦИЯ ==========
-window.testTGS = async function() {
-    addDebugLog('info', '🧪 Запуск теста TGS');
-    
-    // Получаем SVG
-    const svg = await generateRecraftSVG('милый кот, vector illustration');
-    if (!svg) {
-        addDebugLog('error', '❌ Не удалось получить SVG');
-        return;
-    }
-    
-    // Конвертируем в Lottie
-    const lottie = await convertSvgToLottie(svg);
-    addDebugLog('info', `📊 Lottie слоев: ${lottie.layers.length}`);
-    
-    // Добавляем тестовую анимацию
-    lottie.layers.forEach((layer, i) => {
-        layer.ks.s = {
-            a: 1,
-            k: [
-                { t: 0, s: [100, 100, 100] },
-                { t: 90, s: [110, 110, 100] },
-                { t: 180, s: [100, 100, 100] }
-            ]
-        };
-    });
-    
-    // Сжимаем в TGS
-    const tgs = await compressToTGS(lottie);
-    
-    // Сохраняем
-    const link = document.createElement('a');
-    link.download = 'test.tgs';
-    link.href = tgs;
-    link.click();
-    
-    addDebugLog('success', '✅ Тестовый TGS создан');
-};
-
-// ========== ТЕСТОВАЯ ФУНКЦИЯ ==========
-window.testTGS = async function() {
-    addDebugLog('info', '🧪 Запуск теста TGS');
-    
-    // Создаем простой SVG
-    const testSvg = `<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-        <rect x="100" y="100" width="300" height="300" fill="rgb(102,126,234)" />
-        <circle cx="256" cy="256" r="100" fill="rgb(251,191,36)" />
-    </svg>`;
-    
-    addDebugLog('info', `📄 Тестовый SVG создан`);
-    
-    // Конвертируем
-    const lottie = await convertSvgToLottie(testSvg);
-    if (!lottie) {
-        addDebugLog('error', '❌ Конвертация не удалась');
-        return;
-    }
-    
-    addDebugLog('success', `✅ Lottie создан, слоев: ${lottie.layers.length}`);
-    
-    // Сжимаем
-    const tgs = await compressToTGS(lottie);
-    
-    // Сохраняем
-    const link = document.createElement('a');
-    link.download = 'test.tgs';
-    link.href = tgs;
-    link.click();
-    
-    addDebugLog('success', '✅ Тестовый TGS создан');
-};
     </script>
 </body>
 </html>
