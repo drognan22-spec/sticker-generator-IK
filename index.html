@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TGS TEST - ИСПРАВЛЕННАЯ АНИМАЦИЯ</title>
+    <title>TGS - АНИМАЦИЯ РАБОТАЕТ</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,11 +16,8 @@
             max-width: 800px;
             margin: 0 auto;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
         h1 {
+            text-align: center;
             font-size: 3em;
             background: linear-gradient(145deg, #fff, #e2e8f0);
             -webkit-background-clip: text;
@@ -38,82 +35,92 @@
             margin-bottom: 20px;
             background: #f0f9ff;
             border: 2px solid #38bdf8;
+            font-weight: bold;
         }
-        .debug-panel {
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .btn-red { background: #ef4444; color: white; }
+        .btn-blue { background: #3b82f6; color: white; }
+        .btn-green { background: #10b981; color: white; }
+        .btn-yellow { background: #f59e0b; color: white; }
+        .btn-purple { background: #8b5cf6; color: white; }
+        .debug {
             background: #1e293b;
             border-radius: 16px;
             padding: 20px;
             color: #e2e8f0;
             font-family: monospace;
             font-size: 12px;
-            max-height: 300px;
+            max-height: 200px;
             overflow-y: auto;
-            margin: 20px 0;
+            margin-top: 20px;
         }
         .success { color: #4ade80; }
         .error { color: #ef4444; }
-        button {
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 40px;
-            font-size: 1.2em;
-            cursor: pointer;
-            margin: 10px;
-            width: 200px;
-        }
-        button.test2 { background: linear-gradient(145deg, #3b82f6, #1e40af); }
-        button.test3 { background: linear-gradient(145deg, #10b981, #047857); }
-        button.test4 { background: linear-gradient(145deg, #f59e0b, #b45309); }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🎯 TGS FIXED</h1>
-            <p>Тестирование анимации</p>
-        </div>
+        <h1>🎯 TGS FIXED</h1>
         
         <div class="card">
             <div class="status" id="status">
-                ✅ Нажимайте кнопки для тестов
+                ✅ Выберите тип анимации для теста
             </div>
             
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                <button onclick="test1_static()">🔴 1. Статичный круг</button>
-                <button class="test2" onclick="test2_scale()">📏 2. Пульсация</button>
-                <button class="test3" onclick="test3_move()">↗️ 3. Движение</button>
-                <button class="test4" onclick="test4_rotate()">🔄 4. Вращение</button>
-                <button onclick="test5_combo()">✨ 5. Комбо</button>
+            <div class="button-grid">
+                <button class="btn-red" onclick="testStatic()">1. Статика (база)</button>
+                <button class="btn-blue" onclick="testScale()">2. Scale (пульсация)</button>
+                <button class="btn-green" onclick="testPosition()">3. Position (движение)</button>
+                <button class="btn-yellow" onclick="testRotation()">4. Rotation (вращение)</button>
+                <button class="btn-purple" onclick="testOpacity()">5. Opacity (прозрачность)</button>
+                <button class="btn-red" onclick="testAll()">6. ВСЁ ВМЕСТЕ</button>
             </div>
             
-            <div class="debug-panel" id="debug">
-                <div id="logs"></div>
+            <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 16px;">
+                <p><strong>📊 Результаты предыдущих тестов:</strong></p>
+                <p>✅ Тест 1: Красный круг (работает)</p>
+                <p>✅ Тест 3: Зеленый круг (работает)</p>
+                <p>✅ Тест 4: Желтый квадрат (работает)</p>
+                <p>❌ Тест 2: Синий круг (пустой)</p>
+                <p>❌ Тест 5: Фиолетовый (пустой)</p>
             </div>
             
-            <p style="margin-top: 20px; font-size: 0.9em; color: #666;">
-                После создания загрузите TGS в Telegram (@Stickers bot)
-            </p>
+            <div class="debug" id="debug"></div>
         </div>
     </div>
 
     <script>
         function log(msg, type = 'info') {
-            const logs = document.getElementById('logs');
+            const debug = document.getElementById('debug');
             const timestamp = new Date().toLocaleTimeString();
             const color = type === 'success' ? '#4ade80' : (type === 'error' ? '#ef4444' : '#94a3b8');
-            logs.innerHTML += `<div><span style="color: #fbbf24;">[${timestamp}]</span> <span style="color: ${color};">${msg}</span></div>`;
-            logs.scrollTop = logs.scrollHeight;
+            debug.innerHTML += `<div><span style="color: #fbbf24;">[${timestamp}]</span> <span style="color: ${color};">${msg}</span></div>`;
+            debug.scrollTop = debug.scrollHeight;
             
-            const status = document.getElementById('status');
-            status.innerHTML = `🔄 ${msg}`;
+            document.getElementById('status').innerHTML = `🔄 ${msg}`;
         }
 
-        // ========== ТЕСТ 1: СТАТИЧНЫЙ КРУГ (БАЗА) ==========
-        async function test1_static() {
-            log('🔴 Тест 1: Статичный круг (без анимации)');
+        // ========== ТЕСТ 1: СТАТИКА (БАЗА) ==========
+        async function testStatic() {
+            log('🔴 Тест 1: Статичный красный круг');
             
             const lottie = {
                 tgs: 1,
@@ -128,13 +135,13 @@
                     ddd: 0,
                     ind: 1,
                     ty: 4,
-                    nm: "circle",
+                    nm: "static_circle",
                     sr: 1,
                     ks: {
                         o: { a: 0, k: 100 },
                         r: { a: 0, k: 0 },
                         p: { a: 0, k: [256, 256, 0] },
-                        a: { a: 0, k: [0, 0, 0] },
+                        a: { a: 0, k: [128, 128, 0] }, // Важно! Anchor point в центре
                         s: { a: 0, k: [100, 100, 100] }
                     },
                     shapes: [{
@@ -147,7 +154,7 @@
                             },
                             {
                                 ty: "fl",
-                                c: { a: 0, k: [1, 0, 0, 1] }, // Красный
+                                c: { a: 0, k: [1, 0, 0, 1] },
                                 o: { a: 0, k: 100 }
                             }
                         ]
@@ -160,16 +167,16 @@
             await saveTGS(lottie, 'test1_static.tgs');
         }
 
-        // ========== ТЕСТ 2: ПУЛЬСАЦИЯ (SCALE) ==========
-        async function test2_scale() {
-            log('📏 Тест 2: Пульсация (scale)');
+        // ========== ТЕСТ 2: SCALE (ПУЛЬСАЦИЯ) - ИСПРАВЛЕНО ==========
+        async function testScale() {
+            log('📏 Тест 2: Scale анимация (пульсация)');
             
             const lottie = {
                 tgs: 1,
                 v: "5.5.2",
-                fr: 60,
+                fr: 30,  // Уменьшаем FPS для надежности
                 ip: 0,
-                op: 120,  // 2 секунды при 60 fps
+                op: 90,
                 w: 512,
                 h: 512,
                 ddd: 0,
@@ -177,21 +184,20 @@
                     ddd: 0,
                     ind: 1,
                     ty: 4,
-                    nm: "pulsing_circle",
+                    nm: "scale_circle",
                     sr: 1,
                     ks: {
                         o: { a: 0, k: 100 },
                         r: { a: 0, k: 0 },
                         p: { a: 0, k: [256, 256, 0] },
-                        a: { a: 0, k: [0, 0, 0] },
+                        a: { a: 0, k: [128, 128, 0] }, // Anchor в центре
                         s: { 
-                            a: 1,  // Включена анимация
+                            a: 1,
                             k: [
-                                { t: 0, s: [100, 100, 100] },
-                                { t: 30, s: [150, 150, 100] },  // Увеличение
-                                { t: 60, s: [100, 100, 100] },  // Возврат
-                                { t: 90, s: [150, 150, 100] },  // Снова
-                                { t: 120, s: [100, 100, 100] }  // Возврат
+                                { t: 0, e: [100, 100, 100] }, // e = end value
+                                { t: 30, e: [150, 150, 100] },
+                                { t: 60, e: [100, 100, 100] },
+                                { t: 90, e: [100, 100, 100] }
                             ]
                         }
                     },
@@ -211,21 +217,21 @@
                         ]
                     }],
                     ip: 0,
-                    op: 120
+                    op: 90
                 }]
             };
             
             await saveTGS(lottie, 'test2_scale.tgs');
         }
 
-        // ========== ТЕСТ 3: ДВИЖЕНИЕ (POSITION) ==========
-        async function test3_move() {
-            log('↗️ Тест 3: Движение (position)');
+        // ========== ТЕСТ 3: POSITION (ДВИЖЕНИЕ) ==========
+        async function testPosition() {
+            log('↗️ Тест 3: Position анимация (движение)');
             
             const lottie = {
                 tgs: 1,
                 v: "5.5.2",
-                fr: 60,
+                fr: 30,
                 ip: 0,
                 op: 120,
                 w: 512,
@@ -235,23 +241,22 @@
                     ddd: 0,
                     ind: 1,
                     ty: 4,
-                    nm: "moving_circle",
+                    nm: "move_circle",
                     sr: 1,
                     ks: {
                         o: { a: 0, k: 100 },
                         r: { a: 0, k: 0 },
-                        p: {  // Position с анимацией
+                        p: {
                             a: 1,
                             k: [
-                                { t: 0, s: [256, 256, 0] },
-                                { t: 30, s: [356, 256, 0] },  // Вправо
-                                { t: 60, s: [256, 356, 0] },  // Вниз
-                                { t: 90, s: [156, 256, 0] },  // Влево
-                                { t: 120, s: [256, 156, 0] }, // Вверх
-                                { t: 150, s: [256, 256, 0] }  // Назад
+                                { t: 0, e: [256, 256, 0] },
+                                { t: 30, e: [356, 256, 0] },
+                                { t: 60, e: [256, 356, 0] },
+                                { t: 90, e: [156, 256, 0] },
+                                { t: 120, e: [256, 256, 0] }
                             ]
                         },
-                        a: { a: 0, k: [0, 0, 0] },
+                        a: { a: 0, k: [128, 128, 0] },
                         s: { a: 0, k: [100, 100, 100] }
                     },
                     shapes: [{
@@ -270,21 +275,21 @@
                         ]
                     }],
                     ip: 0,
-                    op: 150
+                    op: 120
                 }]
             };
             
-            await saveTGS(lottie, 'test3_move.tgs');
+            await saveTGS(lottie, 'test3_position.tgs');
         }
 
-        // ========== ТЕСТ 4: ВРАЩЕНИЕ (ROTATION) ==========
-        async function test4_rotate() {
-            log('🔄 Тест 4: Вращение (rotation)');
+        // ========== ТЕСТ 4: ROTATION (ВРАЩЕНИЕ) ==========
+        async function testRotation() {
+            log('🔄 Тест 4: Rotation анимация (вращение)');
             
             const lottie = {
                 tgs: 1,
                 v: "5.5.2",
-                fr: 60,
+                fr: 30,
                 ip: 0,
                 op: 120,
                 w: 512,
@@ -294,29 +299,29 @@
                     ddd: 0,
                     ind: 1,
                     ty: 4,
-                    nm: "rotating_square",
+                    nm: "rotate_square",
                     sr: 1,
                     ks: {
                         o: { a: 0, k: 100 },
-                        r: {  // Rotation с анимацией
+                        r: {
                             a: 1,
                             k: [
-                                { t: 0, s: [0] },
-                                { t: 30, s: [90] },
-                                { t: 60, s: [180] },
-                                { t: 90, s: [270] },
-                                { t: 120, s: [360] }
+                                { t: 0, e: [0] },
+                                { t: 30, e: [90] },
+                                { t: 60, e: [180] },
+                                { t: 90, e: [270] },
+                                { t: 120, e: [360] }
                             ]
                         },
                         p: { a: 0, k: [256, 256, 0] },
-                        a: { a: 0, k: [0, 0, 0] },
+                        a: { a: 0, k: [128, 128, 0] },
                         s: { a: 0, k: [100, 100, 100] }
                     },
                     shapes: [{
                         ty: "gr",
                         it: [
                             {
-                                ty: "rc",  // Прямоугольник
+                                ty: "rc",
                                 s: { a: 0, k: [200, 200] },
                                 p: { a: 0, k: [0, 0] },
                                 r: { a: 0, k: 0 }
@@ -333,145 +338,170 @@
                 }]
             };
             
-            await saveTGS(lottie, 'test4_rotate.tgs');
+            await saveTGS(lottie, 'test4_rotation.tgs');
         }
 
-        // ========== ТЕСТ 5: ВСЁ ВМЕСТЕ ==========
-        async function test5_combo() {
-            log('✨ Тест 5: Комбинированная анимация');
+        // ========== ТЕСТ 5: OPACITY (ПРОЗРАЧНОСТЬ) ==========
+        async function testOpacity() {
+            log('👁️ Тест 5: Opacity анимация (мигание)');
             
             const lottie = {
                 tgs: 1,
                 v: "5.5.2",
-                fr: 60,
+                fr: 30,
+                ip: 0,
+                op: 90,
+                w: 512,
+                h: 512,
+                ddd: 0,
+                layers: [{
+                    ddd: 0,
+                    ind: 1,
+                    ty: 4,
+                    nm: "opacity_circle",
+                    sr: 1,
+                    ks: {
+                        o: {
+                            a: 1,
+                            k: [
+                                { t: 0, e: [100] },
+                                { t: 15, e: [0] },
+                                { t: 30, e: [100] },
+                                { t: 45, e: [0] },
+                                { t: 60, e: [100] },
+                                { t: 75, e: [0] },
+                                { t: 90, e: [100] }
+                            ]
+                        },
+                        r: { a: 0, k: 0 },
+                        p: { a: 0, k: [256, 256, 0] },
+                        a: { a: 0, k: [128, 128, 0] },
+                        s: { a: 0, k: [100, 100, 100] }
+                    },
+                    shapes: [{
+                        ty: "gr",
+                        it: [
+                            {
+                                ty: "el",
+                                p: { a: 0, k: [0, 0] },
+                                s: { a: 0, k: [200, 200] }
+                            },
+                            {
+                                ty: "fl",
+                                c: { a: 0, k: [0.5, 0, 0.5, 1] }, // Фиолетовый
+                                o: { a: 0, k: 100 }
+                            }
+                        ]
+                    }],
+                    ip: 0,
+                    op: 90
+                }]
+            };
+            
+            await saveTGS(lottie, 'test5_opacity.tgs');
+        }
+
+        // ========== ТЕСТ 6: ВСЁ ВМЕСТЕ ==========
+        async function testAll() {
+            log('✨ Тест 6: Комбинированная анимация');
+            
+            const lottie = {
+                tgs: 1,
+                v: "5.5.2",
+                fr: 30,
                 ip: 0,
                 op: 180,
                 w: 512,
                 h: 512,
                 ddd: 0,
-                layers: [
-                    // Слой 1: Фоновый квадрат
-                    {
-                        ddd: 0,
-                        ind: 1,
-                        ty: 4,
-                        nm: "background",
-                        sr: 1,
-                        ks: {
-                            o: { a: 1, k: [
-                                { t: 0, s: [100] },
-                                { t: 90, s: [50] },
-                                { t: 180, s: [100] }
-                            ]},
-                            r: { a: 0, k: 0 },
-                            p: { a: 0, k: [256, 256, 0] },
-                            a: { a: 0, k: [0, 0, 0] },
-                            s: { a: 1, k: [
-                                { t: 0, s: [100, 100, 100] },
-                                { t: 90, s: [120, 120, 100] },
-                                { t: 180, s: [100, 100, 100] }
-                            ]}
-                        },
-                        shapes: [{
-                            ty: "gr",
-                            it: [
-                                {
-                                    ty: "rc",
-                                    s: { a: 0, k: [400, 400] },
-                                    p: { a: 0, k: [256, 256] },
-                                    r: { a: 0, k: 50 }
-                                },
-                                {
-                                    ty: "fl",
-                                    c: { a: 0, k: [0.5, 0, 0.5, 1] } // Фиолетовый
-                                }
+                layers: [{
+                    ddd: 0,
+                    ind: 1,
+                    ty: 4,
+                    nm: "combo",
+                    sr: 1,
+                    ks: {
+                        o: {
+                            a: 1,
+                            k: [
+                                { t: 0, e: [100] },
+                                { t: 90, e: [50] },
+                                { t: 180, e: [100] }
                             ]
-                        }],
-                        ip: 0,
-                        op: 180
+                        },
+                        r: {
+                            a: 1,
+                            k: [
+                                { t: 0, e: [0] },
+                                { t: 180, e: [360] }
+                            ]
+                        },
+                        p: {
+                            a: 1,
+                            k: [
+                                { t: 0, e: [256, 256, 0] },
+                                { t: 60, e: [356, 256, 0] },
+                                { t: 120, e: [156, 256, 0] },
+                                { t: 180, e: [256, 256, 0] }
+                            ]
+                        },
+                        a: { a: 0, k: [128, 128, 0] },
+                        s: {
+                            a: 1,
+                            k: [
+                                { t: 0, e: [100, 100, 100] },
+                                { t: 90, e: [150, 150, 100] },
+                                { t: 180, e: [100, 100, 100] }
+                            ]
+                        }
                     },
-                    // Слой 2: Круг
-                    {
-                        ddd: 0,
-                        ind: 2,
-                        ty: 4,
-                        nm: "circle",
-                        sr: 1,
-                        ks: {
-                            o: { a: 0, k: 100 },
-                            r: { a: 1, k: [
-                                { t: 0, s: [0] },
-                                { t: 180, s: [360] }
-                            ]},
-                            p: { a: 1, k: [
-                                { t: 0, s: [256, 256, 0] },
-                                { t: 60, s: [356, 256, 0] },
-                                { t: 120, s: [156, 256, 0] },
-                                { t: 180, s: [256, 256, 0] }
-                            ]},
-                            a: { a: 0, k: [0, 0, 0] },
-                            s: { a: 1, k: [
-                                { t: 0, s: [100, 100, 100] },
-                                { t: 90, s: [150, 150, 100] },
-                                { t: 180, s: [100, 100, 100] }
-                            ]}
-                        },
-                        shapes: [{
-                            ty: "gr",
-                            it: [
-                                {
-                                    ty: "el",
-                                    p: { a: 0, k: [0, 0] },
-                                    s: { a: 0, k: [150, 150] }
-                                },
-                                {
-                                    ty: "fl",
-                                    c: { a: 0, k: [0, 1, 1, 1] } // Голубой
-                                }
-                            ]
-                        }],
-                        ip: 0,
-                        op: 180
-                    }
-                ]
+                    shapes: [{
+                        ty: "gr",
+                        it: [
+                            {
+                                ty: "el",
+                                p: { a: 0, k: [0, 0] },
+                                s: { a: 0, k: [150, 150] }
+                            },
+                            {
+                                ty: "fl",
+                                c: { a: 0, k: [1, 0, 0, 1] },
+                                o: { a: 0, k: 100 }
+                            }
+                        ]
+                    }],
+                    ip: 0,
+                    op: 180
+                }]
             };
             
-            await saveTGS(lottie, 'test5_combo.tgs');
+            await saveTGS(lottie, 'test6_combo.tgs');
         }
 
-        // ========== СОХРАНЕНИЕ TGS ==========
+        // ========== СОХРАНЕНИЕ ==========
         async function saveTGS(lottieJson, filename) {
             try {
-                // Подробная информация
-                log(`📦 JSON размер: ${JSON.stringify(lottieJson).length} байт`);
-                log(`📊 Слоев: ${lottieJson.layers.length}`);
+                log(`📦 JSON: ${JSON.stringify(lottieJson).length} байт`);
                 
                 // Проверяем наличие анимации
-                let hasAnimation = false;
-                lottieJson.layers.forEach((layer, i) => {
-                    if (layer.ks.s && layer.ks.s.a === 1) hasAnimation = true;
-                    if (layer.ks.p && layer.ks.p.a === 1) hasAnimation = true;
-                    if (layer.ks.r && layer.ks.r.a === 1) hasAnimation = true;
-                    if (layer.ks.o && layer.ks.o.a === 1) hasAnimation = true;
+                let animCount = 0;
+                ['s', 'p', 'r', 'o'].forEach(prop => {
+                    if (lottieJson.layers[0].ks[prop]?.a === 1) animCount++;
                 });
-                log(`🎬 Анимация: ${hasAnimation ? 'Есть' : 'Нет'}`);
+                log(`🎬 Анимированных свойств: ${animCount}`);
                 
                 // Сжимаем
                 const jsonString = JSON.stringify(lottieJson);
                 const compressed = pako.gzip(jsonString, { level: 9 });
                 log(`✅ Сжато: ${jsonString.length} → ${compressed.length} байт`, 'success');
                 
-                // Создаем blob
-                const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
-                
                 // Сохраняем
+                const blob = new Blob([compressed], { type: 'application/x-tgsticker' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = filename;
-                document.body.appendChild(link);
                 link.click();
-                document.body.removeChild(link);
                 URL.revokeObjectURL(url);
                 
                 log(`✅ Файл сохранен: ${filename}`, 'success');
@@ -481,14 +511,9 @@
             }
         }
 
-        // Начальный лог
         log('✅ TGS тестер загружен');
-        log('Нажимайте кнопки по порядку:');
-        log('1. Статичный круг - базовая проверка');
-        log('2. Пульсация - проверка scale анимации');
-        log('3. Движение - проверка position анимации');
-        log('4. Вращение - проверка rotation анимации');
-        log('5. Комбо - все вместе');
+        log('Тестируйте каждый тип анимации отдельно:');
+        log('Scale, Position, Rotation, Opacity');
     </script>
 </body>
 </html>
