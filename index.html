@@ -2604,36 +2604,45 @@ function initStyles() {
             }
         }
 
-        // ========== СОХРАНЕНИЕ WEBM ==========
-        async function saveAsWEBM(filename) {
-            const canvas = document.getElementById('webmCanvas');
+// ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ СОХРАНЕНИЯ WEBM ==========
+async function saveAsWEBM(filename) {
+    const canvas = document.getElementById('webmCanvas');
+    
+    // Уменьшаем битрейт для соответствия требованиям Telegram (256 KB)
+    const stream = canvas.captureStream(30); // Уменьшаем FPS до 30
+    const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp9',
+        videoBitsPerSecond: 250000 // 250 kbps — должно дать ~93 КБ за 3 секунды
+    });
+    
+    const chunks = [];
+    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+    
+    return new Promise((resolve) => {
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
             
-            const stream = canvas.captureStream(60);
-            const mediaRecorder = new MediaRecorder(stream, {
-                mimeType: 'video/webm;codecs=vp9',
-                videoBitsPerSecond: 5000000
-            });
+            // Проверяем размер
+            if (blob.size > 256 * 1024) {
+                addDebugLog('warn', `⚠️ Размер файла ${(blob.size/1024).toFixed(2)} КБ превышает лимит 256 КБ`);
+            } else {
+                addDebugLog('success', `✅ Размер файла: ${(blob.size/1024).toFixed(2)} КБ (в лимите)`);
+            }
             
-            const chunks = [];
-            mediaRecorder.ondataavailable = e => chunks.push(e.data);
-            
-            return new Promise((resolve) => {
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(chunks, { type: 'video/webm' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = filename;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    addDebugLog('success', `✅ WEBM сохранен: ${filename}`);
-                    resolve(blob);
-                };
-                
-                mediaRecorder.start();
-                setTimeout(() => mediaRecorder.stop(), 3000);
-            });
-        }
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            addDebugLog('success', `✅ WEBM сохранен: ${filename}`);
+            resolve(blob);
+        };
+        
+        mediaRecorder.start();
+        setTimeout(() => mediaRecorder.stop(), 3000);
+    });
+}
 
         // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
         window.generatePack = async () => {
