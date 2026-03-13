@@ -577,6 +577,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/kalidokit@1.1/dist/kalidokit.umd.js"></script>
 </head>
 <body>
     <div class="container">
@@ -2622,35 +2623,7 @@ function startPremiumAnimation(landmarks) {
     return () => cancelAnimationFrame(animationFrame);
 }
 
-        // ========== ЗАПУСК АНИМАЦИИ С ИЗОБРАЖЕНИЕМ ==========
-        async function startAnimationWithImage(pngDataUrl, emotion) {
-            try {
-                const img = new Image();
-                await new Promise((resolve, reject) => {
-                    img.onload = resolve;
-                    img.onerror = reject;
-                    img.src = pngDataUrl;
-                });
-                
-                pngImage = img;
-                currentEmotion = emotion;
-                
-                const pngCanvas = document.getElementById('pngCanvas');
-                const pngCtx = pngCanvas.getContext('2d');
-                pngCtx.drawImage(img, 0, 0, 512, 512);
-                
-                addDebugLog('info', '🔍 Анализ изображения через MediaPipe...');
-                const landmarks = await analyzeImage(img);
-                
-                startPremiumAnimation(landmarks);
-                
-                return landmarks;
-                
-            } catch (error) {
-                addDebugLog('error', `❌ Ошибка запуска анимации: ${error.message}`);
-                return null;
-            }
-        }
+        
 
 // ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ СОХРАНЕНИЯ WEBM ==========
 async function saveAsWEBM(filename) {
@@ -2694,63 +2667,85 @@ async function saveAsWEBM(filename) {
 
         // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
         window.generatePack = async () => {
-            const character = document.getElementById('characterPrompt').value.trim();
+    const character = document.getElementById('characterPrompt').value.trim();
+    
+    if (!character || !selectedProfession || selectedEmotions.length === 0) {
+        alert('Пожалуйста, выберите персонажа, профессию и эмоции');
+        return;
+    }
+
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('generateBtn').disabled = true;
+    document.getElementById('results').innerHTML = '';
+
+    try {
+        generatedPNG = [];
+        generatedWEBM = [];
+        
+        const profession = PROFESSIONS.find(p => p.id === selectedProfession);
+
+        for (let i = 0; i < selectedEmotions.length; i++) {
+            const emotionId = selectedEmotions[i];
+            const emotion = EMOTIONS.find(e => e.id === emotionId);
             
-            if (!character || !selectedProfession || selectedEmotions.length === 0) {
-                alert('Пожалуйста, выберите персонажа, профессию и эмоции');
-                return;
-            }
-
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('generateBtn').disabled = true;
-            document.getElementById('results').innerHTML = '';
-
-            try {
-                generatedPNG = [];
-                generatedWEBM = [];
+            const humorItem = profession.humor[Math.floor(Math.random() * profession.humor.length)];
+            
+            document.getElementById('loadingProgress').textContent = 
+                `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
+            
+            // 1. Генерация PNG с английским промптом (текст уже внутри)
+            const pngDataUrl = await generatePNG(profession, emotion, humorItem);
+            
+            if (pngDataUrl) {
+                // 2. Загружаем изображение
+                const img = new Image();
+                await new Promise((resolve) => { 
+                    img.onload = resolve; 
+                    img.src = pngDataUrl; 
+                });
                 
-                const profession = PROFESSIONS.find(p => p.id === selectedProfession);
-
-                for (let i = 0; i < selectedEmotions.length; i++) {
-                    const emotionId = selectedEmotions[i];
-                    const emotion = EMOTIONS.find(e => e.id === emotionId);
-                    
-                    const humorItem = profession.humor[Math.floor(Math.random() * profession.humor.length)];
-                    
-                    document.getElementById('loadingProgress').textContent = 
-                        `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
-                    
-                    // 1. Генерация PNG с английским промптом (текст уже внутри)
-                    const pngDataUrl = await generatePNG(profession, emotion, humorItem);
-                    
-                    if (pngDataUrl) {
-                        // 2. Запуск анимации с этим PNG
-                        const landmarks = await startAnimationWithImage(pngDataUrl, emotion);
-                        
-                        // 3. Сохранение WEBM
-                        const filename = `${character}_${profession.id}_${emotion.id}_${i}.webm`;
-                        await saveAsWEBM(filename);
-                        
-                        generatedPNG.push({
-                            emotion: emotion,
-                            profession: profession.name,
-                            humor: humorItem.ru,
-                            dataUrl: pngDataUrl,
-                            filename: `${character}_${profession.id}_${emotion.id}_${i}.png`
-                        });
-                    }
-                }
-
-                displayResults(generatedPNG);
+                pngImage = img;
                 
-            } catch (error) {
-                alert('Ошибка: ' + error.message);
-                addDebugLog('error', `❌ Глобальная ошибка: ${error.message}`);
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('generateBtn').disabled = false;
+                // Отображаем в превью
+                const pngCanvas = document.getElementById('pngCanvas');
+                const pngCtx = pngCanvas.getContext('2d');
+                pngCtx.drawImage(img, 0, 0, 512, 512);
+                
+                // 3. Анализ через MediaPipe
+                const landmarks = await analyzeImage(img);
+                
+                // 4. ЗАПУСКАЕМ УМНУЮ АНИМАЦИЮ (ВМЕСТО СТАРОЙ)
+                startSmartAnimation(landmarks, emotion, character);
+                
+                // 5. Сохранение WEBM (через 3 секунды, чтобы анимация успела проиграться)
+                setTimeout(async () => {
+                    const filename = `${character}_${profession.id}_${emotion.id}_${i}.webm`;
+                    await saveAsWEBM(filename);
+                }, 3500);
+                
+                generatedPNG.push({
+                    emotion: emotion,
+                    profession: profession.name,
+                    humor: humorItem.ru,
+                    dataUrl: pngDataUrl,
+                    filename: `${character}_${profession.id}_${emotion.id}_${i}.png`
+                });
             }
-        };
+        }
+
+        // Даем время на запись всех WEBM
+        setTimeout(() => {
+            displayResults(generatedPNG);
+        }, selectedEmotions.length * 3500 + 1000);
+        
+    } catch (error) {
+        alert('Ошибка: ' + error.message);
+        addDebugLog('error', `❌ Глобальная ошибка: ${error.message}`);
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('generateBtn').disabled = false;
+    }
+};
 
         // ========== ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ==========
         function displayResults(pngStickers) {
@@ -2875,6 +2870,187 @@ async function saveAsWEBM(filename) {
     // Логируем успешную загрузку
     addDebugLog('success', '🚀 Приложение успешно загружено');
 });
+
+// ========== ФУНКЦИЯ 1: ОПРЕДЕЛЕНИЕ ТИПА ОБЪЕКТА ==========
+function detectObjectType(prompt, landmarks) {
+    const promptLower = prompt.toLowerCase();
+    
+    // Проверяем по промпту
+    if (promptLower.includes('cat') || promptLower.includes('кот') || 
+        promptLower.includes('dog') || promptLower.includes('собак') ||
+        promptLower.includes('animal') || promptLower.includes('животн') ||
+        promptLower.includes('кошка') || promptLower.includes('пёс')) {
+        return 'animal';
+    }
+    
+    if (promptLower.includes('предмет') || promptLower.includes('object') ||
+        promptLower.includes('robot') || promptLower.includes('робот') ||
+        promptLower.includes('car') || promptLower.includes('машин') ||
+        promptLower.includes('стул') || promptLower.includes('стол')) {
+        return 'object';
+    }
+    
+    // Проверяем по точкам MediaPipe
+    if (landmarks && landmarks.length > 0) {
+        const visiblePoints = landmarks.filter(l => l.visibility > 0.7).length;
+        if (visiblePoints > 15) return 'human';
+        if (visiblePoints > 5) return 'animal';
+    }
+    
+    return 'unknown';
+}
+
+// ========== ФУНКЦИЯ 2: БАЗОВАЯ АНИМАЦИЯ ==========
+function applyBasicAnimation(frame, ctx, pulseIntensity, moveIntensity, rotateIntensity) {
+    const breathScale = 1 + Math.sin(frame * 0.1) * 0.02 * pulseIntensity;
+    const headX = Math.sin(frame * 0.05) * 10 * moveIntensity;
+    const headY = Math.cos(frame * 0.07) * 8 * moveIntensity;
+    const headRotate = Math.sin(frame * 0.03) * 0.05 * rotateIntensity;
+    const bounceY = Math.abs(Math.sin(frame * 0.2)) * 15 * moveIntensity;
+    
+    ctx.scale(breathScale, breathScale);
+    ctx.translate(headX, headY);
+    ctx.rotate(headRotate);
+    ctx.translate(0, -bounceY);
+}
+
+// ========== ФУНКЦИЯ 3: УМНАЯ АНИМАЦИЯ ==========
+function startSmartAnimation(landmarks, emotion, characterPrompt) {
+    const canvas = document.getElementById('webmCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    if (!pngImage) {
+        addDebugLog('error', '❌ Нет изображения для анимации');
+        return;
+    }
+    
+    const objectType = detectObjectType(characterPrompt, landmarks);
+    addDebugLog('success', `🎯 Определен тип объекта: ${objectType}`);
+    
+    const pulseIntensity = document.getElementById('pulseIntensity').value / 100;
+    const moveIntensity = document.getElementById('moveIntensity').value / 100;
+    const rotateIntensity = document.getElementById('rotateIntensity').value / 100;
+    
+    let frame = 0;
+    
+    function animate() {
+        ctx.clearRect(0, 0, 512, 512);
+        ctx.save();
+        ctx.translate(256, 256);
+        
+        // ВЫБИРАЕМ АНИМАЦИЮ ПО ТИПУ
+        switch(objectType) {
+            case 'human':
+                // ===== ЧЕЛОВЕЧЕСКАЯ АНИМАЦИЯ (Kalidokit) =====
+                if (window.Kalidokit && landmarks && landmarks.length > 0) {
+                    try {
+                        const faceRig = Kalidokit.Face.solve(landmarks, { runtime: 'mediapipe' });
+                        const bodyRig = Kalidokit.Pose.solve(landmarks);
+                        
+                        // Голова
+                        ctx.translate((faceRig?.head?.x || 0) * 50 * moveIntensity, 
+                                     (faceRig?.head?.y || 0) * 50 * moveIntensity);
+                        ctx.rotate((faceRig?.head?.z || 0) * 0.3 * rotateIntensity);
+                        
+                        // Тело
+                        if (bodyRig) {
+                            ctx.translate((bodyRig?.spine?.x || 0) * 30 * moveIntensity,
+                                         (bodyRig?.spine?.y || 0) * 30 * moveIntensity);
+                            ctx.rotate((bodyRig?.spine?.z || 0) * 0.2 * rotateIntensity);
+                        }
+                        
+                        // Руки
+                        if (bodyRig?.rightArm && bodyRig?.leftArm) {
+                            const armX = (bodyRig.rightArm.x + bodyRig.leftArm.x) * 20 * moveIntensity;
+                            const armY = (bodyRig.rightArm.y + bodyRig.leftArm.y) * 20 * moveIntensity;
+                            ctx.translate(armX, armY);
+                        }
+                    } catch (e) {
+                        applyBasicAnimation(frame, ctx, pulseIntensity, moveIntensity, rotateIntensity);
+                    }
+                } else {
+                    applyBasicAnimation(frame, ctx, pulseIntensity, moveIntensity, rotateIntensity);
+                }
+                break;
+                
+            case 'animal':
+                // ===== АНИМАЦИЯ ДЛЯ ЖИВОТНЫХ =====
+                // Дыхание
+                const breathScale = 1 + Math.sin(frame * 0.15) * 0.03 * pulseIntensity;
+                ctx.scale(breathScale, breathScale * 0.9);
+                
+                // Покачивание головой
+                const headWag = Math.sin(frame * 0.1) * 8 * moveIntensity;
+                const headBob = Math.cos(frame * 0.12) * 5 * moveIntensity;
+                ctx.translate(headWag, headBob);
+                
+                // Виляние хвостом (имитация)
+                const tailWag = Math.sin(frame * 0.2) * 10 * rotateIntensity;
+                ctx.rotate(tailWag * 0.01);
+                
+                // Микро-движения
+                const twitch = (Math.random() - 0.5) * 2;
+                ctx.translate(twitch, 0);
+                break;
+                
+            case 'object':
+                // ===== АНИМАЦИЯ ДЛЯ ПРЕДМЕТОВ =====
+                // Пульсация
+                const objectPulse = 1 + Math.sin(frame * 0.2) * 0.04 * pulseIntensity;
+                ctx.scale(objectPulse, objectPulse);
+                
+                // Физическое покачивание
+                const physicsSway = Math.sin(frame * 0.1) * 5 * moveIntensity;
+                const physicsBob = Math.abs(Math.sin(frame * 0.15)) * 8 * moveIntensity;
+                ctx.translate(physicsSway, -physicsBob);
+                
+                // Вращение
+                const spin = Math.sin(frame * 0.05) * 0.03 * rotateIntensity;
+                ctx.rotate(spin);
+                break;
+                
+            default:
+                // ===== БАЗОВАЯ АНИМАЦИЯ =====
+                applyBasicAnimation(frame, ctx, pulseIntensity, moveIntensity, rotateIntensity);
+        }
+        
+        // ===== ЭМОЦИОНАЛЬНЫЕ ЭФФЕКТЫ =====
+        if (emotion) {
+            switch(emotion.id) {
+                case 'laughing':
+                case 'happy':
+                    const shakeX = (Math.random() - 0.5) * 6;
+                    const shakeY = (Math.random() - 0.5) * 4;
+                    ctx.translate(shakeX, shakeY);
+                    break;
+                case 'sad':
+                case 'crying':
+                    ctx.translate(0, 5 * pulseIntensity);
+                    ctx.rotate(-0.02);
+                    break;
+                case 'angry':
+                    const jerkX = Math.sin(frame * 0.3) * 12;
+                    const jerkY = Math.cos(frame * 0.3) * 8;
+                    ctx.translate(jerkX, jerkY);
+                    break;
+                case 'surprised':
+                    ctx.scale(1 + Math.abs(Math.sin(frame * 0.1)) * 0.05, 1);
+                    break;
+            }
+        }
+        
+        // Рисуем изображение
+        ctx.drawImage(pngImage, -256, -256, 512, 512);
+        ctx.restore();
+        
+        frame++;
+        animationFrame = requestAnimationFrame(animate);
+    }
+    
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+    animate();
+    addDebugLog('success', `🎬 Запущена анимация для типа: ${objectType}`);
+}
     </script>
 </body>
 </html>
