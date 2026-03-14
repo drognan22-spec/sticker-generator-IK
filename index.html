@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator ULTIMATE - Kling AI ONLY</title>
+    <title>Sticker Generator - Kling AI PRO</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
@@ -114,6 +114,12 @@
             color: #b91c1c;
         }
 
+        .api-status.checking {
+            background: #fef9c3;
+            border-color: #facc15;
+            color: #854d0e;
+        }
+
         .debug-panel {
             background: #1e293b;
             border-radius: 16px;
@@ -191,6 +197,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            transition: all 0.2s;
         }
 
         .profession-item:hover {
@@ -317,6 +324,7 @@
             border-radius: 20px;
             color: white;
             text-align: center;
+            grid-column: span 3;
         }
 
         .revenue-card .label {
@@ -354,7 +362,7 @@
             overflow: hidden;
         }
 
-        canvas {
+        canvas, video {
             width: 100%;
             height: 100%;
             display: block;
@@ -436,6 +444,12 @@
             font-weight: 800;
             cursor: pointer;
             margin: 30px 0;
+            transition: all 0.3s;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 30px 50px rgba(251, 191, 36, 0.5);
         }
 
         .generate-btn:disabled {
@@ -477,8 +491,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎨 Sticker Generator <span>KLING AI ONLY</span></h1>
-            <div class="premium-badge">✨ Только Kling AI • Без запасных анимаций</div>
+            <h1>🎨 Sticker Generator <span>KLING AI PRO</span></h1>
+            <div class="premium-badge">✨ Только Kling AI • Прямая интеграция</div>
             <div class="stats">
                 <div class="stat-badge"><span>38+</span> профессий</div>
                 <div class="stat-badge"><span>30</span> эмоций</div>
@@ -511,7 +525,6 @@
             </div>
             <div class="professions-grid" id="professionsGrid"></div>
 
-            <!-- Поле для ручного ввода шуток -->
             <div class="input-group" id="customHumorsField" style="display: none;">
                 <label>✏️ Ваши шутки (через точку с запятой)</label>
                 <textarea id="customHumors" placeholder="Введите шутки через точку с запятой">счастье это просто; грусть это навсегда; злость это плохо</textarea>
@@ -552,7 +565,7 @@
                         <input type="number" id="copyPrice" min="100" max="100000" value="2990" onchange="updateRevenue()">
                     </div>
 
-                    <div class="revenue-card" style="grid-column: span 3;">
+                    <div class="revenue-card">
                         <div class="label">💰 ПОТЕНЦИАЛЬНЫЙ ДОХОД</div>
                         <div class="value" id="totalRevenue">149 500 ₽</div>
                     </div>
@@ -2334,47 +2347,31 @@ const ADDITIONAL_PROFESSIONS = [
         // ========== ПРОМПТЫ ДЛЯ KLING AI ==========
         const MOTION_PROMPTS = {
             subtle: {
-                happy: 'gentle happy movement, soft smile, subtle nod, peaceful atmosphere',
-                sad: 'subtle sad expression, gentle head drop, melancholic mood',
-                angry: 'subtle annoyed expression, slight frown, restrained tension',
-                surprised: 'gentle surprised look, slight eyebrow raise, brief reaction',
+                happy: 'subtle happy movement, gentle smile, peaceful atmosphere',
+                sad: 'subtle sad expression, melancholic mood',
+                angry: 'subtle annoyed expression, restrained tension',
+                surprised: 'gentle surprised look, brief reaction',
                 laughing: 'subtle laugh, gentle shaking, restrained joy',
-                love: 'subtle loving expression, warm gaze, gentle lean forward',
-                sleepy: 'gentle sleepy movement, slight nodding, slow blinking',
-                cool: 'subtle cool pose, slight head tilt, confident attitude',
-                scared: 'subtle scared expression, slight flinch, wide eyes',
+                love: 'subtle loving expression, warm gaze',
+                sleepy: 'gentle sleepy movement, slow blinking',
+                cool: 'subtle cool pose, confident attitude',
+                scared: 'subtle scared expression, slight flinch',
                 silly: 'gentle silly expression, slight goofy smile',
-                sick: 'subtle sick movement, weak posture, minimal motion',
-                eating: 'gentle eating motion, slight chewing',
-                working: 'subtle working motion, slight typing, focused expression',
+                sick: 'subtle sick movement, weak posture',
+                eating: 'gentle eating motion',
+                working: 'subtle working motion, focused expression',
                 celebrating: 'gentle celebration, slight happy bounce',
-                thinking: 'subtle thinking pose, slight head tilt, thoughtful',
+                thinking: 'subtle thinking pose, thoughtful expression',
                 crying: 'subtle crying, slight tears, gentle sobbing',
                 winking: 'subtle wink, slight eye movement, playful',
-                shy: 'subtle shy movement, slight look away, bashful',
-                bored: 'subtle bored expression, slight sigh',
-                proud: 'subtle proud pose, slight head raise, confident',
-                default: 'subtle natural movement, slight breathing motion, gentle and calm'
+                shy: 'subtle shy movement, bashful expression',
+                bored: 'subtle bored expression',
+                proud: 'subtle proud pose, confident expression',
+                default: 'subtle natural movement, gentle and calm'
             }
         };
 
         // ========== СИСТЕМА АНАЛИЗА ЭМОЦИЙ ==========
-        const TONE_KEYWORDS = {
-            positive: { words: ['😊', 'счастье', 'радость', 'круто', 'супер', 'love', 'happy'], weight: 1.0 },
-            negative: { words: ['😢', '😭', 'плохо', 'грустно', 'ужас', 'sad'], weight: 1.0 },
-            angry: { words: ['😠', '😤', 'злость', 'бесит', 'angry'], weight: 1.5 },
-            funny: { words: ['😂', '🤣', 'прикол', 'смех', 'laugh'], weight: 1.2 },
-            romantic: { words: ['😍', '🥰', '💕', 'любовь', 'love'], weight: 1.3 }
-        };
-
-        const TONE_TO_EMOTIONS = {
-            positive: [{ emotion: 'happy', priority: 1.0 }, { emotion: 'proud', priority: 0.8 }],
-            negative: [{ emotion: 'sad', priority: 1.0 }, { emotion: 'crying', priority: 0.9 }],
-            angry: [{ emotion: 'angry', priority: 1.0 }],
-            funny: [{ emotion: 'laughing', priority: 1.0 }, { emotion: 'silly', priority: 0.9 }],
-            romantic: [{ emotion: 'love', priority: 1.0 }, { emotion: 'shy', priority: 0.8 }]
-        };
-
         // 4. КОНФЛИКТЫ ЭМОЦИЙ
         const EMOTION_CONFLICTS = {
             'love': ['злость', 'ненавижу', 'убью', 'бесит', 'ненавид', 'терпеть не могу'],
@@ -2384,17 +2381,6 @@ const ADDITIONAL_PROFESSIONS = [
             'scared': ['храбрый', 'смелый', 'бесстрашный', 'герой'],
             'happy': ['грустно', 'печально', 'депрессия', 'тоска']
         };
-
-        function analyzeText(text) {
-            const textLower = text.toLowerCase();
-            const scores = {};
-            Object.entries(TONE_KEYWORDS).forEach(([tone, data]) => {
-                data.words.forEach(word => {
-                    if (textLower.includes(word.toLowerCase())) scores[tone] = (scores[tone] || 0) + data.weight;
-                });
-            });
-            return { emotions: Object.keys(scores) };
-        }
 
         function isHumorCompatible(humorText, emotionId) {
             if (EMOTION_CONFLICTS[emotionId]) {
@@ -2538,14 +2524,19 @@ const ADDITIONAL_PROFESSIONS = [
         // ========== ПРОВЕРКА API ==========
         async function checkAPIs() {
             try {
-                await fetch('https://external.api.recraft.ai/v1/images/generations', {
+                const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${RECRAFT_API_KEY}` },
-                    body: JSON.stringify({ prompt: 'test', n: 1 })
+                    headers: { 
+                        'Authorization': `Bearer ${RECRAFT_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: 'test', n: 1, size: '1024x1024' })
                 });
-                document.getElementById('recraftStatus').innerHTML = '✅ Recraft V4: Подключен';
+                document.getElementById('recraftStatus').innerHTML = response.ok 
+                    ? '✅ Recraft V4: Подключен' 
+                    : '❌ Recraft V4: Ошибка';
             } catch {
-                document.getElementById('recraftStatus').innerHTML = '❌ Recraft V4: Ошибка';
+                document.getElementById('recraftStatus').innerHTML = '❌ Recraft V4: Ошибка сети';
             }
 
             document.getElementById('klingStatus').innerHTML = KLING_ACCESS_KEY && KLING_SECRET_KEY 
@@ -2574,15 +2565,18 @@ const ADDITIONAL_PROFESSIONS = [
                     })
                 });
 
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
+                
                 if (data.data?.[0]?.b64_json) {
                     addLogMessage(`✅ Recraft: изображение готово`, 'success');
                     return await resizeImage(data.data[0].b64_json);
                 }
+                throw new Error('Нет данных в ответе');
             } catch (e) {
                 addLogMessage(`❌ Recraft ошибка: ${e.message}`, 'error');
+                throw e;
             }
-            return null;
         }
 
         function resizeImage(base64) {
@@ -2598,60 +2592,75 @@ const ADDITIONAL_PROFESSIONS = [
             });
         }
 
-        // ========== KLING AI АНИМАЦИЯ (ТОЛЬКО ОНА, БЕЗ ЗАПАСНЫХ) ==========
+        // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
         async function animateWithKling(imageDataUrl, emotionId) {
             addLogMessage(`🎬 Kling AI: отправляем на анимацию...`, 'info');
             
             const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
-            const token = btoa(`${KLING_ACCESS_KEY}:${KLING_SECRET_KEY}`);
+            
+            // Правильное формирование Basic Auth
+            const authString = btoa(`${KLING_ACCESS_KEY}:${KLING_SECRET_KEY}`);
             
             try {
-                // 1. Создаем задачу
-                const taskRes = await fetch('https://api.klingai.com/v1/videos', {
+                // 1. Конвертируем data URL в Blob для отправки
+                const imageBlob = await (await fetch(imageDataUrl)).blob();
+                const formData = new FormData();
+                formData.append('image', imageBlob, 'image.png');
+                
+                // 2. Создаем задачу с правильными заголовками
+                const taskResponse = await fetch('https://api.klingai.com/v1/images/generations', {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model: "kling-v1",
-                        input: { prompt: motionPrompt, image: imageDataUrl },
-                        parameters: { duration: 5, mode: "pro", cfg_scale: 0.8 }
-                    })
+                    headers: {
+                        'Authorization': `Basic ${authString}`,
+                        // Не ставим Content-Type, браузер сам поставит с boundary
+                    },
+                    body: formData
                 });
 
-                if (!taskRes.ok) throw new Error(`Kling API error: ${taskRes.status}`);
-                
-                const taskData = await taskRes.json();
-                const taskId = taskData.data?.task_id;
-                if (!taskId) throw new Error('Не получен task_id');
-                
-                addLogMessage(`⏳ Задача создана, ожидаем результат...`, 'info');
+                if (!taskResponse.ok) {
+                    const errorText = await taskResponse.text();
+                    throw new Error(`Kling API ошибка ${taskResponse.status}: ${errorText}`);
+                }
 
-                // 2. Опрашиваем статус
+                const taskData = await taskResponse.json();
+                if (!taskData.data?.task_id) throw new Error('Не получен task_id');
+                
+                const taskId = taskData.data.task_id;
+                addLogMessage(`⏳ Задача создана: ${taskId}`, 'info');
+
+                // 3. Опрашиваем статус
                 let attempts = 0;
-                while (attempts < 30) {
+                while (attempts < 60) { // 5 минут максимум
                     await new Promise(r => setTimeout(r, 5000));
                     
-                    const statusRes = await fetch(`https://api.klingai.com/v1/videos/${taskId}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
+                    const statusResponse = await fetch(`https://api.klingai.com/v1/tasks/${taskId}`, {
+                        headers: { 'Authorization': `Basic ${authString}` }
                     });
-                    const statusData = await statusRes.json();
+                    
+                    if (!statusResponse.ok) continue;
+                    
+                    const statusData = await statusResponse.json();
                     
                     if (statusData.code === 0) {
-                        if (statusData.data?.task_status === 'succeed') {
-                            addLogMessage(`✅ Kling AI: анимация готова`, 'success');
-                            return statusData.data.result.video_url;
+                        if (statusData.data?.status === 'succeed' || statusData.data?.task_status === 'succeed') {
+                            const videoUrl = statusData.data?.result?.video_url || statusData.data?.video_url;
+                            if (videoUrl) {
+                                addLogMessage(`✅ Kling AI: анимация готова`, 'success');
+                                return videoUrl;
+                            }
                         }
-                        if (statusData.data?.task_status === 'failed') {
-                            throw new Error('Kling generation failed');
+                        if (statusData.data?.status === 'failed') {
+                            throw new Error('Генерация не удалась');
                         }
                     }
                     attempts++;
                 }
-                throw new Error('Timeout waiting for Kling generation');
+                throw new Error('Таймаут ожидания генерации');
                 
             } catch (error) {
                 addLogMessage(`❌ KLING AI ОШИБКА: ${error.message}`, 'error');
                 addLogMessage(`⚠️ Процесс остановлен. Запасные анимации не используются.`, 'error');
-                throw error; // Пробрасываем ошибку выше для остановки всего процесса
+                throw error;
             }
         }
 
@@ -2659,51 +2668,56 @@ const ADDITIONAL_PROFESSIONS = [
         async function convertToWEBM(videoUrl) {
             addLogMessage(`🔄 Конвертация в WEBM...`, 'info');
             
-            const videoBlob = await fetch(videoUrl).then(r => r.blob());
-            const video = document.createElement('video');
-            video.src = URL.createObjectURL(videoBlob);
-            
-            await new Promise((resolve, reject) => {
-                video.onloadedmetadata = resolve;
-                video.onerror = reject;
-                setTimeout(resolve, 5000);
-            });
+            try {
+                const videoBlob = await fetch(videoUrl).then(r => r.blob());
+                const video = document.createElement('video');
+                video.src = URL.createObjectURL(videoBlob);
+                
+                await new Promise((resolve, reject) => {
+                    video.onloadedmetadata = resolve;
+                    video.onerror = reject;
+                    setTimeout(reject, 10000);
+                });
 
-            const canvas = document.createElement('canvas');
-            canvas.width = 512; canvas.height = 512;
-            const ctx = canvas.getContext('2d');
-            const stream = canvas.captureStream(30);
-            
-            const recorder = new MediaRecorder(stream, {
-                mimeType: 'video/webm;codecs=vp9',
-                videoBitsPerSecond: 250000
-            });
+                const canvas = document.createElement('canvas');
+                canvas.width = 512; canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                const stream = canvas.captureStream(30);
+                
+                const recorder = new MediaRecorder(stream, {
+                    mimeType: 'video/webm;codecs=vp9',
+                    videoBitsPerSecond: 250000
+                });
 
-            return new Promise((resolve, reject) => {
-                const chunks = [];
-                recorder.ondataavailable = e => chunks.push(e.data);
-                recorder.onstop = () => {
-                    const blob = new Blob(chunks, { type: 'video/webm' });
-                    addLogMessage(`✅ WEBM готов`, 'success');
-                    resolve(URL.createObjectURL(blob));
-                };
-                recorder.onerror = reject;
+                return new Promise((resolve, reject) => {
+                    const chunks = [];
+                    recorder.ondataavailable = e => chunks.push(e.data);
+                    recorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'video/webm' });
+                        addLogMessage(`✅ WEBM готов: ${(blob.size/1024).toFixed(2)} KB`, 'success');
+                        resolve(URL.createObjectURL(blob));
+                    };
+                    recorder.onerror = reject;
 
-                recorder.start();
-                video.currentTime = 0;
-                video.play().catch(reject);
+                    recorder.start();
+                    video.currentTime = 0;
+                    video.play().catch(reject);
 
-                let frame = 0;
-                const interval = setInterval(() => {
-                    if (frame++ >= 90) {
-                        clearInterval(interval);
-                        video.pause();
-                        recorder.stop();
-                        return;
-                    }
-                    ctx.drawImage(video, 0, 0, 512, 512);
-                }, 33);
-            });
+                    let frame = 0;
+                    const interval = setInterval(() => {
+                        if (frame++ >= 90) {
+                            clearInterval(interval);
+                            video.pause();
+                            recorder.stop();
+                            return;
+                        }
+                        ctx.drawImage(video, 0, 0, 512, 512);
+                    }, 33);
+                });
+            } catch (error) {
+                addLogMessage(`❌ Ошибка конвертации: ${error.message}`, 'error');
+                throw error;
+            }
         }
 
         // ========== ГЕНЕРАЦИЯ МАСТЕР-НАБОРА ==========
@@ -2715,6 +2729,7 @@ const ADDITIONAL_PROFESSIONS = [
             if (isCustom) {
                 customHumors = document.getElementById('customHumors').value
                     .split(';').map(h => h.trim()).filter(h => h.length > 0);
+                if (customHumors.length === 0) customHumors = ['обычная шутка'];
             }
             
             for (let i = 0; i < selectedEmotions.length; i++) {
@@ -2727,7 +2742,7 @@ const ADDITIONAL_PROFESSIONS = [
                     addLogMessage(`🎨 ${i+1}/${selectedEmotions.length}: ${emotion.name}`, 'info');
                     addLogMessage(`${result.isCompatible ? '✅' : '⚠️'} Шутка: "${humorItem.ru}"`, 'info');
                 } else {
-                    const humorText = customHumors[i % customHumors.length] || 'шутка';
+                    const humorText = customHumors[i % customHumors.length];
                     humorItem = { ru: humorText, en: humorText };
                     addLogMessage(`🎨 ${i+1}/${selectedEmotions.length}: ${emotion.name} (ручная шутка)`, 'info');
                     addLogMessage(`💬 "${humorText}"`, 'info');
@@ -2736,7 +2751,11 @@ const ADDITIONAL_PROFESSIONS = [
                 const pngDataUrl = await generatePNG(professionInfo, emotion, humorItem, character);
                 if (!pngDataUrl) throw new Error('Не удалось сгенерировать PNG');
                 
-                // ЗДЕСЬ ВЫЗЫВАЕМ KLING AI - ЕСЛИ ОШИБКА, ПРОЦЕСС ОСТАНАВЛИВАЕТСЯ
+                // Отображаем PNG
+                const img = new Image();
+                await new Promise(r => { img.onload = r; img.src = pngDataUrl; });
+                document.getElementById('pngCanvas').getContext('2d').drawImage(img, 0, 0, 512, 512);
+                
                 const videoUrl = await animateWithKling(pngDataUrl, emotion.id);
                 const webmUrl = await convertToWEBM(videoUrl);
                 
@@ -2795,10 +2814,10 @@ const ADDITIONAL_PROFESSIONS = [
                 
                 // Сохраняем описание
                 const desc = generatePackDescription(character, professionInfo, masterSet, isLimited, editionSize, copyPrice);
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(new Blob([desc], { type: 'text/plain;charset=utf-8' }));
-                link.download = `pack_description_${Date.now()}.txt`;
-                link.click();
+                const descLink = document.createElement('a');
+                descLink.href = URL.createObjectURL(new Blob([desc], { type: 'text/plain;charset=utf-8' }));
+                descLink.download = `pack_description_${Date.now()}.txt`;
+                descLink.click();
                 
                 // Генерируем копии
                 for (let copy = 1; copy <= editionSize; copy++) {
@@ -2816,6 +2835,7 @@ const ADDITIONAL_PROFESSIONS = [
                             : `sticker_${(s+1).toString().padStart(2,'0')}.webm`;
                         a.click();
                         URL.revokeObjectURL(url);
+                        await new Promise(r => setTimeout(r, 100));
                     }
                 }
                 
