@@ -2545,21 +2545,17 @@ const ADDITIONAL_PROFESSIONS = [
         }
 		
 		// ========== ПРОВЕРКА ПРОКСИ ==========
+// ========== ПРОВЕРКА ПРОКСИ ==========
 async function checkProxy() {
-    addLogMessage('🔍 Проверка прокси-сервера...', 'info');
     try {
-        const response = await fetch('http://localhost:3000/api/kling/test');
+        const response = await fetch('http://localhost:3000/test');
         if (response.ok) {
             const data = await response.json();
             addLogMessage(`✅ Прокси работает: ${data.message}`, 'success');
             return true;
-        } else {
-            addLogMessage(`❌ Прокси не отвечает`, 'error');
-            return false;
         }
     } catch (error) {
-        addLogMessage(`❌ Ошибка подключения к прокси: ${error.message}`, 'error');
-        addLogMessage(`📌 Убедитесь что прокси-сервер запущен (npm start в папке kling-proxy)`, 'info');
+        addLogMessage(`❌ Прокси не отвечает. Запустите: node proxy-server.js`, 'error');
         return false;
     }
 }
@@ -2614,47 +2610,30 @@ async function checkProxy() {
 
         // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
 // ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
-// ========== KLING AI С ПРАВИЛЬНЫМИ ЭНДПОИНТАМИ ==========
+// ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
 async function animateWithKling(imageDataUrl, emotionId) {
-    addLogMessage(`🎬 Kling AI: отправляем запрос...`, 'info');
+    addLogMessage(`🎬 Kling AI: отправляем через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. Конвертируем data URL в Blob для отправки
-        const base64Data = imageDataUrl.split(',')[1];
-        const binaryData = atob(base64Data);
-        const arrayBuffer = new Uint8Array(binaryData.length);
-        for (let i = 0; i < binaryData.length; i++) {
-            arrayBuffer[i] = binaryData.charCodeAt(i);
-        }
-        const imageBlob = new Blob([arrayBuffer], { type: 'image/png' });
-
-        // 2. Создаем FormData для отправки
-        const formData = new FormData();
-        formData.append('image', imageBlob, 'image.png');
-        formData.append('prompt', motionPrompt);
-        formData.append('model', 'kling-v1');
-        formData.append('duration', '5');
-        formData.append('cfg_scale', '0.8');
-
-        // 3. Создаем Basic Auth заголовок (access_key:secret_key в base64)
-        const authString = btoa(`${KLING_ACCESS_KEY}:${KLING_SECRET_KEY}`);
-
-        // 4. Отправляем запрос на создание видео
-        addLogMessage(`📤 Отправляем запрос в Kling AI...`, 'info');
-        
-        const createResponse = await fetch('https://api.klingai.com/v1/videos/generations', {
+        // 1. Создаем задачу через прокси
+        const createResponse = await fetch('http://localhost:3000/api/kling/create', {
             method: 'POST',
             headers: {
-                'Authorization': `Basic ${authString}`
+                'Content-Type': 'application/json'
             },
-            body: formData
+            body: JSON.stringify({
+                imageDataUrl: imageDataUrl,
+                prompt: motionPrompt,
+                accessKey: KLING_ACCESS_KEY,
+                secretKey: KLING_SECRET_KEY
+            })
         });
 
         if (!createResponse.ok) {
-            const errorText = await createResponse.text();
-            throw new Error(`Kling API ошибка: ${createResponse.status} - ${errorText}`);
+            const error = await createResponse.json();
+            throw new Error(error.error || 'Ошибка создания задачи');
         }
 
         const createData = await createResponse.json();
@@ -2666,7 +2645,7 @@ async function animateWithKling(imageDataUrl, emotionId) {
         const taskId = createData.data.task_id;
         addLogMessage(`⏳ Задача создана: ${taskId}`, 'info');
 
-        // 5. Опрашиваем статус
+        // 2. Опрашиваем статус
         let attempts = 0;
         let videoUrl = null;
         
@@ -2674,12 +2653,7 @@ async function animateWithKling(imageDataUrl, emotionId) {
             await new Promise(r => setTimeout(r, 3000));
             
             const statusResponse = await fetch(
-                `https://api.klingai.com/v1/videos/tasks/${taskId}`,
-                {
-                    headers: {
-                        'Authorization': `Basic ${authString}`
-                    }
-                }
+                `http://localhost:3000/api/kling/status/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}`
             );
             
             if (statusResponse.ok) {
@@ -2704,13 +2678,16 @@ async function animateWithKling(imageDataUrl, emotionId) {
 
         addLogMessage(`✅ Kling AI: видео готово`, 'success');
 
-        // 6. Скачиваем видео
-        const videoResponse = await fetch(videoUrl);
-        if (!videoResponse.ok) {
+        // 3. Скачиваем видео через прокси
+        const downloadResponse = await fetch(
+            `http://localhost:3000/api/kling/download?videoUrl=${encodeURIComponent(videoUrl)}`
+        );
+
+        if (!downloadResponse.ok) {
             throw new Error('Не удалось скачать видео');
         }
 
-        const videoBlob = await videoResponse.blob();
+        const videoBlob = await downloadResponse.blob();
         return videoBlob;
 
     } catch (error) {
@@ -3097,21 +3074,26 @@ ${humorSamples}
     document.getElementById('generateBtn').disabled = false;
 };
 
-        // ========== ИНИЦИАЛИЗАЦИЯ ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            renderProfessions();
-            renderEmotions();
-            initStyles();
-            checkAPIs();
-            updateRevenue();
-            
-            setTimeout(() => {
-                EMOTIONS.slice(0, 5).forEach(e => {
-                    const cb = document.querySelector(`input[value="${e.id}"]`);
-                    if (cb) { cb.checked = true; toggleEmotion(e.id, true); }
-                });
-            }, 100);
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
+document.addEventListener('DOMContentLoaded', async function() {
+    renderProfessions();
+    renderEmotions();
+    initStyles();
+    await checkProxy();  // <--- ВОТ СЮДА ДОБАВЛЯЕМ
+    checkAPIs();
+    updateRevenue();
+
+    setTimeout(() => {
+        EMOTIONS.slice(0, 5).forEach(emotion => {
+            const checkbox = document.querySelector(`input[value="${emotion.id}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+                toggleEmotion(emotion.id, true);
+            }
         });
+    }, 100);
+});
+		
     </script>
 </body>
 </html>
