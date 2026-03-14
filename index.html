@@ -2543,6 +2543,26 @@ const ADDITIONAL_PROFESSIONS = [
                 ? '✅ Kling AI: Ключи загружены' 
                 : '⚠️ Kling AI: Нет ключей';
         }
+		
+		// ========== ПРОВЕРКА ПРОКСИ ==========
+async function checkProxy() {
+    addLogMessage('🔍 Проверка прокси-сервера...', 'info');
+    try {
+        const response = await fetch('http://localhost:3000/api/kling/test');
+        if (response.ok) {
+            const data = await response.json();
+            addLogMessage(`✅ Прокси работает: ${data.message}`, 'success');
+            return true;
+        } else {
+            addLogMessage(`❌ Прокси не отвечает`, 'error');
+            return false;
+        }
+    } catch (error) {
+        addLogMessage(`❌ Ошибка подключения к прокси: ${error.message}`, 'error');
+        addLogMessage(`📌 Убедитесь что прокси-сервер запущен (npm start в папке kling-proxy)`, 'info');
+        return false;
+    }
+}
 
         // ========== ГЕНЕРАЦИЯ PNG ==========
         async function generatePNG(professionInfo, emotion, humorItem, character) {
@@ -2593,132 +2613,147 @@ const ADDITIONAL_PROFESSIONS = [
         }
 
         // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
-        async function animateWithKling(imageDataUrl, emotionId) {
-            addLogMessage(`🎬 Kling AI: отправляем на анимацию...`, 'info');
+// ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
+// ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
+async function animateWithKling(imageDataUrl, emotionId) {
+    addLogMessage(`🎬 Kling AI: отправляем через прокси...`, 'info');
+    
+    const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
+    
+    try {
+        // 1. Отправляем запрос на создание видео через прокси
+        const createResponse = await fetch('http://localhost:3000/api/kling/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                imageDataUrl: imageDataUrl,
+                prompt: motionPrompt,
+                accessKey: KLING_ACCESS_KEY,
+                secretKey: KLING_SECRET_KEY
+            })
+        });
+
+        if (!createResponse.ok) {
+            const error = await createResponse.json();
+            throw new Error(error.error || 'Ошибка создания задачи');
+        }
+
+        const createData = await createResponse.json();
+        
+        if (!createData.data?.task_id) {
+            throw new Error('Не получен task_id');
+        }
+        
+        const taskId = createData.data.task_id;
+        addLogMessage(`⏳ Задача создана: ${taskId}`, 'info');
+
+        // 2. Опрашиваем статус через прокси
+        let attempts = 0;
+        let videoUrl = null;
+        
+        while (attempts < 30 && !videoUrl) {
+            await new Promise(r => setTimeout(r, 3000));
             
-            const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
+            const statusResponse = await fetch(
+                `http://localhost:3000/api/kling/status/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}`
+            );
             
-            // Правильное формирование Basic Auth
-            const authString = btoa(`${KLING_ACCESS_KEY}:${KLING_SECRET_KEY}`);
-            
-            try {
-                // 1. Конвертируем data URL в Blob для отправки
-                const imageBlob = await (await fetch(imageDataUrl)).blob();
-                const formData = new FormData();
-                formData.append('image', imageBlob, 'image.png');
+            if (statusResponse.ok) {
+                const statusData = await statusResponse.json();
                 
-                // 2. Создаем задачу с правильными заголовками
-                const taskResponse = await fetch('https://api.klingai.com/v1/images/generations', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Basic ${authString}`,
-                        // Не ставим Content-Type, браузер сам поставит с boundary
-                    },
-                    body: formData
-                });
-
-                if (!taskResponse.ok) {
-                    const errorText = await taskResponse.text();
-                    throw new Error(`Kling API ошибка ${taskResponse.status}: ${errorText}`);
-                }
-
-                const taskData = await taskResponse.json();
-                if (!taskData.data?.task_id) throw new Error('Не получен task_id');
-                
-                const taskId = taskData.data.task_id;
-                addLogMessage(`⏳ Задача создана: ${taskId}`, 'info');
-
-                // 3. Опрашиваем статус
-                let attempts = 0;
-                while (attempts < 60) { // 5 минут максимум
-                    await new Promise(r => setTimeout(r, 5000));
-                    
-                    const statusResponse = await fetch(`https://api.klingai.com/v1/tasks/${taskId}`, {
-                        headers: { 'Authorization': `Basic ${authString}` }
-                    });
-                    
-                    if (!statusResponse.ok) continue;
-                    
-                    const statusData = await statusResponse.json();
-                    
-                    if (statusData.code === 0) {
-                        if (statusData.data?.status === 'succeed' || statusData.data?.task_status === 'succeed') {
-                            const videoUrl = statusData.data?.result?.video_url || statusData.data?.video_url;
-                            if (videoUrl) {
-                                addLogMessage(`✅ Kling AI: анимация готова`, 'success');
-                                return videoUrl;
-                            }
-                        }
-                        if (statusData.data?.status === 'failed') {
-                            throw new Error('Генерация не удалась');
-                        }
+                if (statusData.code === 0) {
+                    if (statusData.data?.status === 'succeed' || statusData.data?.task_status === 'succeed') {
+                        videoUrl = statusData.data?.result?.video_url;
+                        if (videoUrl) break;
                     }
-                    attempts++;
+                    if (statusData.data?.status === 'failed') {
+                        throw new Error('Генерация не удалась');
+                    }
                 }
-                throw new Error('Таймаут ожидания генерации');
-                
-            } catch (error) {
-                addLogMessage(`❌ KLING AI ОШИБКА: ${error.message}`, 'error');
-                addLogMessage(`⚠️ Процесс остановлен. Запасные анимации не используются.`, 'error');
-                throw error;
             }
+            attempts++;
         }
 
-        // ========== КОНВЕРТАЦИЯ В WEBM ==========
-        async function convertToWEBM(videoUrl) {
-            addLogMessage(`🔄 Конвертация в WEBM...`, 'info');
-            
-            try {
-                const videoBlob = await fetch(videoUrl).then(r => r.blob());
-                const video = document.createElement('video');
-                video.src = URL.createObjectURL(videoBlob);
-                
-                await new Promise((resolve, reject) => {
-                    video.onloadedmetadata = resolve;
-                    video.onerror = reject;
-                    setTimeout(reject, 10000);
-                });
-
-                const canvas = document.createElement('canvas');
-                canvas.width = 512; canvas.height = 512;
-                const ctx = canvas.getContext('2d');
-                const stream = canvas.captureStream(30);
-                
-                const recorder = new MediaRecorder(stream, {
-                    mimeType: 'video/webm;codecs=vp9',
-                    videoBitsPerSecond: 250000
-                });
-
-                return new Promise((resolve, reject) => {
-                    const chunks = [];
-                    recorder.ondataavailable = e => chunks.push(e.data);
-                    recorder.onstop = () => {
-                        const blob = new Blob(chunks, { type: 'video/webm' });
-                        addLogMessage(`✅ WEBM готов: ${(blob.size/1024).toFixed(2)} KB`, 'success');
-                        resolve(URL.createObjectURL(blob));
-                    };
-                    recorder.onerror = reject;
-
-                    recorder.start();
-                    video.currentTime = 0;
-                    video.play().catch(reject);
-
-                    let frame = 0;
-                    const interval = setInterval(() => {
-                        if (frame++ >= 90) {
-                            clearInterval(interval);
-                            video.pause();
-                            recorder.stop();
-                            return;
-                        }
-                        ctx.drawImage(video, 0, 0, 512, 512);
-                    }, 33);
-                });
-            } catch (error) {
-                addLogMessage(`❌ Ошибка конвертации: ${error.message}`, 'error');
-                throw error;
-            }
+        if (!videoUrl) {
+            throw new Error('Таймаут ожидания генерации');
         }
+
+        addLogMessage(`✅ Kling AI: видео готово`, 'success');
+
+        // 3. Скачиваем видео через прокси
+        const downloadResponse = await fetch(
+            `http://localhost:3000/api/kling/download/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}&videoUrl=${encodeURIComponent(videoUrl)}`
+        );
+
+        if (!downloadResponse.ok) {
+            throw new Error('Не удалось скачать видео');
+        }
+
+        const videoBlob = await downloadResponse.blob();
+        return await convertToWEBM(videoBlob);
+
+    } catch (error) {
+        addLogMessage(`❌ KLING AI ОШИБКА: ${error.message}`, 'error');
+        addLogMessage(`⚠️ Процесс остановлен. Запасные анимации не используются.`, 'error');
+        throw error;
+    }
+}
+
+// ========== ОБНОВЛЕННАЯ КОНВЕРТАЦИЯ ==========
+// ========== ОБНОВЛЕННАЯ КОНВЕРТАЦИЯ ==========
+async function convertToWEBM(videoBlob) {
+    addLogMessage(`🔄 Конвертация в WEBM...`, 'info');
+    
+    try {
+        const video = document.createElement('video');
+        video.src = URL.createObjectURL(videoBlob);
+        
+        await new Promise((resolve, reject) => {
+            video.onloadedmetadata = resolve;
+            video.onerror = reject;
+            setTimeout(() => reject(new Error('Таймаут загрузки видео')), 10000);
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        const stream = canvas.captureStream(30);
+        
+        const recorder = new MediaRecorder(stream, {
+            mimeType: 'video/webm;codecs=vp9',
+            videoBitsPerSecond: 250000
+        });
+
+        return new Promise((resolve, reject) => {
+            const chunks = [];
+            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                addLogMessage(`✅ WEBM готов: ${(blob.size/1024).toFixed(2)} KB`, 'success');
+                resolve(URL.createObjectURL(blob));
+            };
+            recorder.onerror = reject;
+
+            recorder.start();
+            video.currentTime = 0;
+            video.play().catch(reject);
+
+            let frame = 0;
+            const interval = setInterval(() => {
+                if (frame++ >= 90) {
+                    clearInterval(interval);
+                    video.pause();
+                    recorder.stop();
+                    return;
+                }
+                ctx.drawImage(video, 0, 0, 512, 512);
+            }, 33);
+        });
+    } catch (error) {
+        addLogMessage(`❌ Ошибка конвертации: ${error.message}`, 'error');
+        throw error;
+    }
+}
 
         // ========== ГЕНЕРАЦИЯ МАСТЕР-НАБОРА ==========
         async function generateMasterSet(character, professionInfo) {
@@ -2784,71 +2819,152 @@ const ADDITIONAL_PROFESSIONS = [
             return desc;
         }
 
-        // ========== ОСНОВНАЯ ФУНКЦИЯ ==========
-        window.generatePack = async () => {
-            const character = document.getElementById('characterPrompt').value.trim();
-            if (!character || selectedEmotions.length === 0) {
-                alert('Введите персонажа и выберите эмоции');
-                return;
-            }
+// ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
+window.generatePack = async () => {
+    const character = document.getElementById('characterPrompt').value.trim();
+    
+    if (!character || selectedEmotions.length === 0) {
+        alert('Введите персонажа и выберите эмоции');
+        return;
+    }
 
-            const isLimited = document.getElementById('batchMode').value === 'limited';
-            const editionSize = isLimited ? parseInt(document.getElementById('editionSize').value) : 1;
-            const copyPrice = isLimited ? parseInt(document.getElementById('copyPrice').value) : 0;
+    const mode = document.getElementById('batchMode').value;
+    const isLimited = mode === 'limited';
+    const editionSize = isLimited ? parseInt(document.getElementById('editionSize').value) : 1;
+    const copyPrice = isLimited ? parseInt(document.getElementById('copyPrice').value) : 0;
+    
+    clearProgressLog();
+    showProgressLog();
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('generateBtn').disabled = true;
+    
+    addLogMessage('🚀 Начинаем генерацию...', 'info');
+    addLogMessage(`📝 Персонаж: ${character}`, 'info');
+    
+    try {
+        generatedPNG = [];
+        generatedWEBM = [];
+        
+        // Получаем информацию о профессии (если выбрана)
+        let professionInfo = null;
+        if (selectedProfession) {
+            const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS, ...TREND_PROFESSIONS];
+            professionInfo = allProfessions.find(p => p.id === selectedProfession);
+            addLogMessage(`💼 Профессия: ${professionInfo?.name || 'не выбрана'}`, 'info');
+        } else {
+            addLogMessage(`💼 Режим: свободный промпт с ручными шутками`, 'info');
+        }
+        
+        addLogMessage(`😊 Выбрано эмоций: ${selectedEmotions.length}`, 'info');
+
+        // 1. Генерируем мастер-набор
+        addLogMessage(`🎨 Генерируем мастер-набор из ${selectedEmotions.length} стикеров...`, 'info');
+        const masterSet = await generateMasterSet(character, professionInfo);
+        
+        if (masterSet.length === 0) {
+            throw new Error('Не удалось создать мастер-набор');
+        }
+        
+        // 2. Генерируем описание пакета
+        const packDescription = generatePackDescription(
+            character, 
+            professionInfo, 
+            masterSet, 
+            isLimited, 
+            editionSize, 
+            copyPrice
+        );
+        
+        // Сохраняем описание в файл
+        const descriptionBlob = new Blob([packDescription], { type: 'text/plain;charset=utf-8' });
+        const descriptionUrl = URL.createObjectURL(descriptionBlob);
+        const descriptionLink = document.createElement('a');
+        descriptionLink.href = descriptionUrl;
+        descriptionLink.download = `pack_description_${Date.now()}.txt`;
+        descriptionLink.click();
+        
+        addLogMessage(`📝 Описание пакета сохранено`, 'success');
+        
+        // 3. Для каждой копии (если лимитированная серия)
+        const timestamp = Date.now();
+        for (let copyNum = 1; copyNum <= editionSize; copyNum++) {
+            updateLogCounter(copyNum, editionSize);
             
-            clearProgressLog();
-            showProgressLog();
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('generateBtn').disabled = true;
+            if (isLimited) {
+                addLogMessage(`📀 Копия #${String(copyNum).padStart(3, '0')} / ${editionSize}`, 'info');
+            }
             
-            addLogMessage('🚀 Начинаем генерацию...', 'info');
-            
-            try {
-                const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS, ...TREND_PROFESSIONS];
-                const professionInfo = selectedProfession ? allProfessions.find(p => p.id === selectedProfession) : null;
+            // Для каждого стикера в наборе
+            for (let stickerIdx = 0; stickerIdx < masterSet.length; stickerIdx++) {
+                const sticker = masterSet[stickerIdx];
                 
-                addLogMessage(`📝 Персонаж: ${character}`, 'info');
-                addLogMessage(professionInfo ? `💼 Профессия: ${professionInfo.name}` : `💼 Режим: свободный промпт`, 'info');
+                // Получаем PNG и анимируем через Kling
+                addLogMessage(`🖼️ Генерируем стикер ${stickerIdx + 1}/${masterSet.length}...`, 'info');
                 
-                const masterSet = await generateMasterSet(character, professionInfo);
+                // Используем готовые данные из мастер-сета
+                const pngDataUrl = sticker.dataUrl;
                 
-                // Сохраняем описание
-                const desc = generatePackDescription(character, professionInfo, masterSet, isLimited, editionSize, copyPrice);
-                const descLink = document.createElement('a');
-                descLink.href = URL.createObjectURL(new Blob([desc], { type: 'text/plain;charset=utf-8' }));
-                descLink.download = `pack_description_${Date.now()}.txt`;
-                descLink.click();
+                // Отображаем PNG в превью
+                const img = new Image();
+                await new Promise(resolve => { img.onload = resolve; img.src = pngDataUrl; });
+                document.getElementById('pngCanvas').getContext('2d').drawImage(img, 0, 0, 512, 512);
                 
-                // Генерируем копии
-                for (let copy = 1; copy <= editionSize; copy++) {
-                    updateLogCounter(copy, editionSize);
-                    if (isLimited) addLogMessage(`📀 Копия #${copy.toString().padStart(3,'0')}`, 'info');
-                    
-                    for (let s = 0; s < masterSet.length; s++) {
-                        const response = await fetch(masterSet[s].webmUrl);
-                        const blob = await response.blob();
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = isLimited 
-                            ? `copy_${copy.toString().padStart(3,'0')}_${(s+1).toString().padStart(2,'0')}.webm`
-                            : `sticker_${(s+1).toString().padStart(2,'0')}.webm`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        await new Promise(r => setTimeout(r, 100));
-                    }
+                // Анимация через Kling (через прокси)
+                addLogMessage(`🎬 Отправляем в Kling AI...`, 'info');
+                const videoUrl = await animateWithKling(pngDataUrl, sticker.emotion.id);
+                
+                // Конвертируем в WEBM
+                const webmUrl = await convertToWEBM(videoUrl);
+                
+                // Сохраняем WEBM файл
+                let filename;
+                if (isLimited) {
+                    filename = `copy_${String(copyNum).padStart(3, '0')}_${String(stickerIdx + 1).padStart(2, '0')}.webm`;
+                } else {
+                    filename = `sticker_${String(stickerIdx + 1).padStart(2, '0')}.webm`;
                 }
                 
-                addLogMessage(`✅ ГЕНЕРАЦИЯ ЗАВЕРШЕНА!`, 'success');
+                // Скачиваем WEBM
+                const webmResponse = await fetch(webmUrl);
+                const webmBlob = await webmResponse.blob();
+                const downloadUrl = URL.createObjectURL(webmBlob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(downloadUrl);
                 
-            } catch (error) {
-                addLogMessage(`❌ КРИТИЧЕСКАЯ ОШИБКА: ${error.message}`, 'error');
-                addLogMessage(`🛑 Процесс остановлен. Запасные анимации не используются.`, 'error');
+                addLogMessage(`✅ Стикер сохранен: ${filename}`, 'success');
+                
+                // Небольшая задержка между сохранениями
+                await new Promise(resolve => setTimeout(resolve, 200));
             }
             
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('generateBtn').disabled = false;
-        };
+            // Если лимитированная, создаем сертификат для этой копии
+            if (isLimited) {
+                const folder = `edition_${timestamp}`;
+                await createCertificate(copyNum, editionSize, masterSet, folder);
+            }
+        }
+        
+        // Если лимитированная, создаем манифест
+        if (isLimited) {
+            const folder = `edition_${timestamp}`;
+            await createManifest(editionSize, copyPrice, masterSet, folder);
+        }
+        
+        addLogMessage(`✅ ГЕНЕРАЦИЯ ЗАВЕРШЕНА!`, 'success');
+        addLogMessage(`📁 Все файлы сохранены`, 'success');
+        
+    } catch (error) {
+        addLogMessage(`❌ КРИТИЧЕСКАЯ ОШИБКА: ${error.message}`, 'error');
+        addLogMessage(`🛑 Процесс остановлен. Запасные анимации не используются.`, 'error');
+        console.error('Ошибка генерации:', error);
+    }
+    
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('generateBtn').disabled = false;
+};
 
         // ========== ИНИЦИАЛИЗАЦИЯ ==========
         document.addEventListener('DOMContentLoaded', () => {
