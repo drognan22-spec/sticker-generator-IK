@@ -440,6 +440,88 @@
             margin-top: 30px;
             color: rgba(255,255,255,0.5);
         }
+		
+		.progress-log {
+    background: #1e293b;
+    border-radius: 24px;
+    padding: 20px;
+    margin: 20px 0;
+    color: #e2e8f0;
+    border: 2px solid #334155;
+    font-family: 'Inter', monospace;
+}
+
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #334155;
+    font-weight: 600;
+    color: #fbbf24;
+}
+
+.log-counter {
+    background: #0f172a;
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 0.9em;
+    color: #4ade80;
+}
+
+.log-messages {
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.log-message {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    background: #0f172a;
+    border-radius: 12px;
+    border-left: 4px solid transparent;
+    animation: slideIn 0.3s ease;
+}
+
+.log-message.success {
+    border-left-color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+}
+
+.log-message.error {
+    border-left-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.log-message.info {
+    border-left-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+}
+
+.log-message.warning {
+    border-left-color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+}
+
+.log-timestamp {
+    color: #94a3b8;
+    font-size: 11px;
+    margin-right: 10px;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
 </head>
@@ -551,6 +633,17 @@
             <button class="generate-btn" onclick="generatePack()" id="generateBtn">
                 🚀 СОЗДАТЬ ПРЕМИУМ НАБОР
             </button>
+			
+			<!-- ЛОГ ВЫПОЛНЕНИЯ (новый элемент) -->
+<div class="progress-log" id="progressLog" style="display: none;">
+    <div class="log-header">
+        <span>📋 Журнал генерации</span>
+        <span class="log-counter" id="logCounter">0/0</span>
+    </div>
+    <div class="log-messages" id="logMessages">
+        <!-- Сюда будут добавляться сообщения -->
+    </div>
+</div>
 
             <div id="loading" class="loading">
                 <div class="loading-spinner"></div>
@@ -2349,95 +2442,150 @@ const PROFESSIONS = [
         }
 
         // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
-        window.generatePack = async () => {
-            const character = document.getElementById('characterPrompt').value.trim();
+        // ========== ФУНКЦИИ ДЛЯ ЛОГА ВЫПОЛНЕНИЯ ==========
+function showProgressLog() {
+    document.getElementById('progressLog').style.display = 'block';
+}
+
+function updateLogCounter(current, total) {
+    document.getElementById('logCounter').textContent = `${current}/${total}`;
+}
+
+function addLogMessage(message, type = 'info') {
+    const logMessages = document.getElementById('logMessages');
+    const timestamp = new Date().toLocaleTimeString();
+    
+    const messageEl = document.createElement('div');
+    messageEl.className = `log-message ${type}`;
+    messageEl.innerHTML = `
+        <span class="log-timestamp">[${timestamp}]</span>
+        <span>${message}</span>
+    `;
+    
+    logMessages.appendChild(messageEl);
+    logMessages.scrollTop = logMessages.scrollHeight;
+}
+
+function clearProgressLog() {
+    document.getElementById('logMessages').innerHTML = '';
+    document.getElementById('logCounter').textContent = '0/0';
+    document.getElementById('progressLog').style.display = 'none';
+}
+		
+		// ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ С ЛОГОМ ==========
+window.generatePack = async () => {
+    const character = document.getElementById('characterPrompt').value.trim();
+    
+    if (!character || !selectedProfession || selectedEmotions.length === 0) {
+        alert('Выберите персонажа, профессию и эмоции');
+        return;
+    }
+
+    // Показываем лог и очищаем старые сообщения
+    clearProgressLog();
+    showProgressLog();
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('generateBtn').disabled = true;
+    
+    addLogMessage('🚀 Начинаем генерацию набора...', 'info');
+    addLogMessage(`📝 Персонаж: ${character}`, 'info');
+    
+    try {
+        generatedPNG = [];
+        generatedWEBM = [];
+        
+        const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS];
+        const profession = allProfessions.find(p => p.id === selectedProfession);
+        
+        addLogMessage(`💼 Профессия: ${profession.name}`, 'info');
+        addLogMessage(`😊 Выбрано эмоций: ${selectedEmotions.length}`, 'info');
+
+        for (let i = 0; i < selectedEmotions.length; i++) {
+            const emotionId = selectedEmotions[i];
+            const emotion = EMOTIONS.find(e => e.id === emotionId);
             
-            if (!character || !selectedProfession || selectedEmotions.length === 0) {
-                alert('Выберите персонажа, профессию и эмоции');
-                return;
-            }
-
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('generateBtn').disabled = true;
+            // Обновляем счетчик
+            updateLogCounter(i, selectedEmotions.length);
             
-            try {
-                generatedPNG = [];
-                generatedWEBM = [];
+            const humorItem = profession.humor[Math.floor(Math.random() * profession.humor.length)];
+            
+            document.getElementById('loadingProgress').textContent = 
+                `Генерируем стикер ${i+1}/${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
+            
+            addLogMessage(`🔄 [${i+1}/${selectedEmotions.length}] Генерация ${emotion.icon} ${emotion.name}...`, 'info');
+            addLogMessage(`💬 Шутка: "${humorItem.ru}"`, 'info');
+            
+            // 1. Генерация PNG
+            addLogMessage(`🎨 Recraft: создаем изображение...`, 'info');
+            const pngDataUrl = await generatePNG(profession, emotion, humorItem);
+            
+            if (pngDataUrl) {
+                addLogMessage(`✅ Recraft: изображение готово`, 'success');
                 
-                const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS];
-                const profession = allProfessions.find(p => p.id === selectedProfession);
-
-                for (let i = 0; i < selectedEmotions.length; i++) {
-                    const emotionId = selectedEmotions[i];
-                    const emotion = EMOTIONS.find(e => e.id === emotionId);
-                    
-                    const humorItem = profession.humor[Math.floor(Math.random() * profession.humor.length)];
-                    
-                    document.getElementById('loadingProgress').textContent = 
-                        `Генерируем стикер ${i+1}/${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
-                    
-                    // 1. Генерация PNG
-                    const pngDataUrl = await generatePNG(profession, emotion, humorItem);
-                    
-                    if (pngDataUrl) {
-                        // Отображаем PNG
-                        const img = new Image();
-                        await new Promise(resolve => { img.onload = resolve; img.src = pngDataUrl; });
-                        
-                        const pngCanvas = document.getElementById('pngCanvas');
-                        pngCanvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
-                        
-                        // 2. Анимация через Kling
-                        document.getElementById('loadingProgress').textContent = 
-                            `Анимация через Kling AI (может занять 1-2 минуты)...`;
-                        
-                        const videoUrl = await animateWithKling(pngDataUrl, emotion.id);
-                        
-                        // 3. Сохраняем результат
-                        const filename = `${character}_${profession.id}_${emotion.id}_${i}.webm`;
-                        
-                        // Скачиваем файл
-                        const videoBlob = await fetch(videoUrl).then(r => r.blob());
-                        const downloadUrl = URL.createObjectURL(videoBlob);
-                        const a = document.createElement('a');
-                        a.href = downloadUrl;
-                        a.download = filename;
-                        a.click();
-                        
-                        generatedPNG.push({
-                            emotion: emotion,
-                            profession: profession.name,
-                            humor: humorItem.ru,
-                            dataUrl: pngDataUrl,
-                            filename: `${character}_${profession.id}_${emotion.id}_${i}.png`
-                        });
-                        
-                        generatedWEBM.push({
-                            filename: filename
-                        });
-                        
-                        addDebugLog('success', `✅ Стикер ${i+1} готов`);
-                    }
-                }
-
-                // Показываем результаты
-                setTimeout(() => {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('generateBtn').disabled = false;
-                    alert(`Готово! ${generatedPNG.length} PNG и ${generatedWEBM.length} WEBM стикеров`);
-                    
-                    // Очищаем результаты для следующей генерации
-                    generatedPNG = [];
-                    generatedWEBM = [];
-                }, 2000);
+                // Отображаем PNG
+                const img = new Image();
+                await new Promise(resolve => { img.onload = resolve; img.src = pngDataUrl; });
                 
-            } catch (error) {
-                alert('Ошибка: ' + error.message);
-                addDebugLog('error', `❌ Глобальная ошибка: ${error.message}`);
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('generateBtn').disabled = false;
+                const pngCanvas = document.getElementById('pngCanvas');
+                pngCanvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
+                
+                // 2. Анимация через Kling
+                document.getElementById('loadingProgress').textContent = 
+                    `Анимация через Kling AI (может занять 1-2 минуты)...`;
+                
+                addLogMessage(`🎬 Kling AI: отправляем на анимацию (тип: ${selectedMotionType})...`, 'info');
+                
+                const videoUrl = await animateWithKling(pngDataUrl, emotion.id);
+                
+                addLogMessage(`✅ Kling AI: анимация готова`, 'success');
+                
+                // 3. Сохраняем результат
+                const filename = `${character}_${profession.id}_${emotion.id}_${i}.webm`;
+                
+                // Скачиваем файл
+                const videoBlob = await fetch(videoUrl).then(r => r.blob());
+                const downloadUrl = URL.createObjectURL(videoBlob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                a.click();
+                
+                generatedPNG.push({
+                    emotion: emotion,
+                    profession: profession.name,
+                    humor: humorItem.ru,
+                    dataUrl: pngDataUrl,
+                    filename: `${character}_${profession.id}_${emotion.id}_${i}.png`
+                });
+                
+                generatedWEBM.push({
+                    filename: filename
+                });
+                
+                addLogMessage(`💾 Стикер сохранен: ${filename}`, 'success');
+            } else {
+                addLogMessage(`❌ Ошибка генерации PNG для ${emotion.name}`, 'error');
             }
-        };
+            
+            // Обновляем счетчик после завершения
+            updateLogCounter(i + 1, selectedEmotions.length);
+        }
+
+        // Финальное сообщение
+        addLogMessage(`✅ Готово! Сгенерировано ${generatedPNG.length} PNG и ${generatedWEBM.length} WEBM стикеров`, 'success');
+        
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('generateBtn').disabled = false;
+            addLogMessage('🎉 Генерация завершена!', 'success');
+        }, 2000);
+        
+    } catch (error) {
+        addLogMessage(`❌ Ошибка: ${error.message}`, 'error');
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('generateBtn').disabled = false;
+    }
+};
 
         // ========== ИНИЦИАЛИЗАЦИЯ ==========
         document.addEventListener('DOMContentLoaded', function() {
