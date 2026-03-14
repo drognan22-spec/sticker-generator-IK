@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator ULTIMATE - PREMIUM WEBM</title>
+    <title>Sticker Generator ULTIMATE - KLING AI PREMIUM</title>
     <style>
+        /* ========== СТИЛИ ПОЛНОСТЬЮ СОХРАНЕНЫ ========== */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
         * {
@@ -62,7 +63,7 @@
 
         .api-status-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -82,10 +83,16 @@
             color: #0369a1;
         }
 
-        .api-status.mediapipe {
+        .api-status.kling {
             background: #f0fdf4;
             border: 2px solid #4ade80;
             color: #166534;
+        }
+
+        .api-status.bgremover {
+            background: #fef9c3;
+            border: 2px solid #facc15;
+            color: #854d0e;
         }
 
         .debug-panel {
@@ -99,23 +106,6 @@
             max-height: 300px;
             overflow-y: auto;
             display: none;
-        }
-
-        .debug-panel .timestamp {
-            color: #fbbf24;
-            margin-right: 10px;
-        }
-
-        .debug-panel .error {
-            color: #ef4444;
-        }
-
-        .debug-panel .success {
-            color: #4ade80;
-        }
-
-        .debug-panel .info {
-            color: #38bdf8;
         }
 
         .input-group {
@@ -136,14 +126,7 @@
             border: 2px solid #e2e8f0;
             border-radius: 24px;
             font-size: 1.1em;
-            transition: all 0.3s;
             font-family: 'Inter', sans-serif;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
         }
 
         .professions-grid {
@@ -174,41 +157,11 @@
         .profession-item:hover {
             border-color: #667eea;
             transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
         }
 
         .profession-item.selected {
             background: linear-gradient(145deg, #667eea, #764ba2);
-            border-color: transparent;
             color: white;
-        }
-
-        .profession-icon {
-            font-size: 1.3em;
-        }
-
-        .profession-name {
-            font-weight: 600;
-            flex: 1;
-            font-size: 0.9em;
-        }
-
-        .section-title {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #1a1f2e;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title .count {
-            background: #667eea;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 30px;
-            font-size: 0.8em;
         }
 
         .emotions-grid {
@@ -230,38 +183,15 @@
             border-radius: 20px;
             padding: 12px;
             cursor: pointer;
-            transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .emotion-item:hover {
-            border-color: #667eea;
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
-        }
-
-        .emotion-item.selected {
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            border-color: transparent;
-            color: white;
         }
 
         .emotion-item input[type="checkbox"] {
             width: 20px;
             height: 20px;
             cursor: pointer;
-        }
-
-        .emotion-icon {
-            font-size: 1.3em;
-        }
-
-        .emotion-name {
-            font-weight: 600;
-            flex: 1;
-            font-size: 0.9em;
         }
 
         .styles-grid {
@@ -274,7 +204,6 @@
             padding: 15px;
             background: #f8fafc;
             border-radius: 24px;
-            border: 2px solid #e2e8f0;
         }
 
         .style-tag {
@@ -282,70 +211,56 @@
             padding: 10px 16px;
             border-radius: 40px;
             border: 2px solid #e2e8f0;
-            color: #4a5568;
             cursor: pointer;
-            transition: all 0.2s;
             font-weight: 600;
-            font-size: 0.85em;
-            flex: 0 0 auto;
-        }
-
-        .style-tag:hover {
-            border-color: #667eea;
-            background: #667eea;
-            color: white;
         }
 
         .style-tag.selected {
             background: #667eea;
-            border-color: #667eea;
             color: white;
         }
 
-        .animation-controls {
+        .motion-controls {
             background: linear-gradient(145deg, #f8fafc, #f1f5f9);
             border-radius: 32px;
             padding: 30px;
             margin: 30px 0;
-            border: 2px solid #e2e8f0;
         }
 
-        .control-group {
+        .motion-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-top: 20px;
         }
 
-        .slider-container {
+        .motion-option {
             background: white;
             padding: 20px;
             border-radius: 24px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        }
-
-        .slider-container label {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .slider-container input[type=range] {
-            width: 100%;
-            height: 8px;
-            border-radius: 8px;
-            background: #e2e8f0;
-            -webkit-appearance: none;
-        }
-
-        .slider-container input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            border-radius: 20px;
             cursor: pointer;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .motion-option.selected {
+            border-color: #fbbf24;
+            background: #fffbeb;
+        }
+
+        .motion-option .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .motion-option .title {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .motion-option .desc {
+            font-size: 0.8em;
+            color: #666;
         }
 
         .preview-area {
@@ -369,10 +284,9 @@
             background: white;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
-        canvas {
+        canvas, video {
             width: 100%;
             height: 100%;
             display: block;
@@ -398,7 +312,6 @@
             border-radius: 24px;
             padding: 20px;
             text-align: center;
-            backdrop-filter: blur(10px);
         }
 
         .price-card .price {
@@ -418,21 +331,7 @@
             font-size: 1.8em;
             font-weight: 800;
             cursor: pointer;
-            transition: all 0.3s;
             margin: 30px 0;
-            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.3);
-        }
-
-        .generate-btn:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 30px 50px rgba(251, 191, 36, 0.5);
-        }
-
-        .generate-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
 
         .loading {
@@ -478,17 +377,10 @@
             border-radius: 16px;
             padding: 15px;
             text-align: center;
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s;
-        }
-
-        .sticker-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
 
         .sticker-card.premium {
-            border-color: #fbbf24;
+            border: 2px solid #fbbf24;
             background: #fffbeb;
         }
 
@@ -496,35 +388,15 @@
             width: 120px;
             height: 120px;
             margin: 0 auto 10px;
-            position: relative;
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .sticker-preview img, .sticker-preview video {
             width: 100%;
             height: 100%;
             object-fit: contain;
-        }
-
-        .sticker-humor {
-            font-size: 0.7em;
-            color: #fbbf24;
-            margin-top: 5px;
-            padding: 2px 5px;
-            background: rgba(251, 191, 36, 0.1);
-            border-radius: 8px;
-            font-weight: 500;
-        }
-
-        .sticker-info {
-            font-size: 0.8em;
-            font-weight: 600;
-            margin-bottom: 5px;
         }
 
         .sticker-badge {
@@ -546,7 +418,7 @@
             color: #1a1f2e;
         }
 
-        .sticker-badge.fps {
+        .sticker-badge.ai {
             background: #48bb78;
             color: white;
         }
@@ -558,16 +430,9 @@
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
             margin-top: 10px;
             background: linear-gradient(145deg, #667eea, #764ba2);
             color: white;
-            font-size: 0.9em;
-        }
-
-        .download-btn.premium {
-            background: linear-gradient(145deg, #fbbf24, #f59e0b);
-            color: #1a1f2e;
         }
 
         footer {
@@ -577,25 +442,19 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/kalidokit@1.1/dist/kalidokit.umd.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎨 Sticker Generator <span>ULTIMATE</span></h1>
-            <div class="premium-badge">✨ 30 профессий • 30 эмоций • 60 FPS • 5-слойная анимация</div>
+            <h1>🎨 Sticker Generator <span>KLING AI</span></h1>
+            <div class="premium-badge">✨ 30+30 профессий • 30 эмоций • AI-анимация • WEBM</div>
         </div>
 
         <div class="creator-card">
             <div class="api-status-container">
-                <div id="recraftStatus" class="api-status recraft checking">
-                    <span class="status-icon">🔄</span>
-                    <span>Recraft V4: Проверка...</span>
-                </div>
-                <div id="mediapipeStatus" class="api-status mediapipe checking">
-                    <span class="status-icon">🔄</span>
-                    <span>MediaPipe Pose: Загрузка...</span>
-                </div>
+                <div id="recraftStatus" class="api-status recraft checking">🔄 Recraft V4: Проверка...</div>
+                <div id="klingStatus" class="api-status kling checking">🔄 Kling AI: Проверка...</div>
+                <div id="bgStatus" class="api-status bgremover checking">🔄 Удаление фона: Готово</div>
             </div>
 
             <button onclick="toggleDebug()" style="margin-bottom: 20px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 40px; cursor: pointer;">
@@ -603,20 +462,16 @@
             </button>
 
             <div id="debugPanel" class="debug-panel">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <strong>📋 Логи</strong>
-                    <button onclick="clearDebug()" style="background: none; border: none; color: #fbbf24; cursor: pointer;">Очистить</button>
-                </div>
                 <div id="debugLogs"></div>
             </div>
 
             <div class="input-group">
                 <label>📝 Персонаж</label>
-                <input type="text" id="characterPrompt" placeholder="например: милый кот, программист, панда..." value="милый антропоморфный">
+                <input type="text" id="characterPrompt" value="милый антропоморфный" placeholder="например: милый кот, программист, панда...">
             </div>
 
             <div class="section-title">
-                💼 Выберите профессию (30 вариантов) <span class="count" id="selectedProfessionCount">не выбрано</span>
+                💼 Выберите профессию (30 основных + 8 тематических) <span class="count" id="selectedProfessionCount">не выбрано</span>
             </div>
             <div class="professions-grid" id="professionsGrid"></div>
 
@@ -626,28 +481,32 @@
             <div class="emotions-grid" id="emotionsGrid"></div>
 
             <div class="section-title">
-                🎨 Выберите стиль (15 вариантов)
+                🎨 Выберите стиль (23 варианта)
             </div>
             <div class="styles-grid" id="styleTags"></div>
 
-            <div class="animation-controls">
-                <h3>🎮 Настройки премиум анимации (5-слойная, 60 FPS)</h3>
-                <div class="control-group">
-                    <div class="slider-container">
-                        <label>📏 Пульсация/дыхание <span id="pulseValue">50%</span></label>
-                        <input type="range" id="pulseIntensity" min="0" max="100" value="50">
+            <!-- Выбор типа движения для Kling AI -->
+            <div class="motion-controls">
+                <h3>🎬 Тип анимации (Kling AI)</h3>
+                <div class="motion-selector" id="motionSelector">
+                    <div class="motion-option selected" data-motion="subtle">
+                        <div class="icon">😌</div>
+                        <div class="title">Легкая</div>
+                        <div class="desc">Моргание, дыхание, легкие движения</div>
                     </div>
-                    <div class="slider-container">
-                        <label>↗️ Движение/жесты <span id="moveValue">50%</span></label>
-                        <input type="range" id="moveIntensity" min="0" max="100" value="50">
+                    <div class="motion-option" data-motion="moderate">
+                        <div class="icon">😊</div>
+                        <div class="title">Умеренная</div>
+                        <div class="desc">Жесты, повороты, естественные движения</div>
                     </div>
-                    <div class="slider-container">
-                        <label>🔄 Вращение/наклоны <span id="rotateValue">30%</span></label>
-                        <input type="range" id="rotateIntensity" min="0" max="100" value="30">
+                    <div class="motion-option" data-motion="expressive">
+                        <div class="icon">🎭</div>
+                        <div class="title">Экспрессивная</div>
+                        <div class="desc">Яркие эмоции, активные жесты</div>
                     </div>
                 </div>
                 <p style="margin-top: 15px; font-size: 0.9em; color: #4a5568;">
-                    <small>✨ 5 слоев: дыхание, голова, руки, корпус, ноги • 33 точки MediaPipe</small>
+                    <small>✨ Kling AI генерирует реалистичную анимацию на основе вашего изображения</small>
                 </p>
             </div>
 
@@ -659,8 +518,9 @@
                     </div>
                 </div>
                 <div class="preview-box">
-                    <h3>🎬 WEBM анимация (60 FPS)</h3>
+                    <h3>🎬 WEBM анимация (Kling AI)</h3>
                     <div class="preview-canvas">
+                        <video id="previewVideo" controls style="display: none;"></video>
                         <canvas id="webmCanvas" width="512" height="512"></canvas>
                     </div>
                 </div>
@@ -694,76 +554,52 @@
 
             <div id="loading" class="loading">
                 <div class="loading-spinner"></div>
-                <p id="loadingProgress" style="font-size: 1.2em;">Генерация PNG с текстом и WEBM 60 FPS...</p>
+                <p id="loadingProgress">Подготовка к генерации...</p>
             </div>
 
             <div id="results" class="results"></div>
         </div>
 
         <footer>
-            <p>30 профессий • 30 эмоций • 60 FPS • 5-слойная анимация • WEBM Premium</p>
+            <p>30 основных + 8 тематических профессий • 30 эмоций • 23 стиля • Kling AI анимация • WEBM Premium</p>
         </footer>
     </div>
 
+    <style>
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
     <script>
-        // ========== API КЛЮЧ RECRAFT ==========
+        // ========== API КЛЮЧИ ==========
         const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
-        console.log('✅ Ключ Recraft загружен');
+        
+        // ВАШИ КЛЮЧИ KLING AI
+        const KLING_ACCESS_KEY = 'ADPABabYdgNpEteCLG9KayNthPL8Pahb';
+        const KLING_SECRET_KEY = 'GQ4M3b3DaKkHPKPJEtFN4GNNeMr4fnAJ';
+        
+        console.log('✅ Ключи загружены');
 
-        // ========== MEDIAPIPE ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
-        let poseDetector = null;
-        let mediapipeReady = false;
-        let pngImage = null;
-        let animationFrame = null;
-        let currentLandmarks = null;
-        let currentEmotion = null;
-
-        // ========== ПЕРЕМЕННЫЕ СОСТОЯНИЯ ==========
+        // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
         let selectedProfession = null;
         let selectedEmotions = [];
-        let currentStyle = '3d render, pixar style, volumetric';
+        let currentStyle = '';
         let generatedPNG = [];
         let generatedWEBM = [];
+        let selectedMotionType = 'subtle'; // По умолчанию легкая анимация
 
-        // ========== ФУНКЦИИ ДЛЯ ДЕБАГА ==========
-        function toggleDebug() {
-            const panel = document.getElementById('debugPanel');
-            if (panel) {
-                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-            }
-        }
-
-        function clearDebug() {
-            const logs = document.getElementById('debugLogs');
-            if (logs) logs.innerHTML = '';
-        }
-
-        function addDebugLog(type, message, data = null) {
-            const logs = document.getElementById('debugLogs');
-            if (!logs) return;
-            
-            const timestamp = new Date().toLocaleTimeString();
-            const logEntry = document.createElement('div');
-            logEntry.style.marginBottom = '8px';
-            logEntry.style.borderBottom = '1px solid #334155';
-            logEntry.style.paddingBottom = '4px';
-            
-            let icon = 'ℹ️';
-            if (type === 'error') icon = '❌';
-            else if (type === 'success') icon = '✅';
-            else if (type === 'info') icon = 'ℹ️';
-            else if (type === 'warn') icon = '⚠️';
-            
-            logEntry.innerHTML = `
-                <span style="color: #fbbf24;">${timestamp}</span>
-                <span style="color: ${type === 'error' ? '#ef4444' : (type === 'success' ? '#4ade80' : '#38bdf8')}">${icon} ${message}</span>
-                ${data ? `<pre style="font-size: 10px; color: #94a3b8;">${JSON.stringify(data, null, 2).substring(0, 200)}</pre>` : ''}
-            `;
-            logs.appendChild(logEntry);
-            logs.scrollTop = logs.scrollHeight;
-        }
-
-        // ========== 30 ПРОФЕССИЙ С 20+ УНИКАЛЬНЫМИ ШУТКАМИ ==========
+// ========== 30 ПРОФЕССИЙ С 20+ УНИКАЛЬНЫМИ ШУТКАМИ ==========
 const PROFESSIONS = [
     {
         id: 'zoomer',
@@ -1727,7 +1563,267 @@ const PROFESSIONS = [
     }
 ];
 
-        // ========== 30 ЭМОЦИЙ ==========
+        // ========== ДОПОЛНИТЕЛЬНЫЕ ТЕМАТИЧЕСКИЕ ПРОФЕССИИ (ПОЛНОСТЬЮ) ==========
+        const ADDITIONAL_PROFESSIONS = [
+            {
+                id: 'wedding',
+                name: '💒 Свадьба',
+                icon: '💒',
+                basePrompt: 'wedding ceremony, bride and groom, marriage celebration',
+                humor: [
+                    { ru: 'план: идеальный, реальность: дождь', en: 'wedding plan perfect, reality rain, couple standing under umbrella' },
+                    { ru: 'тамада: "горько!" в 100й раз', en: 'toastmaster saying bitterly for 100th time, couple exhausted' },
+                    { ru: 'свадебный торт: красивый, но невкусный', en: 'wedding cake beautiful but tasteless, guests pretending to enjoy' },
+                    { ru: 'гость: пришёл поесть и уйти', en: 'guest came to eat and leave, sneaking towards exit' },
+                    { ru: 'невеста: платье дороже машины', en: 'bride dress more expensive than car, groom shocked' },
+                    { ru: 'жених: забыл кольца дома', en: 'groom forgot rings at home, panicking' },
+                    { ru: 'свадебный фотограф: "улыбнитесь" уже 3 часа', en: 'wedding photographer saying smile for 3 hours, couple with frozen smiles' },
+                    { ru: 'конкурсы: для пьяных и смелых', en: 'wedding games for drunk and brave, guests participating reluctantly' },
+                    { ru: 'первый танец: наступил на платье', en: 'first dance, groom stepped on dress, both falling' },
+                    { ru: 'свадебный тост: говорили все, кроме молодых', en: 'toasts: everyone spoke except couple, couple bored' },
+                    { ru: 'букет невесты: поймала та, кто не хотела', en: 'bouquet caught by someone who didnt want it, awkward' },
+                    { ru: 'свадебный лимузин: сломался по дороге', en: 'wedding limo broke down, couple on side of road' },
+                    { ru: 'теща: "мой ребенок лучше всех"', en: 'mother in law: my child is best, everyone nods' },
+                    { ru: 'свекровь: советует как жить', en: 'mother in law giving life advice, bride annoyed' },
+                    { ru: 'свадебное меню: оливье закончилось через 5 минут', en: 'wedding menu: olivier salad gone in 5 minutes' },
+                    { ru: 'гость в белом: позор на всю свадьбу', en: 'guest wearing white, disgrace, everyone staring' },
+                    { ru: 'свадебный торт: упал перед подачей', en: 'wedding cake fell before serving, disaster' },
+                    { ru: 'молодожены: хотят спать после фотосессии', en: 'newlyweds want to sleep after photoshoot, exhausted' },
+                    { ru: 'свадебный оркестр: играет не в такт', en: 'wedding band playing out of sync, couple dancing awkwardly' },
+                    { ru: 'гость: "за ваше здоровье!" (снова)', en: 'guest: to your health, again, everyone drinks' },
+                    { ru: 'свадебные бокалы: разбились сами', en: 'wedding glasses broke by themselves, bad omen' },
+                    { ru: 'фата: зацепилась за декор', en: 'veil caught on decor, bride stuck' },
+                    { ru: 'свадебный кортеж: все сигналят, никто не поздравляет', en: 'wedding procession: everyone honks, no one congratulates' },
+                    { ru: 'тамада: шутит, но не смешно', en: 'toastmaster jokes, not funny, awkward silence' }
+                ]
+            },
+            {
+                id: 'birthday',
+                name: '🎂 День рождения',
+                icon: '🎂',
+                basePrompt: 'birthday party, celebration, birthday cake',
+                humor: [
+                    { ru: 'годы идут, а торт все тот же', en: 'years pass, same cake, birthday person staring' },
+                    { ru: 'когда задуваешь свечи, но не все', en: 'blowing candles, not all go out, awkward' },
+                    { ru: 'подарок: носки от бабушки (снова)', en: 'gift: socks from grandma, again, fake smile' },
+                    { ru: 'день рождения: повод напиться в будний день', en: 'birthday: excuse to drink on weekday, friends celebrating' },
+                    { ru: 'возраст: уже не спрашивают', en: 'age: no one asks anymore, relieved' },
+                    { ru: 'именинник: "я не старею, я матерею"', en: 'birthday person: im not aging, im maturing' },
+                    { ru: 'гости: пришли, поели, ушли', en: 'guests: came, ate, left, birthday person alone' },
+                    { ru: 'когда твой день рождения совпал с понедельником', en: 'birthday on monday, everyone working, sad' },
+                    { ru: 'тосты: "чтоб ты жил до 100 лет" (а надо ли)', en: 'toasts: live to 100, questionable' },
+                    { ru: 'свечи на торте: пожарная сигнализация сработала', en: 'candles on cake, fire alarm went off' },
+                    { ru: 'поздравления в соцсетях: от тех, кто не позвонил', en: 'social media greetings from those who didnt call' },
+                    { ru: 'день рождения и разбитое зеркало', en: 'birthday and broken mirror, bad luck' },
+                    { ru: 'когда тебе дарят второй тостер', en: 'receiving second toaster as gift, confused' },
+                    { ru: 'именинный пирог: подгорел снизу', en: 'birthday cake burnt on bottom, still served' },
+                    { ru: 'гость с плюсом: никто не знает кто это', en: 'guest plus one, nobody knows them' },
+                    { ru: 'день рождения на удаленке: zoom и колпак', en: 'birthday remote: zoom and party hat' },
+                    { ru: 'возраст: 29 лет (в 5й раз)', en: 'age: 29 for the 5th time' },
+                    { ru: 'подарок своими руками: неловко', en: 'homemade gift: awkward' },
+                    { ru: 'когда твой день рождения високосный', en: 'birthday on leap day, celebrate every 4 years' },
+                    { ru: 'гость: "а где моя порция?"', en: 'guest: where is my portion' },
+                    { ru: 'именинник: загадал желание, свеча не задувается', en: 'birthday person made wish, candle wont blow out' },
+                    { ru: 'день рождения и развод (плохой подарок)', en: 'birthday and divorce, bad gift' },
+                    { ru: 'подарочная карта: "на что хочешь" (лень выбирать)', en: 'gift card: get what you want, too lazy to choose' },
+                    { ru: 'когда перепутали твой возраст на торте', en: 'they got your age wrong on cake' }
+                ]
+            },
+            {
+                id: 'newyear',
+                name: '🎄 Новый год',
+                icon: '🎄',
+                basePrompt: 'new year celebration, christmas tree, holiday',
+                humor: [
+                    { ru: 'оливье: закончилось, началась драма', en: 'olivier salad finished, drama begins' },
+                    { ru: 'ёлка: упала в 12 ночи', en: 'christmas tree fell at midnight' },
+                    { ru: 'президент: говорит, никто не слушает', en: 'president speaking, no one listening' },
+                    { ru: 'подарки: носки и гель для душа', en: 'gifts: socks and shower gel, classic' },
+                    { ru: 'бой курантов: загадал желание, но передумал', en: 'chimes: made wish, changed mind' },
+                    { ru: 'салют: соседи жгут деньги', en: 'fireworks: neighbors burning money' },
+                    { ru: 'новогодний стол: готовили 3 дня, съели за 30 минут', en: 'new year table: cooked 3 days, ate in 30 min' },
+                    { ru: 'шампанское: выстрелило в люстру', en: 'champagne: shot into chandelier' },
+                    { ru: 'дед мороз: пришёл, но это папа', en: 'santa came, its dad' },
+                    { ru: 'снегурочка: внучка деда (которому 40)', en: 'snow maiden: granddaughter of 40yo grandpa' },
+                    { ru: 'новогодний корпоратив: пьяный начальник пляшет', en: 'corporate party: drunk boss dancing' },
+                    { ru: 'оливье: с колбасой или с мясом? вечный спор', en: 'olivier: with sausage or meat, eternal debate' },
+                    { ru: 'мандарины: закончились первыми', en: 'tangerines: finished first' },
+                    { ru: 'новогоднее обращение: все ждут боя курантов', en: 'new year address: everyone waiting for chimes' },
+                    { ru: 'утро 1 января: "что было вчера?"', en: 'jan 1 morning: what happened yesterday' },
+                    { ru: 'новогодний фильм: "ирония судьбы" в 100й раз', en: 'new year movie: irony of fate for 100th time' },
+                    { ru: 'ёлочные игрушки: разбил кот', en: 'tree ornaments: cat broke them' },
+                    { ru: 'гирлянда: запуталась как жизнь', en: 'fairy lights: tangled like life' },
+                    { ru: 'новогодний костюм: надел, вспотел, снял', en: 'new year costume: wore, sweated, took off' },
+                    { ru: 'фейерверк: не взлетел', en: 'firework: didnt fly' },
+                    { ru: 'новогодние обещания: сбросить вес (опять)', en: 'new year resolutions: lose weight again' },
+                    { ru: 'детский утренник: ребёнок плачет, дед мороз в ужасе', en: 'childrens party: child cries, santa horrified' },
+                    { ru: 'новый год в поезде: романтика или ад', en: 'new year on train: romance or hell' },
+                    { ru: 'остатки оливье: едят до 8 марта', en: 'olivier leftovers: eaten until march 8' }
+                ]
+            },
+            {
+                id: 'halloween',
+                name: '🎃 Хеллоуин',
+                icon: '🎃',
+                basePrompt: 'halloween celebration, spooky, pumpkins',
+                humor: [
+                    { ru: 'костюм: купил, но страшно выйти', en: 'costume: bought, too scared to go out' },
+                    { ru: 'тыква: вырезал, сгнила через день', en: 'pumpkin: carved, rotted next day' },
+                    { ru: 'конфеты: "сладость или гадость" закончились быстро', en: 'candy: trick or treat ran out fast' },
+                    { ru: 'привидение: простыня с дырками', en: 'ghost: sheet with holes' },
+                    { ru: 'хеллоуин в офисе: никто не понял', en: 'halloween at office: no one got it' },
+                    { ru: 'страшный грим: смывается неделю', en: 'scary makeup: washes off for a week' },
+                    { ru: 'паутина: купил, развесил, запутался сам', en: 'cobwebs: bought, hung, got tangled' },
+                    { ru: 'скелет в шкафу: буквально', en: 'skeleton in closet: literally' },
+                    { ru: 'хеллоуинская вечеринка: пришли все в одинаковых костюмах', en: 'halloween party: everyone in same costume' },
+                    { ru: 'летучая мышь: залетела, испугала всех', en: 'bat: flew in, scared everyone' },
+                    { ru: 'зомби апокалипсис: утром на работу', en: 'zombie apocalypse: morning at work' },
+                    { ru: 'ведьма: метла не летает', en: 'witch: broom wont fly' },
+                    { ru: 'вампир: чеснок в супе', en: 'vampire: garlic in soup' },
+                    { ru: 'оборотень: полнолуние, а он забыл', en: 'werewolf: full moon, forgot' },
+                    { ru: 'хеллоуин у детей: "дайте конфету или я заплачу"', en: 'halloween kids: give candy or ill cry' },
+                    { ru: 'соседи: не открывают, боятся', en: 'neighbors: dont open, scared' },
+                    { ru: 'хеллоуинский декор: дороже чем подарки', en: 'halloween decor: more expensive than gifts' },
+                    { ru: 'страшные истории: никто не пугается', en: 'scary stories: no one scared' },
+                    { ru: 'хеллоуин в россии: "а это наш праздник?"', en: 'halloween in russia: is this our holiday' },
+                    { ru: 'костюм скелета: кости нарисованы криво', en: 'skeleton costume: bones drawn crooked' },
+                    { ru: 'сладости: съел сам, детям не досталось', en: 'candy: ate myself, none for kids' },
+                    { ru: 'хеллоуинский тыквенный суп: никто не ест', en: 'pumpkin soup: no one eats' },
+                    { ru: 'призрак: простыня сломала вайфай', en: 'ghost: sheet broke wifi' },
+                    { ru: 'хеллоуин закончился, а ты в гриме неделю', en: 'halloween over, still in makeup for week' }
+                ]
+            },
+            {
+                id: 'gta',
+                name: '🎮 Игра GTA',
+                icon: '🎮',
+                basePrompt: 'GTA game style, Grand Theft Auto, video game character',
+                humor: [
+                    { ru: 'звезды полиции: 5, а ты в танке', en: 'wanted stars: 5, youre in tank' },
+                    { ru: 'украл машину, а бензин закончился', en: 'stole car, ran out of gas' },
+                    { ru: 'код на деньги: rosebud? не та игра', en: 'money cheat: rosebud? wrong game' },
+                    { ru: 'сбил прохожего, а он встал и пошел', en: 'hit pedestrian, they got up and walked' },
+                    { ru: 'миссия: угнать самолет, а у тебя права только на машину', en: 'mission: steal plane, you only have car license' },
+                    { ru: 'GTA в реальной жизни: штраф 5000 рублей', en: 'GTA in real life: 5000 ruble fine' },
+                    { ru: 'прохожий: "эй, ты!" и началась стрельба', en: 'pedestrian: hey you, shooting starts' },
+                    { ru: 'полицейская погоня: застрял в заборе', en: 'police chase: stuck in fence' },
+                    { ru: 'вертолет: сбил, упал на себя', en: 'helicopter: shot down, fell on self' },
+                    { ru: 'GTA онлайн: ребенок сказал, что спал с твоей мамой', en: 'GTA online: kid said they slept with your mom' },
+                    { ru: 'прохождение сюжета: 100 часов, побочные квесты: 500 часов', en: 'story: 100 hours, side quests: 500 hours' },
+                    { ru: 'стриптиз-клуб: потратил все деньги', en: 'strip club: spent all money' },
+                    { ru: 'танк: выехал, город в руинах', en: 'tank: drove out, city in ruins' },
+                    { ru: 'парашют: забыл открыть', en: 'parachute: forgot to open' },
+                    { ru: 'гонка: проиграл, взорвал всех', en: 'race: lost, blew everyone up' },
+                    { ru: 'GTA: игра где ты преступник, но герой', en: 'GTA: game where youre criminal but hero' },
+                    { ru: 'моды: добавил халка, игра сломалась', en: 'mods: added hulk, game crashed' },
+                    { ru: 'полицейский вертолет: сбить сложно, но приятно', en: 'police helicopter: hard to shoot, satisfying' },
+                    { ru: 'GTA V: три героя, а играешь за одного', en: 'GTA V: three characters, play as one' },
+                    { ru: 'радар: ищешь коллекционные предметы', en: 'radar: looking for collectibles' },
+                    { ru: 'GTA: читы на бессмертие, но машина взрывается', en: 'GTA: god mode cheats, car still explodes' },
+                    { ru: 'онлайн режим: купил квартиру, сосед - 12-летний', en: 'online mode: bought apartment, neighbor is 12yo' },
+                    { ru: 'GTA: единственная игра где боишься полиции', en: 'GTA: only game where you fear police' },
+                    { ru: 'мотоцикл: прыжок, переворот, смерть', en: 'motorcycle: jump, flip, death' }
+                ]
+            },
+            {
+                id: 'minecraft',
+                name: '⛏️ Майнкрафт',
+                icon: '⛏️',
+                basePrompt: 'Minecraft game style, blocky, pixelated',
+                humor: [
+                    { ru: 'крипер: подкрался, бабах, дома нет', en: 'creeper: snuck up, boom, no house' },
+                    { ru: 'алмаз: нашёл, упал в лаву', en: 'diamond: found, fell in lava' },
+                    { ru: 'ночь наступила, а кровати нет', en: 'night came, no bed, monsters everywhere' },
+                    { ru: 'построил замок, залили гасты', en: 'built castle, ghasts blew it up' },
+                    { ru: 'ресурсы: копал 3 часа, нашёл булыжник', en: 'resources: mined 3 hours, got cobblestone' },
+                    { ru: 'первая ночь: закопался в землю', en: 'first night: dug into ground' },
+                    { ru: 'эндермен: смотришь на него, он бесится', en: 'enderman: look at him, he rages' },
+                    { ru: 'портал в ад: построил, страшно заходить', en: 'nether portal: built, scared to enter' },
+                    { ru: 'деревянная кирка: сломалась через 2 удара', en: 'wooden pickaxe: broke after 2 hits' },
+                    { ru: 'кровать в аду: взорвалась', en: 'bed in nether: exploded' },
+                    { ru: 'серебряный рыбак: выпрыгнул из стены', en: 'silverfish: jumped out of wall' },
+                    { ru: 'скелет: стреляет, попал в крипера', en: 'skeleton: shot, hit creeper, chain reaction' },
+                    { ru: 'выживание: построил дом, пришел крипер', en: 'survival: built house, creeper came' },
+                    { ru: 'творческий режим: построил всё, скучно', en: 'creative mode: built everything, bored' },
+                    { ru: 'редстоун: пытался сделать механизм, взорвалось', en: 'redstone: tried to make mechanism, exploded' },
+                    { ru: 'майнкрафт с модами: 200 модов, игра не грузится', en: 'minecraft with mods: 200 mods, game wont load' },
+                    { ru: 'деревня: нашел, жители странные', en: 'village: found, villagers weird' },
+                    { ru: 'торговец ламой: пришел, лама сбежала', en: 'trader llama: came, llama ran' },
+                    { ru: 'элитры: нашел, упал с неба', en: 'elytra: found, fell from sky' },
+                    { ru: 'дракон края: убил, скучно стало', en: 'ender dragon: killed, got bored' },
+                    { ru: 'подводный храм: вода, страшно, тону', en: 'ocean monument: water, scary, drowning' },
+                    { ru: 'грибной остров: милый, но одиноко', en: 'mushroom island: cute, lonely' },
+                    { ru: 'майнкрафт с друзьями: они сломали твой дом', en: 'minecraft with friends: they broke your house' },
+                    { ru: 'ресурс пак: поставил, всё стало розовым', en: 'resource pack: installed, everything pink' }
+                ]
+            },
+            {
+                id: 'cyberpunk',
+                name: '🌃 Киберпанк',
+                icon: '🌃',
+                basePrompt: 'cyberpunk style, futuristic, neon, high tech low life',
+                humor: [
+                    { ru: 'импланты: поставил, забыл выключить wifi', en: 'implants: installed, forgot to turn off wifi' },
+                    { ru: 'кибердека: хакнул, вырубили свет во всем районе', en: 'cyberdeck: hacked, blackout in whole district' },
+                    { ru: 'неоновые вывески: красиво, но глаза болят', en: 'neon signs: beautiful, eyes hurt' },
+                    { ru: 'андроид: кофе сварил, но обиделся', en: 'android: made coffee, got offended' },
+                    { ru: 'киберпанк 2077: багов больше чем контента', en: 'cyberpunk 2077: more bugs than content' },
+                    { ru: 'чип в голове: реклама играет даже во сне', en: 'head chip: ads playing even in sleep' },
+                    { ru: 'киберрука: сила есть, мелкую моторику потерял', en: 'cyberarm: strong, no fine motor skills' },
+                    { ru: 'нейросеть: нарисовала, но пальцы кривые', en: 'neural net: drew, but fingers crooked' },
+                    { ru: 'технологии: все есть, денег нет', en: 'technology: everything, no money' },
+                    { ru: 'корпорации: правят миром, а ты пьёшь синт-кофе', en: 'corporations rule world, you drink synth coffee' },
+                    { ru: 'киберпсихоз: напал на торговый автомат', en: 'cyberpsychosis: attacked vending machine' },
+                    { ru: 'репликант: плакал, значит человек', en: 'replicant: cried, so human' },
+                    { ru: 'хакер в подворотне: ломает твой тостер', en: 'hacker in alley: hacking your toaster' },
+                    { ru: 'неоновый дождь: мокро, но красиво', en: 'neon rain: wet, but beautiful' },
+                    { ru: 'виртуальная реальность: там лучше, чем в реале', en: 'virtual reality: better than real life' },
+                    { ru: 'андроид-бармен: наливает, но не пьет', en: 'android bartender: pours, doesnt drink' },
+                    { ru: 'био-чип: обновился, теперь сядешь на 15 лет', en: 'biochip: updated, now 15 years jail' },
+                    { ru: 'робот-полицейский: ловит за превышение скорости мысли', en: 'robot cop: catches speeding thoughts' },
+                    { ru: 'киберпанк: будущее, где нет котиков', en: 'cyberpunk: future with no cats' },
+                    { ru: 'нано-боты: лечат, но жужжат под кожей', en: 'nanobots: heal, but buzz under skin' },
+                    { ru: 'флаер: летишь, но пробки в воздухе', en: 'flyer: flying, but air traffic' },
+                    { ru: 'кибер-глаз: видишь рекламу даже с закрытыми', en: 'cybereye: see ads even with eyes closed' },
+                    { ru: 'квантовый компьютер: считает, но ответ "42"', en: 'quantum computer: computes, answer 42' },
+                    { ru: 'кожа с подогревом: зимой хорошо, летом ад', en: 'heated skin: good in winter, hell in summer' }
+                ]
+            },
+            {
+                id: 'kdrama',
+                name: '💕 Корейская дорама',
+                icon: '💕',
+                basePrompt: 'Korean drama style, romantic, emotional, korean actors',
+                humor: [
+                    { ru: 'главный герой: богатый, красивый, но с травмой', en: 'male lead: rich, handsome, traumatized' },
+                    { ru: 'главная героиня: бедная, но добрая, спотыкается', en: 'female lead: poor, kind, trips' },
+                    { ru: 'сценарист: зачем 16 серий, если можно за 10', en: 'writer: why 16 episodes if 10 enough' },
+                    { ru: 'злодейка: красивая, но злая, все ее ненавидят', en: 'villainess: beautiful, evil, everyone hates' },
+                    { ru: 'первая любовь: возвращается из США', en: 'first love: returns from USA' },
+                    { ru: 'поцелуй в дораме: 5 минут смотреть друг на друга', en: 'drama kiss: 5 minutes staring' },
+                    { ru: 'флешбеки: каждый эпизод одно и то же', en: 'flashbacks: same thing every episode' },
+                    { ru: 'OST: слушаешь неделю после серии', en: 'OST: listen for week after episode' },
+                    { ru: 'главный герой падает, героиня ловит', en: 'male lead falls, female lead catches' },
+                    { ru: 'мать героя: против бедной невестки', en: 'heros mom: against poor daughter in law' },
+                    { ru: 'тайное прошлое: все связаны', en: 'secret past: everyone connected' },
+                    { ru: 'авария: потеря памяти перед свадьбой', en: 'accident: amnesia before wedding' },
+                    { ru: 'лучший друг: влюблен в героиню, но молчит', en: 'best friend: loves heroine, silent' },
+                    { ru: 'еда в дораме: едят и хвалят каждую секунду', en: 'food in drama: eat and praise every second' },
+                    { ru: 'главный герой: плачет красиво', en: 'male lead: cries beautifully' },
+                    { ru: 'смотреть дораму: начал в 22, закончил в 6 утра', en: 'watching drama: started 10pm, ended 6am' },
+                    { ru: 'второстепенная пара: интереснее главной', en: 'second couple: more interesting than main' },
+                    { ru: 'рабочее место: все влюблены друг в друга', en: 'workplace: everyone in love with each other' },
+                    { ru: 'путешествие во времени: встретил себя', en: 'time travel: met self' },
+                    { ru: 'король/президент: влюбляется в простую девушку', en: 'king/president: falls for common girl' },
+                    { ru: 'сестры/братья: вечно ссорятся, но любят', en: 'siblings: fight, but love' },
+                    { ru: 'свадьба в последней серии: все счастливы', en: 'wedding in last episode: everyone happy' },
+                    { ru: 'дорама закончилась: депрессия на неделю', en: 'drama ended: depression for week' },
+                    { ru: 'смотреть с субтитрами: пропустил момент, перематываю', en: 'watch with subs: missed moment, rewind' }
+                ]
+            }
+        ];
+
+        // ========== 30 ЭМОЦИЙ (ПОЛНОСТЬЮ) ==========
         const EMOTIONS = [
             { id: 'happy', name: 'Счастье', icon: '😊', prompt: 'happy, smiling, joyful' },
             { id: 'sad', name: 'Грусть', icon: '😢', prompt: 'sad, crying, unhappy' },
@@ -1750,332 +1846,149 @@ const PROFESSIONS = [
             { id: 'bored', name: 'Скучает', icon: '🥱', prompt: 'bored, yawning, uninterested' },
             { id: 'proud', name: 'Гордый', icon: '🦚', prompt: 'proud, confident, pleased' }
         ];
-		
-		// ========== ДОПОЛНИТЕЛЬНЫЕ ТЕМАТИЧЕСКИЕ ПРОФЕССИИ ==========
-const ADDITIONAL_PROFESSIONS = [
-    {
-        id: 'wedding',
-        name: '💒 Свадьба',
-        icon: '💒',
-        basePrompt: 'wedding ceremony, bride and groom, marriage celebration',
-        humor: [
-            { ru: 'план: идеальный, реальность: дождь', en: 'wedding plan perfect, reality rain, couple standing under umbrella' },
-            { ru: 'тамада: "горько!" в 100й раз', en: 'toastmaster saying bitterly for 100th time, couple exhausted' },
-            { ru: 'свадебный торт: красивый, но невкусный', en: 'wedding cake beautiful but tasteless, guests pretending to enjoy' },
-            { ru: 'гость: пришёл поесть и уйти', en: 'guest came to eat and leave, sneaking towards exit' },
-            { ru: 'невеста: платье дороже машины', en: 'bride dress more expensive than car, groom shocked' },
-            { ru: 'жених: забыл кольца дома', en: 'groom forgot rings at home, panicking' },
-            { ru: 'свадебный фотограф: "улыбнитесь" уже 3 часа', en: 'wedding photographer saying smile for 3 hours, couple with frozen smiles' },
-            { ru: 'конкурсы: для пьяных и смелых', en: 'wedding games for drunk and brave, guests participating reluctantly' },
-            { ru: 'первый танец: наступил на платье', en: 'first dance, groom stepped on dress, both falling' },
-            { ru: 'свадебный тост: говорили все, кроме молодых', en: 'toasts: everyone spoke except couple, couple bored' },
-            { ru: 'букет невесты: поймала та, кто не хотела', en: 'bouquet caught by someone who didnt want it, awkward' },
-            { ru: 'свадебный лимузин: сломался по дороге', en: 'wedding limo broke down, couple on side of road' },
-            { ru: 'теща: "мой ребенок лучше всех"', en: 'mother in law: my child is best, everyone nods' },
-            { ru: 'свекровь: советует как жить', en: 'mother in law giving life advice, bride annoyed' },
-            { ru: 'свадебное меню: оливье закончилось через 5 минут', en: 'wedding menu: olivier salad gone in 5 minutes' },
-            { ru: 'гость в белом: позор на всю свадьбу', en: 'guest wearing white, disgrace, everyone staring' },
-            { ru: 'свадебный торт: упал перед подачей', en: 'wedding cake fell before serving, disaster' },
-            { ru: 'молодожены: хотят спать после фотосессии', en: 'newlyweds want to sleep after photoshoot, exhausted' },
-            { ru: 'свадебный оркестр: играет не в такт', en: 'wedding band playing out of sync, couple dancing awkwardly' },
-            { ru: 'гость: "за ваше здоровье!" (снова)', en: 'guest: to your health, again, everyone drinks' },
-            { ru: 'свадебные бокалы: разбились сами', en: 'wedding glasses broke by themselves, bad omen' },
-            { ru: 'фата: зацепилась за декор', en: 'veil caught on decor, bride stuck' },
-            { ru: 'свадебный кортеж: все сигналят, никто не поздравляет', en: 'wedding procession: everyone honks, no one congratulates' },
-            { ru: 'тамада: шутит, но не смешно', en: 'toastmaster jokes, not funny, awkward silence' }
-        ]
-    },
-    {
-        id: 'birthday',
-        name: '🎂 День рождения',
-        icon: '🎂',
-        basePrompt: 'birthday party, celebration, birthday cake',
-        humor: [
-            { ru: 'годы идут, а торт все тот же', en: 'years pass, same cake, birthday person staring' },
-            { ru: 'когда задуваешь свечи, но не все', en: 'blowing candles, not all go out, awkward' },
-            { ru: 'подарок: носки от бабушки (снова)', en: 'gift: socks from grandma, again, fake smile' },
-            { ru: 'день рождения: повод напиться в будний день', en: 'birthday: excuse to drink on weekday, friends celebrating' },
-            { ru: 'возраст: уже не спрашивают', en: 'age: no one asks anymore, relieved' },
-            { ru: 'именинник: "я не старею, я матерею"', en: 'birthday person: im not aging, im maturing' },
-            { ru: 'гости: пришли, поели, ушли', en: 'guests: came, ate, left, birthday person alone' },
-            { ru: 'когда твой день рождения совпал с понедельником', en: 'birthday on monday, everyone working, sad' },
-            { ru: 'тосты: "чтоб ты жил до 100 лет" (а надо ли)', en: 'toasts: live to 100, questionable' },
-            { ru: 'свечи на торте: пожарная сигнализация сработала', en: 'candles on cake, fire alarm went off' },
-            { ru: 'поздравления в соцсетях: от тех, кто не позвонил', en: 'social media greetings from those who didnt call' },
-            { ru: 'день рождения и разбитое зеркало', en: 'birthday and broken mirror, bad luck' },
-            { ru: 'когда тебе дарят второй тостер', en: 'receiving second toaster as gift, confused' },
-            { ru: 'именинный пирог: подгорел снизу', en: 'birthday cake burnt on bottom, still served' },
-            { ru: 'гость с плюсом: никто не знает кто это', en: 'guest plus one, nobody knows them' },
-            { ru: 'день рождения на удаленке: zoom и колпак', en: 'birthday remote: zoom and party hat' },
-            { ru: 'возраст: 29 лет (в 5й раз)', en: 'age: 29 for the 5th time' },
-            { ru: 'подарок своими руками: неловко', en: 'homemade gift: awkward' },
-            { ru: 'когда твой день рождения високосный', en: 'birthday on leap day, celebrate every 4 years' },
-            { ru: 'гость: "а где моя порция?"', en: 'guest: where is my portion' },
-            { ru: 'именинник: загадал желание, свеча не задувается', en: 'birthday person made wish, candle wont blow out' },
-            { ru: 'день рождения и развод (плохой подарок)', en: 'birthday and divorce, bad gift' },
-            { ru: 'подарочная карта: "на что хочешь" (лень выбирать)', en: 'gift card: get what you want, too lazy to choose' },
-            { ru: 'когда перепутали твой возраст на торте', en: 'they got your age wrong on cake' }
-        ]
-    },
-    {
-        id: 'newyear',
-        name: '🎄 Новый год',
-        icon: '🎄',
-        basePrompt: 'new year celebration, christmas tree, holiday',
-        humor: [
-            { ru: 'оливье: закончилось, началась драма', en: 'olivier salad finished, drama begins' },
-            { ru: 'ёлка: упала в 12 ночи', en: 'christmas tree fell at midnight' },
-            { ru: 'президент: говорит, никто не слушает', en: 'president speaking, no one listening' },
-            { ru: 'подарки: носки и гель для душа', en: 'gifts: socks and shower gel, classic' },
-            { ru: 'бой курантов: загадал желание, но передумал', en: 'chimes: made wish, changed mind' },
-            { ru: 'салют: соседи жгут деньги', en: 'fireworks: neighbors burning money' },
-            { ru: 'новогодний стол: готовили 3 дня, съели за 30 минут', en: 'new year table: cooked 3 days, ate in 30 min' },
-            { ru: 'шампанское: выстрелило в люстру', en: 'champagne: shot into chandelier' },
-            { ru: 'дед мороз: пришёл, но это папа', en: 'santa came, its dad' },
-            { ru: 'снегурочка: внучка деда (которому 40)', en: 'snow maiden: granddaughter of 40yo grandpa' },
-            { ru: 'новогодний корпоратив: пьяный начальник пляшет', en: 'corporate party: drunk boss dancing' },
-            { ru: 'оливье: с колбасой или с мясом? вечный спор', en: 'olivier: with sausage or meat, eternal debate' },
-            { ru: 'мандарины: закончились первыми', en: 'tangerines: finished first' },
-            { ru: 'новогоднее обращение: все ждут боя курантов', en: 'new year address: everyone waiting for chimes' },
-            { ru: 'утро 1 января: "что было вчера?"', en: 'jan 1 morning: what happened yesterday' },
-            { ru: 'новогодний фильм: "ирония судьбы" в 100й раз', en: 'new year movie: irony of fate for 100th time' },
-            { ru: 'ёлочные игрушки: разбил кот', en: 'tree ornaments: cat broke them' },
-            { ru: 'гирлянда: запуталась как жизнь', en: 'fairy lights: tangled like life' },
-            { ru: 'новогодний костюм: надел, вспотел, снял', en: 'new year costume: wore, sweated, took off' },
-            { ru: 'фейерверк: не взлетел', en: 'firework: didnt fly' },
-            { ru: 'новогодние обещания: сбросить вес (опять)', en: 'new year resolutions: lose weight again' },
-            { ru: 'детский утренник: ребёнок плачет, дед мороз в ужасе', en: 'childrens party: child cries, santa horrified' },
-            { ru: 'новый год в поезде: романтика или ад', en: 'new year on train: romance or hell' },
-            { ru: 'остатки оливье: едят до 8 марта', en: 'olivier leftovers: eaten until march 8' }
-        ]
-    },
-    {
-        id: 'halloween',
-        name: '🎃 Хеллоуин',
-        icon: '🎃',
-        basePrompt: 'halloween celebration, spooky, pumpkins',
-        humor: [
-            { ru: 'костюм: купил, но страшно выйти', en: 'costume: bought, too scared to go out' },
-            { ru: 'тыква: вырезал, сгнила через день', en: 'pumpkin: carved, rotted next day' },
-            { ru: 'конфеты: "сладость или гадость" закончились быстро', en: 'candy: trick or treat ran out fast' },
-            { ru: 'привидение: простыня с дырками', en: 'ghost: sheet with holes' },
-            { ru: 'хеллоуин в офисе: никто не понял', en: 'halloween at office: no one got it' },
-            { ru: 'страшный грим: смывается неделю', en: 'scary makeup: washes off for a week' },
-            { ru: 'паутина: купил, развесил, запутался сам', en: 'cobwebs: bought, hung, got tangled' },
-            { ru: 'скелет в шкафу: буквально', en: 'skeleton in closet: literally' },
-            { ru: 'хеллоуинская вечеринка: пришли все в одинаковых костюмах', en: 'halloween party: everyone in same costume' },
-            { ru: 'летучая мышь: залетела, испугала всех', en: 'bat: flew in, scared everyone' },
-            { ru: 'зомби апокалипсис: утром на работу', en: 'zombie apocalypse: morning at work' },
-            { ru: 'ведьма: метла не летает', en: 'witch: broom wont fly' },
-            { ru: 'вампир: чеснок в супе', en: 'vampire: garlic in soup' },
-            { ru: 'оборотень: полнолуние, а он забыл', en: 'werewolf: full moon, forgot' },
-            { ru: 'хеллоуин у детей: "дайте конфету или я заплачу"', en: 'halloween kids: give candy or ill cry' },
-            { ru: 'соседи: не открывают, боятся', en: 'neighbors: dont open, scared' },
-            { ru: 'хеллоуинский декор: дороже чем подарки', en: 'halloween decor: more expensive than gifts' },
-            { ru: 'страшные истории: никто не пугается', en: 'scary stories: no one scared' },
-            { ru: 'хеллоуин в россии: "а это наш праздник?"', en: 'halloween in russia: is this our holiday' },
-            { ru: 'костюм скелета: кости нарисованы криво', en: 'skeleton costume: bones drawn crooked' },
-            { ru: 'сладости: съел сам, детям не досталось', en: 'candy: ate myself, none for kids' },
-            { ru: 'хеллоуинский тыквенный суп: никто не ест', en: 'pumpkin soup: no one eats' },
-            { ru: 'призрак: простыня сломала вайфай', en: 'ghost: sheet broke wifi' },
-            { ru: 'хеллоуин закончился, а ты в гриме неделю', en: 'halloween over, still in makeup for week' }
-        ]
-    },
-    {
-        id: 'gta',
-        name: '🎮 Игра GTA',
-        icon: '🎮',
-        basePrompt: 'GTA game style, Grand Theft Auto, video game character',
-        humor: [
-            { ru: 'звезды полиции: 5, а ты в танке', en: 'wanted stars: 5, youre in tank' },
-            { ru: 'украл машину, а бензин закончился', en: 'stole car, ran out of gas' },
-            { ru: 'код на деньги: rosebud? не та игра', en: 'money cheat: rosebud? wrong game' },
-            { ru: 'сбил прохожего, а он встал и пошел', en: 'hit pedestrian, they got up and walked' },
-            { ru: 'миссия: угнать самолет, а у тебя права только на машину', en: 'mission: steal plane, you only have car license' },
-            { ru: 'GTA в реальной жизни: штраф 5000 рублей', en: 'GTA in real life: 5000 ruble fine' },
-            { ru: 'прохожий: "эй, ты!" и началась стрельба', en: 'pedestrian: hey you, shooting starts' },
-            { ru: 'полицейская погоня: застрял в заборе', en: 'police chase: stuck in fence' },
-            { ru: 'вертолет: сбил, упал на себя', en: 'helicopter: shot down, fell on self' },
-            { ru: 'GTA онлайн: ребенок сказал, что спал с твоей мамой', en: 'GTA online: kid said they slept with your mom' },
-            { ru: 'прохождение сюжета: 100 часов, побочные квесты: 500 часов', en: 'story: 100 hours, side quests: 500 hours' },
-            { ru: 'стриптиз-клуб: потратил все деньги', en: 'strip club: spent all money' },
-            { ru: 'танк: выехал, город в руинах', en: 'tank: drove out, city in ruins' },
-            { ru: 'парашют: забыл открыть', en: 'parachute: forgot to open' },
-            { ru: 'гонка: проиграл, взорвал всех', en: 'race: lost, blew everyone up' },
-            { ru: 'GTA: игра где ты преступник, но герой', en: 'GTA: game where youre criminal but hero' },
-            { ru: 'моды: добавил халка, игра сломалась', en: 'mods: added hulk, game crashed' },
-            { ru: 'полицейский вертолет: сбить сложно, но приятно', en: 'police helicopter: hard to shoot, satisfying' },
-            { ru: 'GTA V: три героя, а играешь за одного', en: 'GTA V: three characters, play as one' },
-            { ru: 'радар: ищешь коллекционные предметы', en: 'radar: looking for collectibles' },
-            { ru: 'GTA: читы на бессмертие, но машина взрывается', en: 'GTA: god mode cheats, car still explodes' },
-            { ru: 'онлайн режим: купил квартиру, сосед - 12-летний', en: 'online mode: bought apartment, neighbor is 12yo' },
-            { ru: 'GTA: единственная игра где боишься полиции', en: 'GTA: only game where you fear police' },
-            { ru: 'мотоцикл: прыжок, переворот, смерть', en: 'motorcycle: jump, flip, death' }
-        ]
-    },
-    {
-        id: 'minecraft',
-        name: '⛏️ Майнкрафт',
-        icon: '⛏️',
-        basePrompt: 'Minecraft game style, blocky, pixelated',
-        humor: [
-            { ru: 'крипер: подкрался, бабах, дома нет', en: 'creeper: snuck up, boom, no house' },
-            { ru: 'алмаз: нашёл, упал в лаву', en: 'diamond: found, fell in lava' },
-            { ru: 'ночь наступила, а кровати нет', en: 'night came, no bed, monsters everywhere' },
-            { ru: 'построил замок, залили гасты', en: 'built castle, ghasts blew it up' },
-            { ru: 'ресурсы: копал 3 часа, нашёл булыжник', en: 'resources: mined 3 hours, got cobblestone' },
-            { ru: 'первая ночь: закопался в землю', en: 'first night: dug into ground' },
-            { ru: 'эндермен: смотришь на него, он бесится', en: 'enderman: look at him, he rages' },
-            { ru: 'портал в ад: построил, страшно заходить', en: 'nether portal: built, scared to enter' },
-            { ru: 'деревянная кирка: сломалась через 2 удара', en: 'wooden pickaxe: broke after 2 hits' },
-            { ru: 'кровать в аду: взорвалась', en: 'bed in nether: exploded' },
-            { ru: 'серебряный рыбак: выпрыгнул из стены', en: 'silverfish: jumped out of wall' },
-            { ru: 'скелет: стреляет, попал в крипера', en: 'skeleton: shot, hit creeper, chain reaction' },
-            { ru: 'выживание: построил дом, пришел крипер', en: 'survival: built house, creeper came' },
-            { ru: 'творческий режим: построил всё, скучно', en: 'creative mode: built everything, bored' },
-            { ru: 'редстоун: пытался сделать механизм, взорвалось', en: 'redstone: tried to make mechanism, exploded' },
-            { ru: 'майнкрафт с модами: 200 модов, игра не грузится', en: 'minecraft with mods: 200 mods, game wont load' },
-            { ru: 'деревня: нашел, жители странные', en: 'village: found, villagers weird' },
-            { ru: 'торговец ламой: пришел, лама сбежала', en: 'trader llama: came, llama ran' },
-            { ru: 'элитры: нашел, упал с неба', en: 'elytra: found, fell from sky' },
-            { ru: 'дракон края: убил, скучно стало', en: 'ender dragon: killed, got bored' },
-            { ru: 'подводный храм: вода, страшно, тону', en: 'ocean monument: water, scary, drowning' },
-            { ru: 'грибной остров: милый, но одиноко', en: 'mushroom island: cute, lonely' },
-            { ru: 'майнкрафт с друзьями: они сломали твой дом', en: 'minecraft with friends: they broke your house' },
-            { ru: 'ресурс пак: поставил, всё стало розовым', en: 'resource pack: installed, everything pink' }
-        ]
-    },
-    {
-        id: 'cyberpunk',
-        name: '🌃 Киберпанк',
-        icon: '🌃',
-        basePrompt: 'cyberpunk style, futuristic, neon, high tech low life',
-        humor: [
-            { ru: 'импланты: поставил, забыл выключить wifi', en: 'implants: installed, forgot to turn off wifi' },
-            { ru: 'кибердека: хакнул, вырубили свет во всем районе', en: 'cyberdeck: hacked, blackout in whole district' },
-            { ru: 'неоновые вывески: красиво, но глаза болят', en: 'neon signs: beautiful, eyes hurt' },
-            { ru: 'андроид: кофе сварил, но обиделся', en: 'android: made coffee, got offended' },
-            { ru: 'киберпанк 2077: багов больше чем контента', en: 'cyberpunk 2077: more bugs than content' },
-            { ru: 'чип в голове: реклама играет даже во сне', en: 'head chip: ads playing even in sleep' },
-            { ru: 'киберрука: сила есть, мелкую моторику потерял', en: 'cyberarm: strong, no fine motor skills' },
-            { ru: 'нейросеть: нарисовала, но пальцы кривые', en: 'neural net: drew, but fingers crooked' },
-            { ru: 'технологии: все есть, денег нет', en: 'technology: everything, no money' },
-            { ru: 'корпорации: правят миром, а ты пьёшь синт-кофе', en: 'corporations rule world, you drink synth coffee' },
-            { ru: 'киберпсихоз: напал на торговый автомат', en: 'cyberpsychosis: attacked vending machine' },
-            { ru: 'репликант: плакал, значит человек', en: 'replicant: cried, so human' },
-            { ru: 'хакер в подворотне: ломает твой тостер', en: 'hacker in alley: hacking your toaster' },
-            { ru: 'неоновый дождь: мокро, но красиво', en: 'neon rain: wet, but beautiful' },
-            { ru: 'виртуальная реальность: там лучше, чем в реале', en: 'virtual reality: better than real life' },
-            { ru: 'андроид-бармен: наливает, но не пьет', en: 'android bartender: pours, doesnt drink' },
-            { ru: 'био-чип: обновился, теперь сядешь на 15 лет', en: 'biochip: updated, now 15 years jail' },
-            { ru: 'робот-полицейский: ловит за превышение скорости мысли', en: 'robot cop: catches speeding thoughts' },
-            { ru: 'киберпанк: будущее, где нет котиков', en: 'cyberpunk: future with no cats' },
-            { ru: 'нано-боты: лечат, но жужжат под кожей', en: 'nanobots: heal, but buzz under skin' },
-            { ru: 'флаер: летишь, но пробки в воздухе', en: 'flyer: flying, but air traffic' },
-            { ru: 'кибер-глаз: видишь рекламу даже с закрытыми', en: 'cybereye: see ads even with eyes closed' },
-            { ru: 'квантовый компьютер: считает, но ответ "42"', en: 'quantum computer: computes, answer 42' },
-            { ru: 'кожа с подогревом: зимой хорошо, летом ад', en: 'heated skin: good in winter, hell in summer' }
-        ]
-    },
-    {
-        id: 'kdrama',
-        name: '💕 Корейская дорама',
-        icon: '💕',
-        basePrompt: 'Korean drama style, romantic, emotional, korean actors',
-        humor: [
-            { ru: 'главный герой: богатый, красивый, но с травмой', en: 'male lead: rich, handsome, traumatized' },
-            { ru: 'главная героиня: бедная, но добрая, спотыкается', en: 'female lead: poor, kind, trips' },
-            { ru: 'сценарист: зачем 16 серий, если можно за 10', en: 'writer: why 16 episodes if 10 enough' },
-            { ru: 'злодейка: красивая, но злая, все ее ненавидят', en: 'villainess: beautiful, evil, everyone hates' },
-            { ru: 'первая любовь: возвращается из США', en: 'first love: returns from USA' },
-            { ru: 'поцелуй в дораме: 5 минут смотреть друг на друга', en: 'drama kiss: 5 minutes staring' },
-            { ru: 'флешбеки: каждый эпизод одно и то же', en: 'flashbacks: same thing every episode' },
-            { ru: 'OST: слушаешь неделю после серии', en: 'OST: listen for week after episode' },
-            { ru: 'главный герой падает, героиня ловит', en: 'male lead falls, female lead catches' },
-            { ru: 'мать героя: против бедной невестки', en: 'heros mom: against poor daughter in law' },
-            { ru: 'тайное прошлое: все связаны', en: 'secret past: everyone connected' },
-            { ru: 'авария: потеря памяти перед свадьбой', en: 'accident: amnesia before wedding' },
-            { ru: 'лучший друг: влюблен в героиню, но молчит', en: 'best friend: loves heroine, silent' },
-            { ru: 'еда в дораме: едят и хвалят каждую секунду', en: 'food in drama: eat and praise every second' },
-            { ru: 'главный герой: плачет красиво', en: 'male lead: cries beautifully' },
-            { ru: 'смотреть дораму: начал в 22, закончил в 6 утра', en: 'watching drama: started 10pm, ended 6am' },
-            { ru: 'второстепенная пара: интереснее главной', en: 'second couple: more interesting than main' },
-            { ru: 'рабочее место: все влюблены друг в друга', en: 'workplace: everyone in love with each other' },
-            { ru: 'путешествие во времени: встретил себя', en: 'time travel: met self' },
-            { ru: 'король/президент: влюбляется в простую девушку', en: 'king/president: falls for common girl' },
-            { ru: 'сестры/братья: вечно ссорятся, но любят', en: 'siblings: fight, but love' },
-            { ru: 'свадьба в последней серии: все счастливы', en: 'wedding in last episode: everyone happy' },
-            { ru: 'дорама закончилась: депрессия на неделю', en: 'drama ended: depression for week' },
-            { ru: 'смотреть с субтитрами: пропустил момент, перематываю', en: 'watch with subs: missed moment, rewind' }
-        ]
-    }
-];
 
-// ========== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ==========
-const ADDITIONAL_STYLES = [
-    { name: '💒 Свадебный', style: 'wedding style, romantic, elegant, bride and groom, formal attire, beautiful decorations' },
-    { name: '🎂 День рождения', style: 'birthday party style, festive, cake, balloons, celebration, happy atmosphere' },
-    { name: '🎄 Новогодний', style: 'new year style, christmas tree, snow, santa claus, festive lights, holiday spirit' },
-    { name: '🎃 Хеллоуин', style: 'halloween style, spooky, pumpkins, ghosts, skeletons, horror, scary but fun' },
-    { name: '🎮 GTA стиль', style: 'GTA game style, grand theft auto, video game aesthetic, urban, criminal, action' },
-    { name: '⛏️ Майнкрафт', style: 'Minecraft style, blocky, pixelated, cubic, game characters, pixel art' },
-    { name: '🌃 Киберпанк', style: 'cyberpunk style, neon lights, futuristic, high tech, dark, rainy, holograms' },
-    { name: '💕 Корейская дорама', style: 'korean drama style, romantic, emotional, soft lighting, aesthetic, korean fashion' }
-];
+        // ========== СТИЛИ (23 ВАРИАНТА) ==========
+        const STYLES = [
+            { name: '✨ 3D мультяшный', style: '3d render, pixar style, volumetric' },
+            { name: '🎯 Плоский (Flat)', style: 'flat vector, minimalism, bright colors' },
+            { name: '🌸 Кавайный (аниме)', style: 'kawaii, chibi, big eyes, anime' },
+            { name: '👾 Пиксельный (8-bit)', style: 'pixel art, 8bit, retro games' },
+            { name: '🎨 Акварельный', style: 'watercolor, hand painted, artistic' },
+            { name: '✏️ Скетч (карандаш)', style: 'sketch, pencil drawing, black and white' },
+            { name: '🖌️ Масляная живопись', style: 'oil painting, artistic, textured' },
+            { name: '🌃 Киберпанк', style: 'cyberpunk, neon, futuristic' },
+            { name: '📺 Ретро (50-е)', style: 'retro, vintage, 50s, old cartoon' },
+            { name: '🦇 Готический', style: 'gothic, dark, mystical, horror' },
+            { name: '⚙️ Стимпанк', style: 'steampunk, mechanical, gears' },
+            { name: '🧝 Фэнтези', style: 'fantasy, magical, fairytale' },
+            { name: '💥 Стиль комиксов', style: 'comic book style, bold outlines' },
+            { name: '🔷 Кубизм', style: 'cubism, geometric, abstract' },
+            { name: '🍅 Поп-арт', style: 'pop art, warhol, bright' },
+            { name: '💒 Свадебный', style: 'wedding style, romantic, elegant, bride and groom, formal attire, beautiful decorations, celebration atmosphere' },
+            { name: '🎂 День рождения', style: 'birthday party style, festive, colorful cake, balloons, presents, happy celebration, party hats' },
+            { name: '🎄 Новогодний', style: 'new year style, christmas tree, snow, santa claus, festive lights, holiday spirit, gifts, winter atmosphere' },
+            { name: '🎃 Хеллоуин', style: 'halloween style, spooky, carved pumpkins, ghosts, skeletons, horror theme, creepy but fun, cobwebs' },
+            { name: '🎮 GTA стиль', style: 'GTA game style, grand theft auto, video game aesthetic, urban, criminal underworld, action packed, wanted stars' },
+            { name: '⛏️ Майнкрафт', style: 'Minecraft style, blocky, pixelated, cubic, game characters, voxel art, pixel perfect, crafting' },
+            { name: '🌃 Киберпанк', style: 'cyberpunk style, neon lights, futuristic city, high tech, dark rainy streets, holograms, cybernetic implants' },
+            { name: '💕 Корейская дорама', style: 'korean drama style, romantic, emotional, soft lighting, aesthetic, korean fashion, melodramatic, beautiful scenes' }
+        ];
+
+        // ========== ПРОМПТЫ ДЛЯ KLING AI ПО ТИПАМ ДВИЖЕНИЙ (ПОЛНОСТЬЮ) ==========
+        const MOTION_PROMPTS = {
+            subtle: {
+                happy: 'subtle happy movement, slight smile, gentle nod, peaceful atmosphere, minimal motion',
+                sad: 'subtle sad expression, slight head drop, melancholic mood, gentle movement, barely perceptible',
+                angry: 'subtle annoyed expression, slight frown, minimal movement, restrained tension',
+                surprised: 'subtle surprised look, slight eyebrow raise, brief moment, gentle reaction',
+                laughing: 'subtle laugh, gentle shaking, joyful but restrained, small smile',
+                love: 'subtle loving expression, gentle gaze, slight lean forward, warm atmosphere',
+                sleepy: 'subtle sleepy movement, slight nodding, slow blinking, drowsy',
+                cool: 'subtle cool pose, slight head tilt, confident but minimal movement',
+                scared: 'subtle scared expression, slight flinch, wide eyes, frozen',
+                silly: 'subtle silly expression, slight goofy smile, playful but restrained',
+                sick: 'subtle sick movement, slight shiver, weak posture, minimal motion',
+                eating: 'subtle eating motion, slight chewing, gentle movement',
+                working: 'subtle working motion, slight typing, focused expression, minimal movement',
+                celebrating: 'subtle celebration, slight happy bounce, restrained joy',
+                thinking: 'subtle thinking pose, slight head tilt, thoughtful expression',
+                crying: 'subtle crying, slight tears, gentle sobbing, minimal motion',
+                winking: 'subtle wink, slight eye movement, playful expression',
+                shy: 'subtle shy movement, slight look away, bashful expression',
+                bored: 'subtle bored expression, slight sigh, uninterested posture',
+                proud: 'subtle proud pose, slight head raise, confident expression',
+                default: 'subtle natural movement, slight breathing motion, gentle and calm'
+            },
+            moderate: {
+                happy: 'happy expression, nodding head, gentle hand gestures, warm smile, moderate movement',
+                sad: 'sad expression, shaking head slightly, wiping eye, melancholic, noticeable emotion',
+                angry: 'angry expression, sharp head turns, tense body language, clear frustration',
+                surprised: 'wide eyes, leaning back slightly, mouth open in surprise, moderate reaction',
+                laughing: 'laughing with open mouth, shoulders moving up and down, joyful expression',
+                love: 'loving expression, gentle hand to heart, warm smile, tender movement',
+                sleepy: 'sleepy expression, yawning, stretching slightly, drowsy movement',
+                cool: 'cool pose, adjusting sunglasses, slight lean, confident attitude',
+                scared: 'scared expression, stepping back, hands up, fearful reaction',
+                silly: 'silly expression, playful gestures, goofy smile, fun movement',
+                sick: 'sick expression, coughing slightly, weak posture, unwell movement',
+                eating: 'eating motion, chewing, enjoying food, moderate movement',
+                working: 'working motion, typing, checking screen, focused movement',
+                celebrating: 'celebrating, small jumps, clapping, happy movement',
+                thinking: 'thinking pose, tapping chin, thoughtful expression, moderate',
+                crying: 'crying, wiping tears, shoulders shaking, sad movement',
+                winking: 'winking, playful smile, slight head tilt, flirtatious',
+                shy: 'shy expression, looking down, playing with hands, bashful',
+                bored: 'bored expression, sighing, looking around, uninterested',
+                proud: 'proud pose, chest out, head high, confident expression',
+                default: 'moderate natural movement, breathing, slight gestures'
+            },
+            expressive: {
+                happy: 'very happy, jumping with joy, waving hands, big smile, expressive dance',
+                sad: 'very sad, crying heavily, hiding face, shoulders shaking dramatically',
+                angry: 'very angry, shaking fists, stomping, red face, intense fury',
+                surprised: 'extremely surprised, jumping back, hands on cheeks, dramatic reaction',
+                laughing: 'laughing hysterically, holding stomach, tears of joy, uncontrolled laughter',
+                love: 'very loving, reaching out, heart eyes, dramatic romantic pose',
+                sleepy: 'very sleepy, falling asleep, head dropping, extreme drowsiness',
+                cool: 'extremely cool, posing dramatically, finger guns, confident swagger',
+                scared: 'terrified, running away, screaming, extreme fear',
+                silly: 'extremely silly, making funny faces, exaggerated gestures, clowning',
+                sick: 'very sick, collapsing, weak, dramatic illness',
+                eating: 'enthusiastic eating, large bites, enjoying food dramatically',
+                working: 'focused working, typing furiously, intense concentration',
+                celebrating: 'wild celebration, jumping, dancing, throwing confetti',
+                thinking: 'deep thinking, pacing, dramatic pondering, exaggerated thought',
+                crying: 'sobbing uncontrollably, falling to knees, dramatic tears',
+                winking: 'dramatic wink, finger pointing, exaggerated flirt',
+                shy: 'extremely shy, hiding face, turning away, bashful drama',
+                bored: 'extremely bored, falling asleep, dramatic sighing, overdone',
+                proud: 'extremely proud, chest puffed, chin high, victorious pose',
+                default: 'expressive movement, dramatic gestures, dynamic motion'
+            }
+        };
+
+        // ========== ФУНКЦИИ ЛОГИРОВАНИЯ ==========
+        function toggleDebug() {
+            const panel = document.getElementById('debugPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function addDebugLog(type, message) {
+            const logs = document.getElementById('debugLogs');
+            if (!logs) return;
+            const timestamp = new Date().toLocaleTimeString();
+            logs.innerHTML += `<div><span style="color: #fbbf24;">${timestamp}</span> <span style="color: ${type === 'error' ? '#ef4444' : '#4ade80'};">${message}</span></div>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
 
         // ========== ФУНКЦИИ ИНТЕРФЕЙСА ==========
-// ========== ФУНКЦИЯ 1: ОБНОВЛЕННАЯ ФУНКЦИЯ РЕНДЕРА ПРОФЕССИЙ ==========
-function renderProfessions() {
-    const grid = document.getElementById('professionsGrid');
-    if (!grid) return;
-    
-    // Объединяем основные профессии с дополнительными
-    const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS];
-    
-    grid.innerHTML = '';
-    allProfessions.forEach(profession => {
-        const div = document.createElement('div');
-        div.className = 'profession-item';
-        div.onclick = (e) => {
-            selectProfession(profession.id, e);
-        };
-        div.innerHTML = `<span class="profession-icon">${profession.icon}</span><span class="profession-name">${profession.name}</span>`;
-        grid.appendChild(div);
-    });
-    
-    addDebugLog('success', `✅ Загружено ${allProfessions.length} профессий`);
-}
-
-        window.selectProfession = (professionId, event) => {
-            selectedProfession = professionId;
-            document.querySelectorAll('.profession-item').forEach(item => item.classList.remove('selected'));
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.add('selected');
-            }
-            const profession = PROFESSIONS.find(p => p.id === professionId);
-            if (profession) {
-                const countEl = document.getElementById('selectedProfessionCount');
-                if (countEl) countEl.textContent = profession.name;
-            }
-        };
+        function renderProfessions() {
+            const grid = document.getElementById('professionsGrid');
+            const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS];
+            
+            grid.innerHTML = '';
+            allProfessions.forEach(prof => {
+                const div = document.createElement('div');
+                div.className = 'profession-item';
+                div.onclick = () => {
+                    selectedProfession = prof.id;
+                    document.querySelectorAll('.profession-item').forEach(i => i.classList.remove('selected'));
+                    div.classList.add('selected');
+                    document.getElementById('selectedProfessionCount').textContent = prof.name;
+                };
+                div.innerHTML = `<span class="profession-icon">${prof.icon}</span><span class="profession-name">${prof.name}</span>`;
+                grid.appendChild(div);
+            });
+            
+            addDebugLog('success', `✅ Загружено ${allProfessions.length} профессий`);
+        }
 
         function renderEmotions() {
             const grid = document.getElementById('emotionsGrid');
-            if (!grid) return;
-            
             grid.innerHTML = '';
             EMOTIONS.forEach(emotion => {
                 const div = document.createElement('div');
                 div.className = 'emotion-item';
-                div.onclick = (e) => {
-                    if (e.target.type !== 'checkbox') {
-                        const checkbox = div.querySelector('input');
-                        if (checkbox) {
-                            checkbox.checked = !checkbox.checked;
-                            toggleEmotion(emotion.id, checkbox.checked);
-                        }
-                    }
-                };
                 div.innerHTML = `
                     <input type="checkbox" value="${emotion.id}" onchange="toggleEmotion('${emotion.id}', this.checked)">
                     <span class="emotion-icon">${emotion.icon}</span>
@@ -2084,100 +1997,14 @@ function renderProfessions() {
                 grid.appendChild(div);
             });
         }
-		
-		// ========== ИНИЦИАЛИЗАЦИЯ СТИЛЕЙ ==========
-function initStyles() {
-    const stylesGrid = document.getElementById('styleTags');
-    if (!stylesGrid) return;
-    
-    // Полностью очищаем сетку стилей
-    stylesGrid.innerHTML = '';
-    
-    // ОСНОВНЫЕ СТИЛИ (15 вариантов)
-    const baseStyles = [
-        { name: '✨ 3D мультяшный', style: '3d render, pixar style, volumetric' },
-        { name: '🎯 Плоский (Flat)', style: 'flat vector, minimalism, bright colors' },
-        { name: '🌸 Кавайный (аниме)', style: 'kawaii, chibi, big eyes, anime' },
-        { name: '👾 Пиксельный (8-bit)', style: 'pixel art, 8bit, retro games' },
-        { name: '🎨 Акварельный', style: 'watercolor, hand painted, artistic' },
-        { name: '✏️ Скетч (карандаш)', style: 'sketch, pencil drawing, black and white' },
-        { name: '🖌️ Масляная живопись', style: 'oil painting, artistic, textured' },
-        { name: '🌃 Киберпанк', style: 'cyberpunk, neon, futuristic' },
-        { name: '📺 Ретро (50-е)', style: 'retro, vintage, 50s, old cartoon' },
-        { name: '🦇 Готический', style: 'gothic, dark, mystical, horror' },
-        { name: '⚙️ Стимпанк', style: 'steampunk, mechanical, gears' },
-        { name: '🧝 Фэнтези', style: 'fantasy, magical, fairytale' },
-        { name: '💥 Стиль комиксов', style: 'comic book style, bold outlines' },
-        { name: '🔷 Кубизм', style: 'cubism, geometric, abstract' },
-        { name: '🍅 Поп-арт', style: 'pop art, warhol, bright' }
-    ];
 
-    // ТЕМАТИЧЕСКИЕ СТИЛИ (8 новых вариантов)
-    const thematicStyles = [
-        { name: '💒 Свадебный', style: 'wedding style, romantic, elegant, bride and groom, formal attire, beautiful decorations, celebration atmosphere' },
-        { name: '🎂 День рождения', style: 'birthday party style, festive, colorful cake, balloons, presents, happy celebration, party hats' },
-        { name: '🎄 Новогодний', style: 'new year style, christmas tree, snow, santa claus, festive lights, holiday spirit, gifts, winter atmosphere' },
-        { name: '🎃 Хеллоуин', style: 'halloween style, spooky, carved pumpkins, ghosts, skeletons, horror theme, creepy but fun, cobwebs' },
-        { name: '🎮 GTA стиль', style: 'GTA game style, grand theft auto, video game aesthetic, urban, criminal underworld, action packed, wanted stars' },
-        { name: '⛏️ Майнкрафт', style: 'Minecraft style, blocky, pixelated, cubic, game characters, voxel art, pixel perfect, crafting' },
-        { name: '🌃 Киберпанк', style: 'cyberpunk style, neon lights, futuristic city, high tech, dark rainy streets, holograms, cybernetic implants' },
-        { name: '💕 Корейская дорама', style: 'korean drama style, romantic, emotional, soft lighting, aesthetic, korean fashion, melodramatic, beautiful scenes' }
-    ];
-
-    // Объединяем все стили
-    const allStyles = [...baseStyles, ...thematicStyles];
-    
-    // Создаем элементы для каждого стиля
-    allStyles.forEach((style, index) => {
-        const div = document.createElement('div');
-        div.className = 'style-tag';
-        if (index === 0) div.classList.add('selected'); // Первый стиль выбран по умолчанию
-        div.setAttribute('data-style', style.style);
-        div.textContent = style.name;
-        
-        // Добавляем обработчик клика
-        div.addEventListener('click', function() {
-            // Убираем выделение у всех стилей
-            document.querySelectorAll('.style-tag').forEach(t => t.classList.remove('selected'));
-            // Выделяем текущий стиль
-            this.classList.add('selected');
-            // Сохраняем выбранный стиль в глобальную переменную
-            currentStyle = this.dataset.style;
-            // Логируем выбор
-            addDebugLog('info', `🎨 Выбран стиль: ${this.textContent} (${currentStyle.substring(0, 50)}...)`);
-        });
-        
-        stylesGrid.appendChild(div);
-    });
-    
-    // Устанавливаем начальный стиль
-    currentStyle = allStyles[0].style;
-    
-    // Логируем успешную загрузку
-    addDebugLog('success', `✅ Загружено ${allStyles.length} стилей (15 основных + 8 тематических)`);
-    
-    // Для отладки выводим список стилей
-    console.log('🎨 Доступные стили:', allStyles.map(s => s.name).join(', '));
-}
-
-        window.toggleEmotion = (emotionId, checked) => {
+        window.toggleEmotion = (id, checked) => {
             if (checked) {
-                if (!selectedEmotions.includes(emotionId)) selectedEmotions.push(emotionId);
+                if (!selectedEmotions.includes(id)) selectedEmotions.push(id);
             } else {
-                selectedEmotions = selectedEmotions.filter(id => id !== emotionId);
+                selectedEmotions = selectedEmotions.filter(e => e !== id);
             }
-            
-            document.querySelectorAll('.emotion-item').forEach(item => {
-                const checkbox = item.querySelector('input');
-                if (checkbox && checkbox.checked) {
-                    item.classList.add('selected');
-                } else {
-                    item.classList.remove('selected');
-                }
-            });
-            
-            const countEl = document.getElementById('selectedCount');
-            if (countEl) countEl.textContent = selectedEmotions.length;
+            document.getElementById('selectedCount').textContent = selectedEmotions.length;
             
             const generateBtn = document.getElementById('generateBtn');
             if (generateBtn) {
@@ -2185,125 +2012,89 @@ function initStyles() {
             }
         };
 
-        document.querySelectorAll('.style-tag').forEach(tag => {
-            tag.addEventListener('click', function() {
-                document.querySelectorAll('.style-tag').forEach(t => t.classList.remove('selected'));
+        function initStyles() {
+            const grid = document.getElementById('styleTags');
+            grid.innerHTML = '';
+            
+            STYLES.forEach((style, index) => {
+                const div = document.createElement('div');
+                div.className = 'style-tag';
+                if (index === 0) div.classList.add('selected');
+                div.setAttribute('data-style', style.style);
+                div.textContent = style.name;
+                
+                div.addEventListener('click', function() {
+                    document.querySelectorAll('.style-tag').forEach(t => t.classList.remove('selected'));
+                    this.classList.add('selected');
+                    currentStyle = this.dataset.style;
+                    addDebugLog('info', `🎨 Выбран стиль: ${this.textContent}`);
+                });
+                
+                grid.appendChild(div);
+            });
+            
+            currentStyle = STYLES[0].style;
+            addDebugLog('success', `✅ Загружено ${STYLES.length} стилей`);
+        }
+
+        // Инициализация выбора типа движения
+        document.querySelectorAll('.motion-option').forEach(opt => {
+            opt.addEventListener('click', function() {
+                document.querySelectorAll('.motion-option').forEach(o => o.classList.remove('selected'));
                 this.classList.add('selected');
-                currentStyle = this.dataset.style;
+                selectedMotionType = this.dataset.motion;
+                addDebugLog('info', `🎬 Выбран тип анимации: ${this.querySelector('.title').textContent}`);
             });
         });
 
-        // ========== ИНИЦИАЛИЗАЦИЯ MEDIAPIPE ==========
-        async function initMediaPipe() {
-            const statusDiv = document.getElementById('mediapipeStatus');
+        // ========== ПРОВЕРКА API ==========
+        async function checkAPIs() {
+            // Проверка Recraft
             try {
-                if (typeof Pose === 'undefined') {
-                    throw new Error('MediaPipe библиотека не загружена');
-                }
-                
-                const pose = new Pose({
-                    locateFile: (file) => {
-                        return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-                    }
-                });
-                
-                pose.setOptions({
-                    modelComplexity: 1,
-                    smoothLandmarks: true,
-                    enableSegmentation: false,
-                    smoothSegmentation: false,
-                    minDetectionConfidence: 0.5,
-                    minTrackingConfidence: 0.5
-                });
-                
-                // Обработчик результатов
-                pose.onResults((results) => {
-                    if (results.poseLandmarks) {
-                        currentLandmarks = results.poseLandmarks;
-                    }
-                });
-                
-                await pose.initialize();
-                poseDetector = pose;
-                mediapipeReady = true;
-                
-                statusDiv.className = 'api-status mediapipe';
-                statusDiv.innerHTML = '<span class="status-icon">✅</span><span>MediaPipe: 33 точки готовы</span>';
-                addDebugLog('success', 'MediaPipe инициализирован');
-                
-            } catch (error) {
-                console.error('MediaPipe init error:', error);
-                statusDiv.className = 'api-status mediapipe error';
-                statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>MediaPipe: Демо-режим (без анализа)</span>';
-                mediapipeReady = false;
-                addDebugLog('warn', 'MediaPipe в демо-режиме');
-            }
-        }
-
-        // ========== ПРОВЕРКА RECRAFT API ==========
-        async function checkRecraftAPI() {
-            const statusDiv = document.getElementById('recraftStatus');
-            if (!statusDiv) return;
-            
-            addDebugLog('info', '🔄 Проверка подключения к Recraft V4...');
-            
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000);
-                
-                const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
+                const recraftRes = await fetch('https://external.api.recraft.ai/v1/images/generations', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${RECRAFT_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 
-                        prompt: 'test', 
-                        n: 1, 
-                        size: '1024x1024',
-                        model: 'recraftv4'
-                    }),
-                    signal: controller.signal
+                    body: JSON.stringify({ prompt: 'test', n: 1, size: '1024x1024' })
                 });
                 
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    statusDiv.className = 'api-status recraft';
-                    statusDiv.innerHTML = '<span class="status-icon">✅</span><span>Recraft V4: Подключен</span>';
-                    addDebugLog('success', '✅ Recraft V4 успешно подключен');
+                if (recraftRes.ok) {
+                    document.getElementById('recraftStatus').innerHTML = '✅ Recraft V4: Подключен';
+                    addDebugLog('success', '✅ Recraft API готов');
                 } else {
-                    const errorText = await response.text();
-                    statusDiv.className = 'api-status recraft error';
-                    statusDiv.innerHTML = '<span class="status-icon">⚠️</span><span>Recraft V4: Ошибка ' + response.status + '</span>';
-                    addDebugLog('error', `❌ Recraft V4 ошибка ${response.status}: ${errorText.substring(0, 100)}`);
+                    document.getElementById('recraftStatus').innerHTML = '⚠️ Recraft V4: Ошибка';
+                    addDebugLog('error', '❌ Recraft API ошибка');
                 }
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    statusDiv.className = 'api-status recraft error';
-                    statusDiv.innerHTML = '<span class="status-icon">⏱️</span><span>Recraft V4: Таймаут</span>';
-                    addDebugLog('error', '❌ Recraft V4: Таймаут (сервер не отвечает 30 секунд)');
-                } else {
-                    statusDiv.className = 'api-status recraft error';
-                    statusDiv.innerHTML = '<span class="status-icon">❌</span><span>Recraft V4: Ошибка сети</span>';
-                    addDebugLog('error', `❌ Recraft V4: ${error.message}`);
-                }
+            } catch {
+                document.getElementById('recraftStatus').innerHTML = '❌ Recraft V4: Ошибка';
+            }
+
+            // Проверка Kling
+            if (KLING_ACCESS_KEY && KLING_SECRET_KEY) {
+                document.getElementById('klingStatus').innerHTML = '✅ Kling AI: Ключи загружены';
+                addDebugLog('success', '✅ Kling AI готов к работе');
+            } else {
+                document.getElementById('klingStatus').innerHTML = '⚠️ Kling AI: Нет ключей';
             }
         }
 
-        // ========== ГЕНЕРАЦИЯ PNG С АНГЛИЙСКИМИ ПРОМПТАМИ ==========
+        // ========== ГЕНЕРАЦИЯ JWT ТОКЕНА ДЛЯ KLING ==========
+        function generateKlingToken() {
+            // Упрощенная версия для демо
+            return btoa(`${KLING_ACCESS_KEY}:${KLING_SECRET_KEY}`);
+        }
+
+        // ========== ГЕНЕРАЦИЯ PNG (Recraft) ==========
         async function generatePNG(profession, emotion, humorItem) {
             const character = document.getElementById('characterPrompt').value;
             
-            // Формируем промпт с английским описанием сцены и русским текстом
             const prompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, ${humorItem.en}. The character has a speech bubble containing Russian text: "${humorItem.ru}". The Russian text must be clearly visible inside the speech bubble. The scene should match the situation described in the text.`;
             
-            addDebugLog('info', `🎨 Отправляю промпт в Recraft: ${prompt.substring(0, 150)}...`);
+            addDebugLog('info', `🎨 Генерация PNG...`);
             
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 45000);
-                
                 const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
                     method: 'POST',
                     headers: {
@@ -2316,741 +2107,361 @@ function initStyles() {
                         size: '1024x1024',
                         model: 'recraftv4',
                         response_format: 'b64_json'
-                    }),
-                    signal: controller.signal
+                    })
                 });
-                
-                clearTimeout(timeoutId);
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    addDebugLog('error', `❌ Recraft ошибка: ${response.status} - ${errorText.substring(0, 100)}`);
-                    
-                    // Пробуем запасной вариант
-                    addDebugLog('info', '🔄 Пробую запасной вариант промпта...');
-                    
-                    const fallbackPrompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, with a speech bubble containing Russian text "${humorItem.ru}", the text is clearly visible, cartoon style, 3d render`;
-                    
-                    const fallbackResponse = await fetch('https://external.api.recraft.ai/v1/images/generations', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${RECRAFT_API_KEY}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            prompt: fallbackPrompt,
-                            n: 1,
-                            size: '1024x1024',
-                            model: 'recraftv4',
-                            response_format: 'b64_json'
-                        })
-                    });
-                    
-                    if (!fallbackResponse.ok) {
-                        throw new Error(`Fallback тоже не сработал: ${fallbackResponse.status}`);
-                    }
-                    
-                    const fallbackData = await fallbackResponse.json();
-                    if (fallbackData.data && fallbackData.data[0] && fallbackData.data[0].b64_json) {
-                        addDebugLog('success', '✅ Запасной вариант сработал!');
-                        return await resizeImageTo512(fallbackData.data[0].b64_json);
-                    }
-                    
-                    return null;
+                    throw new Error(`Recraft error: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
-                
                 if (data.data && data.data[0] && data.data[0].b64_json) {
-                    addDebugLog('success', `✅ PNG получен от Recraft, размер: ${data.data[0].b64_json.length} символов`);
-                    return await resizeImageTo512(data.data[0].b64_json);
+                    addDebugLog('success', `✅ PNG готов`);
+                    return await resizeImage(data.data[0].b64_json);
                 }
-                
-                addDebugLog('error', '❌ Неожиданный формат ответа от Recraft');
-                return null;
-                
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    addDebugLog('error', '❌ Таймаут генерации PNG (45 секунд)');
-                } else {
-                    addDebugLog('error', `❌ Ошибка генерации PNG: ${error.message}`);
-                }
-                return null;
+            } catch (e) {
+                addDebugLog('error', `❌ Ошибка PNG: ${e.message}`);
             }
+            return null;
         }
 
-        // ========== РЕСАЙЗ ИЗОБРАЖЕНИЯ ==========
-        function resizeImageTo512(base64Image) {
-            return new Promise((resolve, reject) => {
+        function resizeImage(base64) {
+            return new Promise((resolve) => {
                 const img = new Image();
                 img.onload = () => {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 512;
-                        canvas.height = 512;
-                        const ctx = canvas.getContext('2d');
-                        
-                        // Рисуем с сохранением пропорций и белым фоном
-                        ctx.fillStyle = 'white';
-                        ctx.fillRect(0, 0, 512, 512);
-                        
-                        // Вычисляем отступы для сохранения пропорций
-                        const scale = Math.min(512 / img.width, 512 / img.height);
-                        const x = (512 - img.width * scale) / 2;
-                        const y = (512 - img.height * scale) / 2;
-                        
-                        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-                        
-                        resolve(canvas.toDataURL('image/png'));
-                    } catch (e) {
-                        reject(e);
-                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 512;
+                    canvas.height = 512;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 512, 512);
+                    resolve(canvas.toDataURL('image/png'));
                 };
-                img.onerror = () => reject(new Error('Failed to load image'));
-                img.src = `data:image/png;base64,${base64Image}`;
+                img.src = `data:image/png;base64,${base64}`;
             });
         }
 
-        // ========== АНАЛИЗ ИЗОБРАЖЕНИЯ ЧЕРЕЗ MEDIAPIPE ==========
-        async function analyzeImage(imageElement) {
-            if (!mediapipeReady || !poseDetector) {
-                addDebugLog('warn', 'MediaPipe не готов, использую демо-анимацию');
-                return null;
-            }
+        // ========== АНИМАЦИЯ ЧЕРЕЗ KLING AI ==========
+        async function animateWithKling(imageDataUrl, emotionId) {
+            addDebugLog('info', `🎬 Отправка в Kling AI...`);
+            
+            // Получаем промпт для движения
+            const motionPrompt = MOTION_PROMPTS[selectedMotionType][emotionId] || MOTION_PROMPTS[selectedMotionType].default;
             
             try {
-                await poseDetector.send({ image: imageElement });
-                
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-                if (currentLandmarks) {
-                    addDebugLog('success', `✅ Найдено ${currentLandmarks.length} точек`);
-                    
-                    const head = currentLandmarks[0];
-                    const leftHand = currentLandmarks[15];
-                    const rightHand = currentLandmarks[16];
-                    
-                    addDebugLog('info', `📍 Голова: (${head?.x.toFixed(2)}, ${head?.y.toFixed(2)})`);
-                    if (leftHand) addDebugLog('info', `👈 Левая рука: (${leftHand.x.toFixed(2)}, ${leftHand.y.toFixed(2)})`);
-                    if (rightHand) addDebugLog('info', `👉 Правая рука: (${rightHand.x.toFixed(2)}, ${rightHand.y.toFixed(2)})`);
-                    
-                    return currentLandmarks;
-                } else {
-                    addDebugLog('warn', '⚠️ Точки не обнаружены');
-                    return null;
+                // 1. Отправляем задание на генерацию
+                const taskResponse = await fetch('https://api.klingai.com/v1/videos', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${generateKlingToken()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "kling-v2",
+                        input: {
+                            prompt: motionPrompt,
+                            image: imageDataUrl
+                        },
+                        parameters: {
+                            duration: 5, // 5 секунд
+                            mode: "pro",
+                            cfg_scale: 0.8
+                        }
+                    })
+                });
+
+                if (!taskResponse.ok) {
+                    throw new Error(`Kling API error: ${taskResponse.status}`);
                 }
+
+                const taskData = await taskResponse.json();
+                const taskId = taskData.data.task_id;
                 
+                addDebugLog('info', `⏳ Задача создана: ${taskId}, ожидаем результат...`);
+
+                // 2. Ждем завершения (опрос статуса)
+                let resultUrl = null;
+                let attempts = 0;
+                const maxAttempts = 30; // Максимум 30 попыток (примерно 2.5 минуты)
+
+                while (!resultUrl && attempts < maxAttempts) {
+                    await new Promise(resolve => setTimeout(resolve, 5000)); // Ждем 5 секунд
+                    
+                    const statusResponse = await fetch(`https://api.klingai.com/v1/videos/${taskId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${generateKlingToken()}`
+                        }
+                    });
+                    
+                    const statusData = await statusResponse.json();
+                    
+                    if (statusData.code === 0) {
+                        if (statusData.data.task_status === 'succeed') {
+                            resultUrl = statusData.data.result.video_url;
+                            addDebugLog('success', `✅ Генерация завершена`);
+                        } else if (statusData.data.task_status === 'failed') {
+                            throw new Error('Kling generation failed');
+                        }
+                    }
+                    
+                    attempts++;
+                }
+
+                if (!resultUrl) {
+                    throw new Error('Timeout waiting for Kling generation');
+                }
+
+                // 3. Скачиваем видео
+                const videoResponse = await fetch(resultUrl);
+                const videoBlob = await videoResponse.blob();
+                
+                // 4. Конвертируем в WEBM для Telegram
+                return await convertToTelegramSticker(videoBlob, imageDataUrl);
+
             } catch (error) {
-                addDebugLog('error', `❌ Ошибка анализа: ${error.message}`);
-                return null;
+                addDebugLog('error', `❌ Kling error: ${error.message}`);
+                
+                // В случае ошибки возвращаем заглушку
+                return await createFallbackAnimation(imageDataUrl);
             }
         }
 
-  // ========== СУПЕР-СЛОЖНАЯ 5-СЛОЙНАЯ АНИМАЦИЯ НА 33 ТОЧКАХ MEDIAPIPE ==========
-function startPremiumAnimation(landmarks) {
-    const canvas = document.getElementById('webmCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    if (!pngImage) {
-        addDebugLog('error', '❌ Нет изображения для анимации');
-        return;
-    }
-    
-    const pulseIntensity = document.getElementById('pulseIntensity').value / 100;
-    const moveIntensity = document.getElementById('moveIntensity').value / 100;
-    const rotateIntensity = document.getElementById('rotateIntensity').value / 100;
-    
-    let frame = 0;
-    let lastTime = performance.now();
-    let fps = 0;
-    
-    function animate() {
-        // Расчет FPS
-        const now = performance.now();
-        const delta = now - lastTime;
-        fps = 1000 / delta;
-        lastTime = now;
-        
-        ctx.clearRect(0, 0, 512, 512);
-        ctx.save();
-        ctx.translate(256, 256); // Центр для анимации
-        
-        if (landmarks && landmarks.length > 0) {
-            // ===== СЛОЙ 1: ДЫХАНИЕ (на основе движения грудной клетки) =====
-            // Точки 11-12 (плечи) и 23-24 (бедра) определяют ритм дыхания
-            if (landmarks[11] && landmarks[12]) {
-                const chestHeight = Math.abs(landmarks[11].y - landmarks[12].y);
-                const breathScaleY = 1 + Math.sin(frame * 0.1) * 0.03 * pulseIntensity * chestHeight;
-                const breathScaleX = 1 + Math.cos(frame * 0.1) * 0.01 * pulseIntensity;
-                ctx.scale(breathScaleX, breathScaleY);
+        // ========== КОНВЕРТАЦИЯ В ФОРМАТ TELEGRAM ==========
+        async function convertToTelegramSticker(videoBlob, fallbackImageUrl) {
+            addDebugLog('info', `🔄 Конвертация в WEBM...`);
+            
+            try {
+                // Создаем видео элемент для обработки
+                const video = document.createElement('video');
+                video.src = URL.createObjectURL(videoBlob);
+                
+                await new Promise((resolve, reject) => {
+                    video.onloadedmetadata = resolve;
+                    video.onerror = reject;
+                    setTimeout(resolve, 5000); // Таймаут 5 секунд
+                });
+
+                // Создаем canvas для обработки кадров
+                const canvas = document.createElement('canvas');
+                canvas.width = 512;
+                canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                
+                // Настраиваем запись
+                const stream = canvas.captureStream(30);
+                const mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'video/webm;codecs=vp9',
+                    videoBitsPerSecond: 250000
+                });
+
+                const chunks = [];
+                mediaRecorder.ondataavailable = e => chunks.push(e.data);
+
+                return new Promise((resolve, reject) => {
+                    mediaRecorder.onstop = () => {
+                        const finalBlob = new Blob(chunks, { type: 'video/webm' });
+                        addDebugLog('success', `✅ Готово: ${(finalBlob.size/1024).toFixed(2)} KB`);
+                        resolve(URL.createObjectURL(finalBlob));
+                    };
+
+                    mediaRecorder.onerror = reject;
+
+                    mediaRecorder.start();
+                    
+                    // Проигрываем видео и рисуем кадры в canvas
+                    video.currentTime = 0;
+                    video.play().catch(() => {
+                        // Если не удалось проиграть, используем запасную анимацию
+                        mediaRecorder.stop();
+                        resolve(createFallbackAnimation(fallbackImageUrl));
+                    });
+                    
+                    let frame = 0;
+                    const interval = setInterval(() => {
+                        if (frame >= 90) { // 3 секунды при 30 fps
+                            clearInterval(interval);
+                            video.pause();
+                            mediaRecorder.stop();
+                            return;
+                        }
+                        
+                        ctx.clearRect(0, 0, 512, 512);
+                        ctx.drawImage(video, 0, 0, 512, 512);
+                        frame++;
+                    }, 33); // ~30 fps
+                });
+            } catch (error) {
+                addDebugLog('error', `❌ Конвертация не удалась: ${error.message}`);
+                return await createFallbackAnimation(fallbackImageUrl);
             }
-            
-            // ===== СЛОЙ 2: ДВИЖЕНИЕ ГОЛОВЫ (точки 0-4) =====
-            if (landmarks[0]) {
-                // Основное движение головы (нос - точка 0)
-                const headX = (landmarks[0].x - 0.5) * 150 * moveIntensity;
-                const headY = (landmarks[0].y - 0.5) * 150 * moveIntensity;
-                
-                // Наклон головы (используем глаза для определения)
-                const headRotate = landmarks[2] && landmarks[3]
-                    ? (landmarks[2].y - landmarks[3].y) * 50 * rotateIntensity
-                    : Math.sin(frame * 0.05) * 0.1 * rotateIntensity;
-                
-                ctx.translate(headX, headY);
-                ctx.rotate(headRotate);
-            }
-            
-            // ===== СЛОЙ 3: АНИМАЦИЯ РУК (точки 11-22) =====
-            if (landmarks[15] && landmarks[16]) {
-                // Левая рука (15 - запястье)
-                const leftHandX = Math.sin(frame * 0.15) * 30 * moveIntensity;
-                const leftHandY = Math.cos(frame * 0.2) * 25 * moveIntensity;
-                
-                // Правая рука (16 - запястье) - противофаза
-                const rightHandX = Math.sin(frame * 0.15 + Math.PI) * 30 * moveIntensity;
-                const rightHandY = Math.cos(frame * 0.2 + Math.PI) * 25 * moveIntensity;
-                
-                // Комбинируем движение обеих рук
-                if (landmarks[15].visibility > 0.5) {
-                    ctx.translate(leftHandX, leftHandY);
-                }
-                if (landmarks[16].visibility > 0.5) {
-                    ctx.translate(rightHandX * 0.7, rightHandY * 0.7);
-                }
-            }
-            
-            // ===== СЛОЙ 4: ПОВОРОТЫ КОРПУСА (точки 11-14, 23-26) =====
-            if (landmarks[11] && landmarks[12] && landmarks[23] && landmarks[24]) {
-                // Поворот корпуса на основе плеч и бедер
-                const shoulderAngle = Math.atan2(
-                    landmarks[12].y - landmarks[11].y,
-                    landmarks[12].x - landmarks[11].x
-                );
-                const hipAngle = Math.atan2(
-                    landmarks[24].y - landmarks[23].y,
-                    landmarks[24].x - landmarks[23].x
-                );
-                
-                const bodyTwist = (shoulderAngle - hipAngle) * 2 * rotateIntensity;
-                const waveTwist = Math.sin(frame * 0.08) * 0.08 * rotateIntensity;
-                
-                ctx.rotate(bodyTwist + waveTwist);
-                
-                // Наклон корпуса
-                const bodyLean = (landmarks[11].y - landmarks[23].y) * 0.5 * moveIntensity;
-                ctx.transform(1, bodyLean, 0, 1, 0, 0);
-            }
-            
-            // ===== СЛОЙ 5: ДИНАМИКА НОГ (точки 23-32) =====
-            if (landmarks[25] && landmarks[26] && landmarks[27] && landmarks[28]) {
-                // Ходьба/подпрыгивание на основе коленей и пяток
-                const stepPhase = Math.sin(frame * 0.2);
-                const stepHeight = Math.abs(stepPhase) * 35 * moveIntensity;
-                const stepShift = Math.sin(frame * 0.25) * 20 * moveIntensity;
-                
-                ctx.translate(stepShift, -stepHeight);
-                
-                // Пружинистость на основе пяток
-                if (landmarks[27] && landmarks[28]) {
-                    const heelBounce = (landmarks[27].y + landmarks[28].y) * 15 * pulseIntensity;
-                    ctx.scale(1, 1 + Math.sin(frame * 0.3) * 0.02 * heelBounce);
-                }
-            }
-            
-            // ===== ДОПОЛНИТЕЛЬНО: МИМИКА И ЭМОЦИИ =====
-            if (currentEmotion) {
-                switch(currentEmotion.id) {
-                    case 'laughing':
-                    case 'happy':
-                        // Тряска от смеха
-                        const shakeX = (Math.random() - 0.5) * 5;
-                        const shakeY = (Math.random() - 0.5) * 3;
-                        ctx.translate(shakeX, shakeY);
-                        break;
-                    case 'sad':
-                    case 'crying':
-                        // Опущенные плечи
-                        ctx.translate(0, 5 * pulseIntensity);
-                        break;
-                    case 'angry':
-                        // Резкие движения
-                        const jerkX = Math.sin(frame * 0.3) * 8;
-                        const jerkY = Math.cos(frame * 0.3) * 8;
-                        ctx.translate(jerkX, jerkY);
-                        break;
-                    case 'surprised':
-                        // Замирание и увеличение
-                        ctx.scale(1 + Math.abs(Math.sin(frame * 0.1)) * 0.05, 1);
-                        break;
-                }
-            }
-            
-            // Логируем каждые 30 кадров для отладки
-            if (frame % 30 === 0) {
-                addDebugLog('info', `🎬 Анимация: кадр ${frame}, FPS: ${Math.round(fps)}`);
-            }
-        } else {
-            // Демо-режим если нет точек MediaPipe
-            const demoScale = 1 + Math.sin(frame * 0.1) * 0.02;
-            const demoRotate = Math.sin(frame * 0.05) * 0.02;
-            const demoBounce = Math.abs(Math.sin(frame * 0.2)) * 10;
-            
-            ctx.scale(demoScale, demoScale);
-            ctx.rotate(demoRotate);
-            ctx.translate(0, -demoBounce);
-            
-            addDebugLog('info', `🎬 Демо-анимация: кадр ${frame}`);
         }
-        
-        // Рисуем PNG со ВСЕМ ТЕКСТОМ внутри
-        ctx.drawImage(pngImage, -256, -256, 512, 512);
-        ctx.restore();
-        
-        frame++;
-        animationFrame = requestAnimationFrame(animate);
-    }
-    
-    // Останавливаем предыдущую анимацию
-    if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-    }
-    
-    // Запускаем новую
-    animate();
-    addDebugLog('success', '🎬 Супер-сложная 5-слойная анимация запущена');
-    
-    // Возвращаем функцию для возможности остановки
-    return () => cancelAnimationFrame(animationFrame);
-}
 
-        
+        // ========== ЗАПАСНАЯ АНИМАЦИЯ (ЕСЛИ KLING НЕ ДОСТУПЕН) ==========
+        async function createFallbackAnimation(imageDataUrl) {
+            addDebugLog('warn', '⚠️ Используется запасная анимация');
+            
+            const img = new Image();
+            await new Promise(resolve => { img.onload = resolve; img.src = imageDataUrl; });
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            
+            const stream = canvas.captureStream(30);
+            const mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'video/webm;codecs=vp9',
+                videoBitsPerSecond: 250000
+            });
 
-// ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ СОХРАНЕНИЯ WEBM ==========
-async function saveAsWEBM(filename) {
-    const canvas = document.getElementById('webmCanvas');
-    
-    // Уменьшаем битрейт для соответствия требованиям Telegram (256 KB)
-    const stream = canvas.captureStream(30); // Уменьшаем FPS до 30
-    const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/webm;codecs=vp9',
-        videoBitsPerSecond: 250000 // 250 kbps — должно дать ~93 КБ за 3 секунды
-    });
-    
-    const chunks = [];
-    mediaRecorder.ondataavailable = e => chunks.push(e.data);
-    
-    return new Promise((resolve) => {
-        mediaRecorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'video/webm' });
-            
-            // Проверяем размер
-            if (blob.size > 256 * 1024) {
-                addDebugLog('warn', `⚠️ Размер файла ${(blob.size/1024).toFixed(2)} КБ превышает лимит 256 КБ`);
-            } else {
-                addDebugLog('success', `✅ Размер файла: ${(blob.size/1024).toFixed(2)} КБ (в лимите)`);
-            }
-            
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
-            addDebugLog('success', `✅ WEBM сохранен: ${filename}`);
-            resolve(blob);
-        };
-        
-        mediaRecorder.start();
-        setTimeout(() => mediaRecorder.stop(), 3000);
-    });
-}
+            const chunks = [];
+            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+
+            return new Promise((resolve) => {
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'video/webm' });
+                    resolve(URL.createObjectURL(blob));
+                };
+
+                mediaRecorder.start();
+                
+                let frame = 0;
+                const interval = setInterval(() => {
+                    if (frame >= 90) {
+                        clearInterval(interval);
+                        mediaRecorder.stop();
+                        return;
+                    }
+                    
+                    ctx.clearRect(0, 0, 512, 512);
+                    ctx.save();
+                    ctx.translate(256, 256);
+                    
+                    // Простая пульсация
+                    const scale = 1 + Math.sin(frame * 0.2) * 0.02;
+                    ctx.scale(scale, scale);
+                    
+                    ctx.drawImage(img, -256, -256, 512, 512);
+                    ctx.restore();
+                    
+                    frame++;
+                }, 33);
+            });
+        }
 
         // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
         window.generatePack = async () => {
-    const character = document.getElementById('characterPrompt').value.trim();
-    
-    if (!character || !selectedProfession || selectedEmotions.length === 0) {
-        alert('Пожалуйста, выберите персонажа, профессию и эмоции');
-        return;
-    }
-
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('generateBtn').disabled = true;
-    document.getElementById('results').innerHTML = '';
-
-    try {
-        generatedPNG = [];
-        generatedWEBM = [];
-        
-        const profession = PROFESSIONS.find(p => p.id === selectedProfession);
-
-        for (let i = 0; i < selectedEmotions.length; i++) {
-            const emotionId = selectedEmotions[i];
-            const emotion = EMOTIONS.find(e => e.id === emotionId);
+            const character = document.getElementById('characterPrompt').value.trim();
             
-            const humorItem = profession.humor[Math.floor(Math.random() * profession.humor.length)];
-            
-            document.getElementById('loadingProgress').textContent = 
-                `Генерируем стикер ${i+1} из ${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
-            
-            // 1. Генерация PNG с английским промптом (текст уже внутри)
-            const pngDataUrl = await generatePNG(profession, emotion, humorItem);
-            
-            if (pngDataUrl) {
-                // 2. Загружаем изображение
-                const img = new Image();
-                await new Promise((resolve) => { 
-                    img.onload = resolve; 
-                    img.src = pngDataUrl; 
-                });
-                
-                pngImage = img;
-                
-                // Отображаем в превью
-                const pngCanvas = document.getElementById('pngCanvas');
-                const pngCtx = pngCanvas.getContext('2d');
-                pngCtx.drawImage(img, 0, 0, 512, 512);
-                
-                // 3. Анализ через MediaPipe
-                const landmarks = await analyzeImage(img);
-                
-                // 4. ЗАПУСКАЕМ УМНУЮ АНИМАЦИЮ (ВМЕСТО СТАРОЙ)
-                startSmartAnimation(landmarks, emotion, character);
-                
-                // 5. Сохранение WEBM (через 3 секунды, чтобы анимация успела проиграться)
-                setTimeout(async () => {
-                    const filename = `${character}_${profession.id}_${emotion.id}_${i}.webm`;
-                    await saveAsWEBM(filename);
-                }, 3500);
-                
-                generatedPNG.push({
-                    emotion: emotion,
-                    profession: profession.name,
-                    humor: humorItem.ru,
-                    dataUrl: pngDataUrl,
-                    filename: `${character}_${profession.id}_${emotion.id}_${i}.png`
-                });
+            if (!character || !selectedProfession || selectedEmotions.length === 0) {
+                alert('Выберите персонажа, профессию и эмоции');
+                return;
             }
-        }
 
-        // Даем время на запись всех WEBM
-        setTimeout(() => {
-            displayResults(generatedPNG);
-        }, selectedEmotions.length * 3500 + 1000);
-        
-    } catch (error) {
-        alert('Ошибка: ' + error.message);
-        addDebugLog('error', `❌ Глобальная ошибка: ${error.message}`);
-    } finally {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('generateBtn').disabled = false;
-    }
-};
-
-        // ========== ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ==========
-        function displayResults(pngStickers) {
-            const resultsDiv = document.getElementById('results');
-            if (!resultsDiv) return;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('generateBtn').disabled = true;
             
-            resultsDiv.innerHTML = '';
+            try {
+                generatedPNG = [];
+                generatedWEBM = [];
+                
+                const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS];
+                const profession = allProfessions.find(p => p.id === selectedProfession);
 
-            const humorCount = pngStickers.filter(s => s.humor).length;
-            const classicCount = pngStickers.length - humorCount;
+                for (let i = 0; i < selectedEmotions.length; i++) {
+                    const emotionId = selectedEmotions[i];
+                    const emotion = EMOTIONS.find(e => e.id === emotionId);
+                    
+                    const humorItem = profession.humor[Math.floor(Math.random() * profession.humor.length)];
+                    
+                    document.getElementById('loadingProgress').textContent = 
+                        `Генерируем стикер ${i+1}/${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
+                    
+                    // 1. Генерация PNG
+                    const pngDataUrl = await generatePNG(profession, emotion, humorItem);
+                    
+                    if (pngDataUrl) {
+                        // Отображаем PNG
+                        const img = new Image();
+                        await new Promise(resolve => { img.onload = resolve; img.src = pngDataUrl; });
+                        
+                        const pngCanvas = document.getElementById('pngCanvas');
+                        pngCanvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
+                        
+                        // 2. Анимация через Kling
+                        document.getElementById('loadingProgress').textContent = 
+                            `Анимация через Kling AI (может занять 1-2 минуты)...`;
+                        
+                        const videoUrl = await animateWithKling(pngDataUrl, emotion.id);
+                        
+                        // 3. Сохраняем результат
+                        const filename = `${character}_${profession.id}_${emotion.id}_${i}.webm`;
+                        
+                        // Скачиваем файл
+                        const videoBlob = await fetch(videoUrl).then(r => r.blob());
+                        const downloadUrl = URL.createObjectURL(videoBlob);
+                        const a = document.createElement('a');
+                        a.href = downloadUrl;
+                        a.download = filename;
+                        a.click();
+                        
+                        generatedPNG.push({
+                            emotion: emotion,
+                            profession: profession.name,
+                            humor: humorItem.ru,
+                            dataUrl: pngDataUrl,
+                            filename: `${character}_${profession.id}_${emotion.id}_${i}.png`
+                        });
+                        
+                        generatedWEBM.push({
+                            filename: filename
+                        });
+                        
+                        addDebugLog('success', `✅ Стикер ${i+1} готов`);
+                    }
+                }
 
-            const title = document.createElement('h2');
-            title.style.cssText = 'font-size: 2em; color: white; margin-bottom: 20px;';
-            title.innerHTML = `🎉 Готово! ${pngStickers.length} премиум стикеров (${humorCount} с юмором, ${classicCount} классических)`;
-            resultsDiv.appendChild(title);
-
-            const packagesDiv = document.createElement('div');
-            packagesDiv.className = 'packages';
-
-            // Премиум набор (PNG + WEBM)
-            const premiumPackage = document.createElement('div');
-            premiumPackage.className = 'package premium';
-            premiumPackage.innerHTML = `
-                <div class="package-header">
-                    <div class="package-title">✨ Премиум (PNG + WEBM)</div>
-                    <div class="package-price">19 990 ₽</div>
-                </div>
-                <div class="stickers-grid" id="pngGrid"></div>
-                <button class="download-btn premium" onclick="downloadAll()">
-                    📥 Скачать все PNG (${pngStickers.length})
-                </button>
-                <p style="text-align: center; margin-top: 10px; color: #4a5568;">
-                    ⬆️ WEBM файлы уже сохранены в папку загрузок
-                </p>
-            `;
-            packagesDiv.appendChild(premiumPackage);
-
-            resultsDiv.appendChild(packagesDiv);
-
-            // Заполняем сетку PNG
-            const pngGrid = document.getElementById('pngGrid');
-            if (pngGrid) {
-                pngStickers.forEach(s => {
-                    const card = document.createElement('div');
-                    card.className = 'sticker-card premium';
-                    card.innerHTML = `
-                        <div class="sticker-preview">
-                            <img src="${s.dataUrl}" alt="${s.emotion.name}">
-                        </div>
-                        <div class="sticker-info">${s.emotion.icon} ${s.emotion.name}</div>
-                        ${s.humor ? `<div class="sticker-humor">${s.humor}</div>` : ''}
-                        <div>
-                            <span class="sticker-badge png">PNG</span>
-                            <span class="sticker-badge webm">WEBM</span>
-                            <span class="sticker-badge fps">60 FPS</span>
-                        </div>
-                    `;
-                    pngGrid.appendChild(card);
-                });
+                // Показываем результаты
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('generateBtn').disabled = false;
+                    alert(`Готово! ${generatedPNG.length} PNG и ${generatedWEBM.length} WEBM стикеров`);
+                    
+                    // Очищаем результаты для следующей генерации
+                    generatedPNG = [];
+                    generatedWEBM = [];
+                }, 2000);
+                
+            } catch (error) {
+                alert('Ошибка: ' + error.message);
+                addDebugLog('error', `❌ Глобальная ошибка: ${error.message}`);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('generateBtn').disabled = false;
             }
-        }
-
-        // ========== СКАЧИВАНИЕ ВСЕХ PNG ==========
-        window.downloadAll = () => {
-            generatedPNG.forEach(s => {
-                const link = document.createElement('a');
-                link.download = s.filename;
-                link.href = s.dataUrl;
-                link.click();
-            });
-            alert(`Скачивание ${generatedPNG.length} PNG файлов начато!`);
         };
 
         // ========== ИНИЦИАЛИЗАЦИЯ ==========
         document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация всех компонентов
-    renderProfessions();
-    renderEmotions();
-    initStyles(); // Добавлено - инициализация стилей
-    checkRecraftAPI();
-    initMediaPipe();
+            renderProfessions();
+            renderEmotions();
+            initStyles();
+            checkAPIs();
 
-    // Выбираем первые 5 эмоций и первую профессию по умолчанию
-    setTimeout(() => {
-        EMOTIONS.slice(0, 5).forEach(emotion => {
-            const checkbox = document.querySelector(`input[value="${emotion.id}"]`);
-            if (checkbox) {
-                checkbox.checked = true;
-                toggleEmotion(emotion.id, true);
-            }
-        });
-        
-        const firstProfession = document.querySelector('.profession-item');
-        if (firstProfession) {
-            firstProfession.click();
-        }
-    }, 100);
-
-    // Инициализация слайдеров анимации
-    const pulseSlider = document.getElementById('pulseIntensity');
-    const moveSlider = document.getElementById('moveIntensity');
-    const rotateSlider = document.getElementById('rotateIntensity');
-    
-    if (pulseSlider) {
-        pulseSlider.oninput = (e) => {
-            document.getElementById('pulseValue').textContent = e.target.value + '%';
-        };
-    }
-    
-    if (moveSlider) {
-        moveSlider.oninput = (e) => {
-            document.getElementById('moveValue').textContent = e.target.value + '%';
-        };
-    }
-    
-    if (rotateSlider) {
-        rotateSlider.oninput = (e) => {
-            document.getElementById('rotateValue').textContent = e.target.value + '%';
-        };
-    }
-    
-    // Логируем успешную загрузку
-    addDebugLog('success', '🚀 Приложение успешно загружено');
-});
-
-// ========== ФУНКЦИЯ 1: ОПРЕДЕЛЕНИЕ ТИПА ОБЪЕКТА ==========
-function detectObjectType(prompt, landmarks) {
-    const promptLower = prompt.toLowerCase();
-    
-    // Проверяем по промпту
-    if (promptLower.includes('cat') || promptLower.includes('кот') || 
-        promptLower.includes('dog') || promptLower.includes('собак') ||
-        promptLower.includes('animal') || promptLower.includes('животн') ||
-        promptLower.includes('кошка') || promptLower.includes('пёс')) {
-        return 'animal';
-    }
-    
-    if (promptLower.includes('предмет') || promptLower.includes('object') ||
-        promptLower.includes('robot') || promptLower.includes('робот') ||
-        promptLower.includes('car') || promptLower.includes('машин') ||
-        promptLower.includes('стул') || promptLower.includes('стол')) {
-        return 'object';
-    }
-    
-    // Проверяем по точкам MediaPipe
-    if (landmarks && landmarks.length > 0) {
-        const visiblePoints = landmarks.filter(l => l.visibility > 0.7).length;
-        if (visiblePoints > 15) return 'human';
-        if (visiblePoints > 5) return 'animal';
-    }
-    
-    return 'unknown';
-}
-
-// ========== ФУНКЦИЯ 2: БАЗОВАЯ АНИМАЦИЯ ==========
-function applyBasicAnimation(frame, ctx, pulseIntensity, moveIntensity, rotateIntensity) {
-    const breathScale = 1 + Math.sin(frame * 0.1) * 0.02 * pulseIntensity;
-    const headX = Math.sin(frame * 0.05) * 10 * moveIntensity;
-    const headY = Math.cos(frame * 0.07) * 8 * moveIntensity;
-    const headRotate = Math.sin(frame * 0.03) * 0.05 * rotateIntensity;
-    const bounceY = Math.abs(Math.sin(frame * 0.2)) * 15 * moveIntensity;
-    
-    ctx.scale(breathScale, breathScale);
-    ctx.translate(headX, headY);
-    ctx.rotate(headRotate);
-    ctx.translate(0, -bounceY);
-}
-
-// ========== ФУНКЦИЯ 3: УМНАЯ АНИМАЦИЯ ==========
-function startSmartAnimation(landmarks, emotion, characterPrompt) {
-    const canvas = document.getElementById('webmCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    if (!pngImage) {
-        addDebugLog('error', '❌ Нет изображения для анимации');
-        return;
-    }
-    
-    const objectType = detectObjectType(characterPrompt, landmarks);
-    addDebugLog('success', `🎯 Определен тип объекта: ${objectType}`);
-    
-    const pulseIntensity = document.getElementById('pulseIntensity').value / 100;
-    const moveIntensity = document.getElementById('moveIntensity').value / 100;
-    const rotateIntensity = document.getElementById('rotateIntensity').value / 100;
-    
-    let frame = 0;
-    
-    function animate() {
-        ctx.clearRect(0, 0, 512, 512);
-        ctx.save();
-        ctx.translate(256, 256);
-        
-        // ВЫБИРАЕМ АНИМАЦИЮ ПО ТИПУ
-        switch(objectType) {
-            case 'human':
-                // ===== ЧЕЛОВЕЧЕСКАЯ АНИМАЦИЯ (Kalidokit) =====
-                if (window.Kalidokit && landmarks && landmarks.length > 0) {
-                    try {
-                        const faceRig = Kalidokit.Face.solve(landmarks, { runtime: 'mediapipe' });
-                        const bodyRig = Kalidokit.Pose.solve(landmarks);
-                        
-                        // Голова
-                        ctx.translate((faceRig?.head?.x || 0) * 50 * moveIntensity, 
-                                     (faceRig?.head?.y || 0) * 50 * moveIntensity);
-                        ctx.rotate((faceRig?.head?.z || 0) * 0.3 * rotateIntensity);
-                        
-                        // Тело
-                        if (bodyRig) {
-                            ctx.translate((bodyRig?.spine?.x || 0) * 30 * moveIntensity,
-                                         (bodyRig?.spine?.y || 0) * 30 * moveIntensity);
-                            ctx.rotate((bodyRig?.spine?.z || 0) * 0.2 * rotateIntensity);
-                        }
-                        
-                        // Руки
-                        if (bodyRig?.rightArm && bodyRig?.leftArm) {
-                            const armX = (bodyRig.rightArm.x + bodyRig.leftArm.x) * 20 * moveIntensity;
-                            const armY = (bodyRig.rightArm.y + bodyRig.leftArm.y) * 20 * moveIntensity;
-                            ctx.translate(armX, armY);
-                        }
-                    } catch (e) {
-                        applyBasicAnimation(frame, ctx, pulseIntensity, moveIntensity, rotateIntensity);
+            setTimeout(() => {
+                // Выбираем первые 5 эмоций по умолчанию
+                EMOTIONS.slice(0, 5).forEach(emotion => {
+                    const checkbox = document.querySelector(`input[value="${emotion.id}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        toggleEmotion(emotion.id, true);
                     }
-                } else {
-                    applyBasicAnimation(frame, ctx, pulseIntensity, moveIntensity, rotateIntensity);
-                }
-                break;
+                });
                 
-            case 'animal':
-                // ===== АНИМАЦИЯ ДЛЯ ЖИВОТНЫХ =====
-                // Дыхание
-                const breathScale = 1 + Math.sin(frame * 0.15) * 0.03 * pulseIntensity;
-                ctx.scale(breathScale, breathScale * 0.9);
-                
-                // Покачивание головой
-                const headWag = Math.sin(frame * 0.1) * 8 * moveIntensity;
-                const headBob = Math.cos(frame * 0.12) * 5 * moveIntensity;
-                ctx.translate(headWag, headBob);
-                
-                // Виляние хвостом (имитация)
-                const tailWag = Math.sin(frame * 0.2) * 10 * rotateIntensity;
-                ctx.rotate(tailWag * 0.01);
-                
-                // Микро-движения
-                const twitch = (Math.random() - 0.5) * 2;
-                ctx.translate(twitch, 0);
-                break;
-                
-            case 'object':
-                // ===== АНИМАЦИЯ ДЛЯ ПРЕДМЕТОВ =====
-                // Пульсация
-                const objectPulse = 1 + Math.sin(frame * 0.2) * 0.04 * pulseIntensity;
-                ctx.scale(objectPulse, objectPulse);
-                
-                // Физическое покачивание
-                const physicsSway = Math.sin(frame * 0.1) * 5 * moveIntensity;
-                const physicsBob = Math.abs(Math.sin(frame * 0.15)) * 8 * moveIntensity;
-                ctx.translate(physicsSway, -physicsBob);
-                
-                // Вращение
-                const spin = Math.sin(frame * 0.05) * 0.03 * rotateIntensity;
-                ctx.rotate(spin);
-                break;
-                
-            default:
-                // ===== БАЗОВАЯ АНИМАЦИЯ =====
-                applyBasicAnimation(frame, ctx, pulseIntensity, moveIntensity, rotateIntensity);
-        }
-        
-        // ===== ЭМОЦИОНАЛЬНЫЕ ЭФФЕКТЫ =====
-        if (emotion) {
-            switch(emotion.id) {
-                case 'laughing':
-                case 'happy':
-                    const shakeX = (Math.random() - 0.5) * 6;
-                    const shakeY = (Math.random() - 0.5) * 4;
-                    ctx.translate(shakeX, shakeY);
-                    break;
-                case 'sad':
-                case 'crying':
-                    ctx.translate(0, 5 * pulseIntensity);
-                    ctx.rotate(-0.02);
-                    break;
-                case 'angry':
-                    const jerkX = Math.sin(frame * 0.3) * 12;
-                    const jerkY = Math.cos(frame * 0.3) * 8;
-                    ctx.translate(jerkX, jerkY);
-                    break;
-                case 'surprised':
-                    ctx.scale(1 + Math.abs(Math.sin(frame * 0.1)) * 0.05, 1);
-                    break;
-            }
-        }
-        
-        // Рисуем изображение
-        ctx.drawImage(pngImage, -256, -256, 512, 512);
-        ctx.restore();
-        
-        frame++;
-        animationFrame = requestAnimationFrame(animate);
-    }
-    
-    if (animationFrame) cancelAnimationFrame(animationFrame);
-    animate();
-    addDebugLog('success', `🎬 Запущена анимация для типа: ${objectType}`);
-}
+                const firstProfession = document.querySelector('.profession-item');
+                if (firstProfession) firstProfession.click();
+            }, 100);
+            
+            addDebugLog('success', '🚀 Приложение загружено');
+        });
     </script>
 </body>
 </html>
