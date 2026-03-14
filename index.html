@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sticker Generator ULTIMATE - PRO</title>
+    <title>Sticker Generator ULTIMATE - Kling AI ONLY</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
@@ -82,7 +82,7 @@
 
         .api-status-container {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -106,18 +106,6 @@
             background: #f0fdf4;
             border: 2px solid #4ade80;
             color: #166534;
-        }
-
-        .api-status.analysis {
-            background: #fef9c3;
-            border: 2px solid #facc15;
-            color: #854d0e;
-        }
-
-        .api-status.checking {
-            background: #fef9c3;
-            border-color: #facc15;
-            color: #854d0e;
         }
 
         .api-status.error {
@@ -222,12 +210,6 @@
             font-style: italic;
         }
 
-        .profession-item.no-profession.selected {
-            background: #64748b;
-            color: white;
-            border-color: #475569;
-        }
-
         .emotions-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -250,11 +232,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .emotion-item:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
         }
 
         .emotion-item input[type="checkbox"] {
@@ -334,12 +311,6 @@
             font-size: 1em;
         }
 
-        .batch-field .hint {
-            font-size: 0.8em;
-            color: #64748b;
-            margin-top: 8px;
-        }
-
         .revenue-card {
             background: linear-gradient(145deg, #1a1f2e, #0f172a);
             padding: 20px;
@@ -358,12 +329,6 @@
             font-size: 2.2em;
             font-weight: 800;
             color: #fbbf24;
-        }
-
-        .revenue-card .sub {
-            font-size: 0.9em;
-            color: #4ade80;
-            margin-top: 5px;
         }
 
         .preview-area {
@@ -389,7 +354,7 @@
             overflow: hidden;
         }
 
-        canvas, video {
+        canvas {
             width: 100%;
             height: 100%;
             display: block;
@@ -437,12 +402,6 @@
             background: #0f172a;
             border-radius: 12px;
             border-left: 4px solid transparent;
-            animation: slideIn 0.3s ease;
-        }
-
-        .log-message.success {
-            border-left-color: #4ade80;
-            background: rgba(74, 222, 128, 0.1);
         }
 
         .log-message.error {
@@ -450,25 +409,20 @@
             background: rgba(239, 68, 68, 0.1);
         }
 
+        .log-message.success {
+            border-left-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+        }
+
         .log-message.info {
             border-left-color: #38bdf8;
             background: rgba(56, 189, 248, 0.1);
-        }
-
-        .log-message.warning {
-            border-left-color: #fbbf24;
-            background: rgba(251, 191, 36, 0.1);
         }
 
         .log-timestamp {
             color: #94a3b8;
             font-size: 11px;
             margin-right: 10px;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .generate-btn {
@@ -513,86 +467,18 @@
             100% { transform: rotate(360deg); }
         }
 
-        .results {
-            margin-top: 40px;
-        }
-
-        .stickers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-            max-height: 600px;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .sticker-card {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .sticker-card.premium {
-            border: 2px solid #fbbf24;
-            background: #fffbeb;
-        }
-
-        .sticker-preview {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 10px;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .sticker-preview img, .sticker-preview video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .sticker-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 30px;
-            font-size: 0.6em;
-            font-weight: 700;
-            margin: 2px;
-        }
-
-        .sticker-badge.png { background: #667eea; color: white; }
-        .sticker-badge.webm { background: #fbbf24; color: #1a1f2e; }
-        .sticker-badge.limited { background: #ef4444; color: white; }
-        .sticker-badge.custom { background: #8b5cf6; color: white; }
-
-        .download-btn {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            background: linear-gradient(145deg, #667eea, #764ba2);
-            color: white;
-        }
-
         footer {
             text-align: center;
             margin-top: 30px;
             color: rgba(255,255,255,0.5);
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎨 Sticker Generator <span>ULTIMATE</span></h1>
-            <div class="premium-badge">✨ AI-анализ • Свободные промпты • Ручные шутки</div>
+            <h1>🎨 Sticker Generator <span>KLING AI ONLY</span></h1>
+            <div class="premium-badge">✨ Только Kling AI • Без запасных анимаций</div>
             <div class="stats">
                 <div class="stat-badge"><span>38+</span> профессий</div>
                 <div class="stat-badge"><span>30</span> эмоций</div>
@@ -605,7 +491,6 @@
             <div class="api-status-container">
                 <div id="recraftStatus" class="api-status recraft checking">🔄 Recraft V4: Проверка...</div>
                 <div id="klingStatus" class="api-status kling checking">🔄 Kling AI: Проверка...</div>
-                <div id="analysisStatus" class="api-status analysis checking">🔄 AI-анализ: Активен</div>
             </div>
 
             <button onclick="toggleDebug()" style="margin-bottom: 20px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 40px; cursor: pointer;">
@@ -626,16 +511,13 @@
             </div>
             <div class="professions-grid" id="professionsGrid"></div>
 
-            <!-- НОВОЕ ПОЛЕ: Ручной ввод шуток -->
+            <!-- Поле для ручного ввода шуток -->
             <div class="input-group" id="customHumorsField" style="display: none;">
                 <label>✏️ Ваши шутки (через точку с запятой)</label>
                 <textarea id="customHumors" placeholder="Введите шутки через точку с запятой">счастье это просто; грусть это навсегда; злость это плохо</textarea>
                 <div class="example">
                     <strong>Пример:</strong><br>
-                    счастье это просто; грусть это навсегда; злость это плохо; удивление вау; смех хахаха; любовь до гроба; сон спать хочу; крутой я такой; страшно боюсь; глупый дурак; болеть не круто; есть обожаю; работа надоела; праздник ура; думаю о жизни; плачу рыдаю; подмигиваю хитро; стесняюсь ой; скучно жить; гордый собой
-                </div>
-                <div class="hint">
-                    💡 Шутки будут распределяться по выбранным эмоциям. Если шуток меньше чем эмоций, они будут повторяться.
+                    счастье это просто; грусть это навсегда; злость это плохо; удивление вау; смех хахаха
                 </div>
             </div>
 
@@ -650,15 +532,10 @@
             <div class="styles-grid" id="styleTags"></div>
 
             <div class="batch-controls">
-                <h3 style="display: flex; align-items: center; gap: 10px;">
-                    <span>📦 НАСТРОЙКИ ТИРАЖА</span>
-                </h3>
-                
+                <h3>📦 НАСТРОЙКИ ТИРАЖА</h3>
                 <div class="batch-grid">
                     <div class="batch-field">
-                        <label>
-                            <span>🎯 Режим</span>
-                        </label>
+                        <label>🎯 Режим</label>
                         <select id="batchMode" onchange="toggleEditionMode()">
                             <option value="single">Одиночный набор</option>
                             <option value="limited">🔥 Лимитированная серия</option>
@@ -666,23 +543,18 @@
                     </div>
 
                     <div class="batch-field" id="editionField">
-                        <label>
-                            <span>🔢 Размер тиража</span>
-                        </label>
+                        <label>🔢 Размер тиража</label>
                         <input type="number" id="editionSize" min="2" max="1000" value="50" onchange="updateRevenue()">
                     </div>
 
                     <div class="batch-field">
-                        <label>
-                            <span>💰 Цена за копию (₽)</span>
-                        </label>
+                        <label>💰 Цена за копию (₽)</label>
                         <input type="number" id="copyPrice" min="100" max="100000" value="2990" onchange="updateRevenue()">
                     </div>
 
                     <div class="revenue-card" style="grid-column: span 3;">
                         <div class="label">💰 ПОТЕНЦИАЛЬНЫЙ ДОХОД</div>
                         <div class="value" id="totalRevenue">149 500 ₽</div>
-                        <div class="sub" id="revenueDetails">50 копий × 2 990 ₽</div>
                     </div>
                 </div>
             </div>
@@ -695,7 +567,7 @@
                     </div>
                 </div>
                 <div class="preview-box">
-                    <h3>🎬 WEBM анимация</h3>
+                    <h3>🎬 WEBM результат (Kling AI)</h3>
                     <div class="preview-canvas">
                         <canvas id="webmCanvas" width="512" height="512"></canvas>
                     </div>
@@ -718,12 +590,10 @@
                 <div class="loading-spinner"></div>
                 <p id="loadingProgress">Подготовка к генерации...</p>
             </div>
-
-            <div id="results" class="results"></div>
         </div>
 
         <footer>
-            <p>• Профессии необязательны • Ручные шутки • AI-анализ • Лимитированные серии • Готовые описания</p>
+            <p>• Только Kling AI • При ошибке процесс останавливается • Без запасных анимаций</p>
         </footer>
     </div>
 
@@ -2266,6 +2136,7 @@ const ADDITIONAL_PROFESSIONS = [
 ];
 // КОНЕЦ ТЕМАТИЧЕСКИХ
 
+
         // ========== 7 НОВЫХ ТРЕНДОВЫХ ПРОФЕССИЙ ==========
         const TREND_PROFESSIONS = [
             {
@@ -2460,208 +2331,48 @@ const ADDITIONAL_PROFESSIONS = [
             { name: '💕 Корейская дорама', style: 'korean drama style, romantic, emotional' }
         ];
 
-        // ========== СИСТЕМА АВТОМАТИЧЕСКОГО АНАЛИЗА ЭМОЦИЙ И ШУТОК ==========
-
-        // 1. РАСШИРЕННЫЙ СЛОВАРЬ ТОНАЛЬНОСТИ С ВЕСАМИ
-        const TONE_KEYWORDS = {
-            positive: {
-                words: ['👍', '✅', '❤️', '😊', 'счастье', 'радость', 'круто', 'супер', 'отлично', 'класс', 'love', 'happy', 'good', 'great', 'лучший', 'победа', 'успех', 'топ', 'клёво', 'шикарно', 'прекрасно', 'восхитительно', 'обалдеть', 'крутяк', 'nice', 'awesome', 'fantastic', 'wonderful', 'amazing'],
-                weight: 1.0
-            },
-            negative: {
-                words: ['👎', '❌', '😢', '😭', 'плохо', 'грустно', 'ужас', 'кринж', 'фейл', 'fail', 'bad', 'sad', 'terrible', 'кошмар', 'проблема', 'беда', 'печаль', 'тоска', 'депрессия', 'отвратительно', 'мерзко', 'гадко', 'паршиво', 'хреново'],
-                weight: 1.0
-            },
-            angry: {
-                words: ['😠', '😤', '🤬', 'злость', 'ярость', 'бесит', 'ненавижу', 'убью', 'damn', 'angry', 'mad', 'furious', 'терпеть', 'достало', 'заколебало', 'бешенство', 'злой', 'раздражение', 'гнев', 'яростный', 'взбешен'],
-                weight: 1.5
-            },
-            funny: {
-                words: ['😂', '🤣', '😆', '😁', 'прикол', 'смех', 'угар', 'ржу', 'lol', 'laugh', 'funny', 'hilarious', 'ахаха', 'поржать', 'смешно', 'умора', 'хохма', 'юмор', 'приколист', 'шутка', 'стеб', 'ирония'],
-                weight: 1.2
-            },
-            romantic: {
-                words: ['😍', '🥰', '💕', '💖', '💗', 'любовь', 'романтика', 'сердце', 'love', 'romance', 'heart', 'sweet', 'нежность', 'обожаю', 'целовать', 'милота', 'лапочка', 'дорогой', 'родной', 'милый', 'зайка', 'солнышко'],
-                weight: 1.3
-            },
-            stressed: {
-                words: ['😫', '😩', '🤯', '😰', 'стресс', 'дедлайн', 'работа', 'устал', 'stress', 'deadline', 'tired', 'exhausted', 'выгорание', 'бессонница', 'утомление', 'изнеможение', 'перегруз', 'напряг', 'завал'],
-                weight: 1.2
-            },
-            surprised: {
-                words: ['😮', '😲', '🤯', '😳', 'вау', 'нифига', 'неожиданно', 'wow', 'surprise', 'shock', 'unexpected', 'охренеть', 'ничего себе', 'обалдеть', 'офигеть', 'не может быть', 'да ладно', 'серьезно'],
-                weight: 1.0
-            },
-            sarcastic: {
-                words: ['😏', '🙄', '😒', 'ну-ну', 'конечно', 'ага', 'sarcasm', 'yeah right', 'sure', 'естественно', 'разумеется', 'как же', 'безусловно', 'непременно', 'куда уж нам'],
-                weight: 0.8
-            },
-            proud: {
-                words: ['🦚', '🦁', 'гордость', 'лучший', 'сигма', 'гриндет', 'proud', 'sigma', 'grind', 'успех', 'достижение', 'элита', 'топчик', 'номер один', 'чемпион', 'победитель', 'легенда'],
-                weight: 1.1
-            },
-            scared: {
-                words: ['😨', '😱', '😰', 'страх', 'боюсь', 'scared', 'fear', 'terrified', 'ужас', 'кошмар', 'паника', 'испуг', 'тревога', 'боязнь', 'жутко', 'страшно'],
-                weight: 1.2
-            },
-            confused: {
-                words: ['😕', '😖', '🤔', '🧐', 'непонятно', 'странно', 'confused', 'weird', 'че за', 'что за', 'объясните', 'в тупике', 'не понимаю', 'запутался', 'не ясно'],
-                weight: 0.9
-            },
-            tired: {
-                words: ['😴', '💤', '🥱', 'устал', 'спать', 'сон', 'tired', 'sleepy', 'exhausted', 'вымотан', 'без сил', 'хочу спать', 'клонит в сон', 'утомлен', 'изнурен'],
-                weight: 1.1
-            },
-            work: {
-                words: ['💼', '👔', 'работа', 'офис', 'босс', 'начальник', 'work', 'job', 'office', 'boss', 'карьера', 'зарплата', 'повышение', 'увольнение', 'коллеги'],
-                weight: 1.0
-            },
-            family: {
-                words: ['👨‍👩‍👧', '👪', 'семья', 'мама', 'папа', 'дети', 'family', 'mom', 'dad', 'kids', 'child', 'родители', 'бабушка', 'дедушка', 'родные'],
-                weight: 1.0
-            },
-            money: {
-                words: ['💰', '💵', '💸', 'деньги', 'бабло', 'капуста', 'cash', 'money', 'rich', 'богатый', 'бедный', 'зарплата', 'финансы', 'бюджет'],
-                weight: 1.0
-            },
-            health: {
-                words: ['🏥', '💊', '💉', 'здоровье', 'болезнь', 'больница', 'врач', 'лечение', 'health', 'hospital', 'doctor', 'sick', 'medication'],
-                weight: 1.0
+        // ========== ПРОМПТЫ ДЛЯ KLING AI ==========
+        const MOTION_PROMPTS = {
+            subtle: {
+                happy: 'gentle happy movement, soft smile, subtle nod, peaceful atmosphere',
+                sad: 'subtle sad expression, gentle head drop, melancholic mood',
+                angry: 'subtle annoyed expression, slight frown, restrained tension',
+                surprised: 'gentle surprised look, slight eyebrow raise, brief reaction',
+                laughing: 'subtle laugh, gentle shaking, restrained joy',
+                love: 'subtle loving expression, warm gaze, gentle lean forward',
+                sleepy: 'gentle sleepy movement, slight nodding, slow blinking',
+                cool: 'subtle cool pose, slight head tilt, confident attitude',
+                scared: 'subtle scared expression, slight flinch, wide eyes',
+                silly: 'gentle silly expression, slight goofy smile',
+                sick: 'subtle sick movement, weak posture, minimal motion',
+                eating: 'gentle eating motion, slight chewing',
+                working: 'subtle working motion, slight typing, focused expression',
+                celebrating: 'gentle celebration, slight happy bounce',
+                thinking: 'subtle thinking pose, slight head tilt, thoughtful',
+                crying: 'subtle crying, slight tears, gentle sobbing',
+                winking: 'subtle wink, slight eye movement, playful',
+                shy: 'subtle shy movement, slight look away, bashful',
+                bored: 'subtle bored expression, slight sigh',
+                proud: 'subtle proud pose, slight head raise, confident',
+                default: 'subtle natural movement, slight breathing motion, gentle and calm'
             }
         };
 
-        // 2. СООТВЕТСТВИЕ ТОНАЛЬНОСТИ ЭМОЦИЯМ С ПРИОРИТЕТАМИ
-        const TONE_TO_EMOTIONS = {
-            positive: [
-                { emotion: 'happy', priority: 1.0 },
-                { emotion: 'proud', priority: 0.8 },
-                { emotion: 'love', priority: 0.6 },
-                { emotion: 'celebrating', priority: 0.7 },
-                { emotion: 'laughing', priority: 0.5 },
-                { emotion: 'cool', priority: 0.4 }
-            ],
-            negative: [
-                { emotion: 'sad', priority: 1.0 },
-                { emotion: 'crying', priority: 0.9 },
-                { emotion: 'scared', priority: 0.5 },
-                { emotion: 'sick', priority: 0.4 },
-                { emotion: 'tired', priority: 0.3 }
-            ],
-            angry: [
-                { emotion: 'angry', priority: 1.0 },
-                { emotion: 'frustrated', priority: 0.8 },
-                { emotion: 'annoyed', priority: 0.7 },
-                { emotion: 'mad', priority: 0.9 }
-            ],
-            funny: [
-                { emotion: 'laughing', priority: 1.0 },
-                { emotion: 'silly', priority: 0.9 },
-                { emotion: 'happy', priority: 0.6 },
-                { emotion: 'winking', priority: 0.5 },
-                { emotion: 'amused', priority: 0.8 }
-            ],
-            romantic: [
-                { emotion: 'love', priority: 1.0 },
-                { emotion: 'shy', priority: 0.8 },
-                { emotion: 'blushing', priority: 0.7 },
-                { emotion: 'happy', priority: 0.5 },
-                { emotion: 'winking', priority: 0.4 }
-            ],
-            stressed: [
-                { emotion: 'tired', priority: 1.0 },
-                { emotion: 'stressed', priority: 0.9 },
-                { emotion: 'bored', priority: 0.5 },
-                { emotion: 'working', priority: 0.4 },
-                { emotion: 'sick', priority: 0.3 }
-            ],
-            surprised: [
-                { emotion: 'surprised', priority: 1.0 },
-                { emotion: 'shocked', priority: 0.8 },
-                { emotion: 'amazed', priority: 0.7 },
-                { emotion: 'scared', priority: 0.3 }
-            ],
-            sarcastic: [
-                { emotion: 'smug', priority: 0.9 },
-                { emotion: 'skeptical', priority: 0.8 },
-                { emotion: 'amused', priority: 0.6 },
-                { emotion: 'winking', priority: 0.5 }
-            ],
-            proud: [
-                { emotion: 'proud', priority: 1.0 },
-                { emotion: 'confident', priority: 0.8 },
-                { emotion: 'cool', priority: 0.6 },
-                { emotion: 'happy', priority: 0.4 }
-            ],
-            scared: [
-                { emotion: 'scared', priority: 1.0 },
-                { emotion: 'terrified', priority: 0.9 },
-                { emotion: 'panicked', priority: 0.7 },
-                { emotion: 'surprised', priority: 0.4 }
-            ],
-            confused: [
-                { emotion: 'confused', priority: 1.0 },
-                { emotion: 'thinking', priority: 0.8 },
-                { emotion: 'surprised', priority: 0.5 },
-                { emotion: 'skeptical', priority: 0.4 }
-            ],
-            tired: [
-                { emotion: 'sleepy', priority: 1.0 },
-                { emotion: 'tired', priority: 0.9 },
-                { emotion: 'bored', priority: 0.6 },
-                { emotion: 'sick', priority: 0.3 }
-            ],
-            work: [
-                { emotion: 'working', priority: 1.0 },
-                { emotion: 'tired', priority: 0.7 },
-                { emotion: 'stressed', priority: 0.6 },
-                { emotion: 'bored', priority: 0.4 }
-            ],
-            family: [
-                { emotion: 'love', priority: 0.8 },
-                { emotion: 'happy', priority: 0.7 },
-                { emotion: 'proud', priority: 0.5 },
-                { emotion: 'caring', priority: 0.6 }
-            ],
-            money: [
-                { emotion: 'happy', priority: 0.5 },
-                { emotion: 'proud', priority: 0.6 },
-                { emotion: 'shocked', priority: 0.4 },
-                { emotion: 'stressed', priority: 0.3 }
-            ],
-            health: [
-                { emotion: 'sick', priority: 1.0 },
-                { emotion: 'tired', priority: 0.6 },
-                { emotion: 'scared', priority: 0.5 },
-                { emotion: 'grateful', priority: 0.4 }
-            ]
+        // ========== СИСТЕМА АНАЛИЗА ЭМОЦИЙ ==========
+        const TONE_KEYWORDS = {
+            positive: { words: ['😊', 'счастье', 'радость', 'круто', 'супер', 'love', 'happy'], weight: 1.0 },
+            negative: { words: ['😢', '😭', 'плохо', 'грустно', 'ужас', 'sad'], weight: 1.0 },
+            angry: { words: ['😠', '😤', 'злость', 'бесит', 'angry'], weight: 1.5 },
+            funny: { words: ['😂', '🤣', 'прикол', 'смех', 'laugh'], weight: 1.2 },
+            romantic: { words: ['😍', '🥰', '💕', 'любовь', 'love'], weight: 1.3 }
         };
 
-        // 3. ПРЯМЫЕ СООТВЕТСТВИЯ ЭМОДЗИ
-        const EMOJI_TO_EMOTION = {
-            '😂': 'laughing',
-            '🤣': 'laughing',
-            '😊': 'happy',
-            '😍': 'love',
-            '🥰': 'love',
-            '😘': 'love',
-            '😢': 'sad',
-            '😭': 'crying',
-            '😠': 'angry',
-            '😤': 'angry',
-            '🤬': 'angry',
-            '😱': 'scared',
-            '😨': 'scared',
-            '😮': 'surprised',
-            '😲': 'surprised',
-            '🤔': 'thinking',
-            '😴': 'sleepy',
-            '🥱': 'tired',
-            '😎': 'cool',
-            '😏': 'smug',
-            '🙄': 'skeptical',
-            '🥺': 'shy',
-            '🤪': 'silly',
-            '😜': 'silly'
+        const TONE_TO_EMOTIONS = {
+            positive: [{ emotion: 'happy', priority: 1.0 }, { emotion: 'proud', priority: 0.8 }],
+            negative: [{ emotion: 'sad', priority: 1.0 }, { emotion: 'crying', priority: 0.9 }],
+            angry: [{ emotion: 'angry', priority: 1.0 }],
+            funny: [{ emotion: 'laughing', priority: 1.0 }, { emotion: 'silly', priority: 0.9 }],
+            romantic: [{ emotion: 'love', priority: 1.0 }, { emotion: 'shy', priority: 0.8 }]
         };
 
         // 4. КОНФЛИКТЫ ЭМОЦИЙ
@@ -2674,141 +2385,39 @@ const ADDITIONAL_PROFESSIONS = [
             'happy': ['грустно', 'печально', 'депрессия', 'тоска']
         };
 
-        // 5. ОСНОВНЫЕ ФУНКЦИИ АНАЛИЗА
-
-        function analyzeTextTone(text) {
-            const textLower = text.toLowerCase();
-            const toneScores = {};
-            
-            Object.entries(TONE_KEYWORDS).forEach(([tone, data]) => {
-                let score = 0;
-                data.words.forEach(word => {
-                    const regex = new RegExp(word.toLowerCase(), 'g');
-                    const matches = (textLower.match(regex) || []).length;
-                    score += matches * data.weight;
-                });
-                
-                if (score > 0) {
-                    toneScores[tone] = score;
-                }
-            });
-            
-            return toneScores;
-        }
-
-        function getEmotionScoresFromTones(toneScores) {
-            const emotionScores = {};
-            
-            Object.entries(toneScores).forEach(([tone, toneScore]) => {
-                const emotionMappings = TONE_TO_EMOTIONS[tone] || [];
-                emotionMappings.forEach(mapping => {
-                    if (!emotionScores[mapping.emotion]) {
-                        emotionScores[mapping.emotion] = 0;
-                    }
-                    emotionScores[mapping.emotion] += toneScore * mapping.priority;
-                });
-            });
-            
-            return emotionScores;
-        }
-
-        function getEmotionScoresFromEmojis(text) {
-            const emotionScores = {};
-            
-            Object.entries(EMOJI_TO_EMOTION).forEach(([emoji, emotion]) => {
-                if (text.includes(emoji)) {
-                    if (!emotionScores[emotion]) {
-                        emotionScores[emotion] = 0;
-                    }
-                    emotionScores[emotion] += 2.0;
-                }
-            });
-            
-            return emotionScores;
-        }
-
         function analyzeText(text) {
-            const toneScores = analyzeTextTone(text);
-            const emotionScores = {
-                ...getEmotionScoresFromTones(toneScores),
-                ...getEmotionScoresFromEmojis(text)
-            };
-            
-            return {
-                text: text,
-                tones: Object.entries(toneScores)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([tone, score]) => ({ tone, score })),
-                emotions: Object.entries(emotionScores)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([emotion, score]) => ({ emotion, score }))
-            };
+            const textLower = text.toLowerCase();
+            const scores = {};
+            Object.entries(TONE_KEYWORDS).forEach(([tone, data]) => {
+                data.words.forEach(word => {
+                    if (textLower.includes(word.toLowerCase())) scores[tone] = (scores[tone] || 0) + data.weight;
+                });
+            });
+            return { emotions: Object.keys(scores) };
         }
 
         function isHumorCompatible(humorText, emotionId) {
-            const analysis = analyzeText(humorText);
-            const emotionScores = analysis.emotions.reduce((acc, item) => {
-                acc[item.emotion] = item.score;
-                return acc;
-            }, {});
-            
-            if (emotionScores[emotionId]) {
-                return true;
-            }
-            
             if (EMOTION_CONFLICTS[emotionId]) {
                 const textLower = humorText.toLowerCase();
                 for (const conflict of EMOTION_CONFLICTS[emotionId]) {
-                    if (textLower.includes(conflict)) {
-                        return false;
-                    }
+                    if (textLower.includes(conflict)) return false;
                 }
             }
-            
-            if (analysis.emotions.length > 0) {
-                return false;
-            }
-            
             return true;
         }
 
-        function filterHumorsByEmotion(humors, emotionId) {
-            return humors.filter(humor => isHumorCompatible(humor.ru, emotionId));
-        }
-
         function getHumorWithAnalysis(profession, emotionId) {
-            const allHumors = profession.humor;
-            const compatibleHumors = filterHumorsByEmotion(allHumors, emotionId);
-            
-            if (compatibleHumors.length > 0) {
-                const selected = compatibleHumors[Math.floor(Math.random() * compatibleHumors.length)];
-                const analysis = analyzeText(selected.ru);
-                
-                return {
-                    humor: selected,
-                    analysis: analysis,
-                    isCompatible: true,
-                    compatibilityScore: compatibleHumors.length / allHumors.length
-                };
-            }
-            
-            const selected = allHumors[Math.floor(Math.random() * allHumors.length)];
-            const analysis = analyzeText(selected.ru);
-            
-            return {
-                humor: selected,
-                analysis: analysis,
-                isCompatible: false,
-                compatibilityScore: 0
-            };
+            const compatible = profession.humor.filter(h => isHumorCompatible(h.ru, emotionId));
+            const selected = compatible.length > 0 
+                ? compatible[Math.floor(Math.random() * compatible.length)]
+                : profession.humor[Math.floor(Math.random() * profession.humor.length)];
+            return { humor: selected, isCompatible: compatible.length > 0 };
         }
 
         // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
         let selectedProfession = null;
         let selectedEmotions = [];
         let currentStyle = '';
-        let generatedPNG = [];
-        let generatedWEBM = [];
 
         // ========== ФУНКЦИИ ИНТЕРФЕЙСА ==========
         function renderProfessions() {
@@ -2817,21 +2426,16 @@ const ADDITIONAL_PROFESSIONS = [
             
             grid.innerHTML = '';
             
-            // Добавляем пункт "Без профессии"
             const noProfDiv = document.createElement('div');
             noProfDiv.className = 'profession-item no-profession';
-            noProfDiv.onclick = () => {
-                selectProfession(null, noProfDiv);
-            };
+            noProfDiv.onclick = () => selectProfession(null, noProfDiv);
             noProfDiv.innerHTML = `<span class="profession-icon">✏️</span><span class="profession-name">Свободный промпт (свои шутки)</span>`;
             grid.appendChild(noProfDiv);
             
             allProfessions.forEach(prof => {
                 const div = document.createElement('div');
                 div.className = 'profession-item';
-                div.onclick = () => {
-                    selectProfession(prof.id, div);
-                };
+                div.onclick = () => selectProfession(prof.id, div);
                 div.innerHTML = `<span class="profession-icon">${prof.icon}</span><span class="profession-name">${prof.name}</span>`;
                 grid.appendChild(div);
             });
@@ -2841,21 +2445,9 @@ const ADDITIONAL_PROFESSIONS = [
             selectedProfession = professionId;
             document.querySelectorAll('.profession-item').forEach(item => item.classList.remove('selected'));
             element.classList.add('selected');
-            
-            const customHumorsField = document.getElementById('customHumorsField');
-            
-            if (professionId === null) {
-                // Выбрана опция "Без профессии"
-                document.getElementById('selectedProfessionCount').textContent = 'свободный промпт';
-                customHumorsField.style.display = 'block';
-            } else {
-                const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS, ...TREND_PROFESSIONS];
-                const profession = allProfessions.find(p => p.id === professionId);
-                if (profession) {
-                    document.getElementById('selectedProfessionCount').textContent = profession.name;
-                    customHumorsField.style.display = 'none';
-                }
-            }
+            document.getElementById('customHumorsField').style.display = professionId === null ? 'block' : 'none';
+            document.getElementById('selectedProfessionCount').textContent = 
+                professionId === null ? 'свободный промпт' : 'выбрана';
         };
 
         function renderEmotions() {
@@ -2867,10 +2459,8 @@ const ADDITIONAL_PROFESSIONS = [
                 div.onclick = (e) => {
                     if (e.target.type !== 'checkbox') {
                         const checkbox = div.querySelector('input');
-                        if (checkbox) {
-                            checkbox.checked = !checkbox.checked;
-                            toggleEmotion(emotion.id, checkbox.checked);
-                        }
+                        checkbox.checked = !checkbox.checked;
+                        toggleEmotion(emotion.id, checkbox.checked);
                     }
                 };
                 div.innerHTML = `
@@ -2883,71 +2473,40 @@ const ADDITIONAL_PROFESSIONS = [
         }
 
         window.toggleEmotion = (emotionId, checked) => {
-            if (checked) {
-                if (!selectedEmotions.includes(emotionId)) selectedEmotions.push(emotionId);
-            } else {
-                selectedEmotions = selectedEmotions.filter(id => id !== emotionId);
-            }
-            
-            document.querySelectorAll('.emotion-item').forEach(item => {
-                const checkbox = item.querySelector('input');
-                if (checkbox && checkbox.checked) {
-                    item.classList.add('selected');
-                } else {
-                    item.classList.remove('selected');
-                }
-            });
-            
+            if (checked) selectedEmotions.push(emotionId);
+            else selectedEmotions = selectedEmotions.filter(id => id !== emotionId);
             document.getElementById('selectedCount').textContent = selectedEmotions.length;
-            
-            const generateBtn = document.getElementById('generateBtn');
-            if (generateBtn) {
-                generateBtn.disabled = selectedEmotions.length === 0;
-            }
+            document.getElementById('generateBtn').disabled = selectedEmotions.length === 0;
         };
 
         function initStyles() {
             const grid = document.getElementById('styleTags');
             grid.innerHTML = '';
-            
             STYLES.forEach((style, index) => {
                 const div = document.createElement('div');
-                div.className = 'style-tag';
-                if (index === 0) div.classList.add('selected');
+                div.className = 'style-tag' + (index === 0 ? ' selected' : '');
                 div.setAttribute('data-style', style.style);
                 div.textContent = style.name;
-                
-                div.addEventListener('click', function() {
+                div.onclick = () => {
                     document.querySelectorAll('.style-tag').forEach(t => t.classList.remove('selected'));
-                    this.classList.add('selected');
-                    currentStyle = this.dataset.style;
-                });
-                
+                    div.classList.add('selected');
+                    currentStyle = div.dataset.style;
+                };
                 grid.appendChild(div);
             });
-            
             currentStyle = STYLES[0].style;
         }
 
         function toggleEditionMode() {
-            const mode = document.getElementById('batchMode').value;
-            const editionField = document.getElementById('editionField');
-            
-            if (mode === 'limited') {
-                editionField.style.display = 'block';
-            } else {
-                editionField.style.display = 'block';
-            }
+            document.getElementById('editionField').style.display = 
+                document.getElementById('batchMode').value === 'limited' ? 'block' : 'block';
             updateRevenue();
         }
 
         function updateRevenue() {
             const size = parseInt(document.getElementById('editionSize').value) || 50;
             const price = parseInt(document.getElementById('copyPrice').value) || 2990;
-            const total = size * price;
-            
-            document.getElementById('totalRevenue').textContent = total.toLocaleString() + ' ₽';
-            document.getElementById('revenueDetails').textContent = `${size} копий × ${price.toLocaleString()} ₽`;
+            document.getElementById('totalRevenue').textContent = (size * price).toLocaleString() + ' ₽';
         }
 
         // ========== ФУНКЦИИ ЛОГИРОВАНИЯ ==========
@@ -2979,42 +2538,26 @@ const ADDITIONAL_PROFESSIONS = [
         // ========== ПРОВЕРКА API ==========
         async function checkAPIs() {
             try {
-                const recraftRes = await fetch('https://external.api.recraft.ai/v1/images/generations', {
+                await fetch('https://external.api.recraft.ai/v1/images/generations', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${RECRAFT_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ prompt: 'test', n: 1, size: '1024x1024' })
+                    headers: { 'Authorization': `Bearer ${RECRAFT_API_KEY}` },
+                    body: JSON.stringify({ prompt: 'test', n: 1 })
                 });
-                
-                if (recraftRes.ok) {
-                    document.getElementById('recraftStatus').innerHTML = '✅ Recraft V4: Подключен';
-                } else {
-                    document.getElementById('recraftStatus').innerHTML = '⚠️ Recraft V4: Ошибка';
-                }
+                document.getElementById('recraftStatus').innerHTML = '✅ Recraft V4: Подключен';
             } catch {
                 document.getElementById('recraftStatus').innerHTML = '❌ Recraft V4: Ошибка';
             }
 
-            if (KLING_ACCESS_KEY && KLING_SECRET_KEY) {
-                document.getElementById('klingStatus').innerHTML = '✅ Kling AI: Ключи загружены';
-            }
-            
-            document.getElementById('analysisStatus').innerHTML = '✅ AI-анализ: Активен';
+            document.getElementById('klingStatus').innerHTML = KLING_ACCESS_KEY && KLING_SECRET_KEY 
+                ? '✅ Kling AI: Ключи загружены' 
+                : '⚠️ Kling AI: Нет ключей';
         }
 
         // ========== ГЕНЕРАЦИЯ PNG ==========
-        async function generatePNG(professionInfo, emotion, humorItem, character, isCustomHumor = false) {
-            let prompt;
-            
-            if (professionInfo) {
-                // С профессией
-                prompt = `${character}, ${professionInfo.basePrompt}, ${emotion.prompt}, ${currentStyle}, ${humorItem.en || humorItem.ru}. The character has a speech bubble containing Russian text: "${humorItem.ru}".`;
-            } else {
-                // Без профессии (свободный промпт)
-                prompt = `${character}, ${emotion.prompt}, ${currentStyle}, ${humorItem.en || humorItem.ru}. The character has a speech bubble containing Russian text: "${humorItem.ru}".`;
-            }
+        async function generatePNG(professionInfo, emotion, humorItem, character) {
+            const prompt = professionInfo
+                ? `${character}, ${professionInfo.basePrompt}, ${emotion.prompt}, ${currentStyle}, ${humorItem.en || humorItem.ru}. Speech bubble with Russian text: "${humorItem.ru}"`
+                : `${character}, ${emotion.prompt}, ${currentStyle}, ${humorItem.en || humorItem.ru}. Speech bubble with Russian text: "${humorItem.ru}"`;
             
             addLogMessage(`🎨 Recraft: отправляем запрос...`, 'info');
             
@@ -3026,21 +2569,18 @@ const ADDITIONAL_PROFESSIONS = [
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        prompt: prompt,
-                        n: 1,
-                        size: '1024x1024',
-                        model: 'recraftv4',
-                        response_format: 'b64_json'
+                        prompt, n: 1, size: '1024x1024',
+                        model: 'recraftv4', response_format: 'b64_json'
                     })
                 });
 
                 const data = await response.json();
-                if (data.data && data.data[0] && data.data[0].b64_json) {
+                if (data.data?.[0]?.b64_json) {
                     addLogMessage(`✅ Recraft: изображение готово`, 'success');
                     return await resizeImage(data.data[0].b64_json);
                 }
             } catch (e) {
-                addLogMessage(`❌ Ошибка PNG: ${e.message}`, 'error');
+                addLogMessage(`❌ Recraft ошибка: ${e.message}`, 'error');
             }
             return null;
         }
@@ -3050,250 +2590,190 @@ const ADDITIONAL_PROFESSIONS = [
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    canvas.width = 512;
-                    canvas.height = 512;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, 512, 512);
+                    canvas.width = 512; canvas.height = 512;
+                    canvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
                     resolve(canvas.toDataURL('image/png'));
                 };
                 img.src = `data:image/png;base64,${base64}`;
             });
         }
 
-        // ========== ФУНКЦИЯ ГЕНЕРАЦИИ МАСТЕР-НАБОРА ==========
-        async function generateMasterSet(character, professionInfo) {
-            const masterSet = [];
-            const isCustomMode = professionInfo === null;
+        // ========== KLING AI АНИМАЦИЯ (ТОЛЬКО ОНА, БЕЗ ЗАПАСНЫХ) ==========
+        async function animateWithKling(imageDataUrl, emotionId) {
+            addLogMessage(`🎬 Kling AI: отправляем на анимацию...`, 'info');
             
-            let customHumors = [];
-            if (isCustomMode) {
-                const humorsText = document.getElementById('customHumors').value;
-                customHumors = humorsText.split(';').map(h => h.trim()).filter(h => h.length > 0);
-                
-                if (customHumors.length === 0) {
-                    addLogMessage(`⚠️ Шутки не введены, используем стандартные`, 'warning');
-                    // Запасной вариант
-                    const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS, ...TREND_PROFESSIONS];
-                    const randomProf = allProfessions[Math.floor(Math.random() * allProfessions.length)];
-                    customHumors = randomProf.humor.map(h => h.ru);
-                }
-            }
+            const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
+            const token = btoa(`${KLING_ACCESS_KEY}:${KLING_SECRET_KEY}`);
             
-            for (let i = 0; i < selectedEmotions.length; i++) {
-                const emotionId = selectedEmotions[i];
-                const emotion = EMOTIONS.find(e => e.id === emotionId);
+            try {
+                // 1. Создаем задачу
+                const taskRes = await fetch('https://api.klingai.com/v1/videos', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: "kling-v1",
+                        input: { prompt: motionPrompt, image: imageDataUrl },
+                        parameters: { duration: 5, mode: "pro", cfg_scale: 0.8 }
+                    })
+                });
+
+                if (!taskRes.ok) throw new Error(`Kling API error: ${taskRes.status}`);
                 
-                let humorItem;
-                let humorSource = '';
+                const taskData = await taskRes.json();
+                const taskId = taskData.data?.task_id;
+                if (!taskId) throw new Error('Не получен task_id');
                 
-                if (professionInfo) {
-                    // С профессией - используем её шутки с AI-анализом
-                    const humorResult = getHumorWithAnalysis(professionInfo, emotionId);
-                    humorItem = humorResult.humor;
-                    humorSource = professionInfo.name;
+                addLogMessage(`⏳ Задача создана, ожидаем результат...`, 'info');
+
+                // 2. Опрашиваем статус
+                let attempts = 0;
+                while (attempts < 30) {
+                    await new Promise(r => setTimeout(r, 5000));
                     
-                    addLogMessage(`🎨 Генерация ${i+1}/${selectedEmotions.length}: ${emotion.name}`, 'info');
-                    
-                    if (humorResult.isCompatible) {
-                        addLogMessage(`✅ Шутка идеально подходит для ${emotion.name}`, 'success');
-                    } else {
-                        addLogMessage(`⚠️ Шутка может не идеально подходить для ${emotion.name}`, 'warning');
-                    }
-                } else {
-                    // Без профессии - используем ручные шутки
-                    const humorIndex = i % customHumors.length;
-                    const humorText = customHumors[humorIndex];
-                    
-                    humorItem = {
-                        ru: humorText,
-                        en: humorText // Для ручных шуток английский такой же
-                    };
-                    humorSource = 'ручной ввод';
-                    
-                    addLogMessage(`🎨 Генерация ${i+1}/${selectedEmotions.length}: ${emotion.name} (ручная шутка)`, 'info');
-                }
-                
-                addLogMessage(`💬 Шутка: "${humorItem.ru}"`, 'info');
-                
-                // Генерируем PNG
-                const pngDataUrl = await generatePNG(
-                    professionInfo, 
-                    emotion, 
-                    humorItem, 
-                    character,
-                    !professionInfo
-                );
-                
-                if (pngDataUrl) {
-                    masterSet.push({
-                        emotion: emotion,
-                        profession: professionInfo?.name || 'свободный промпт',
-                        humorSource: humorSource,
-                        humor: humorItem.ru,
-                        dataUrl: pngDataUrl
+                    const statusRes = await fetch(`https://api.klingai.com/v1/videos/${taskId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
+                    const statusData = await statusRes.json();
+                    
+                    if (statusData.code === 0) {
+                        if (statusData.data?.task_status === 'succeed') {
+                            addLogMessage(`✅ Kling AI: анимация готова`, 'success');
+                            return statusData.data.result.video_url;
+                        }
+                        if (statusData.data?.task_status === 'failed') {
+                            throw new Error('Kling generation failed');
+                        }
+                    }
+                    attempts++;
                 }
+                throw new Error('Timeout waiting for Kling generation');
+                
+            } catch (error) {
+                addLogMessage(`❌ KLING AI ОШИБКА: ${error.message}`, 'error');
+                addLogMessage(`⚠️ Процесс остановлен. Запасные анимации не используются.`, 'error');
+                throw error; // Пробрасываем ошибку выше для остановки всего процесса
             }
-            
-            return masterSet;
         }
 
-        // ========== ФУНКЦИЯ ГЕНЕРАЦИИ ОПИСАНИЯ ПАКЕТА ==========
-        function generatePackDescription(character, professionInfo, masterSet, isLimited, editionSize, copyPrice) {
-            const emotionList = masterSet.map(s => `${s.emotion.name} ${s.emotion.icon}`).join(', ');
-            const humorSamples = masterSet.slice(0, 5).map(s => `• "${s.humor}" (${s.emotion.icon})`).join('\n');
+        // ========== КОНВЕРТАЦИЯ В WEBM ==========
+        async function convertToWEBM(videoUrl) {
+            addLogMessage(`🔄 Конвертация в WEBM...`, 'info');
             
-            const date = new Date().toLocaleDateString('ru-RU');
-            const packId = `STICKER-${Date.now().toString().slice(-6)}`;
+            const videoBlob = await fetch(videoUrl).then(r => r.blob());
+            const video = document.createElement('video');
+            video.src = URL.createObjectURL(videoBlob);
             
-            let description = `🎨 ПРЕМИУМ НАБОР СТИКЕРОВ "${character}"
+            await new Promise((resolve, reject) => {
+                video.onloadedmetadata = resolve;
+                video.onerror = reject;
+                setTimeout(resolve, 5000);
+            });
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 512; canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            const stream = canvas.captureStream(30);
             
-📦 Состав набора:
-- ${masterSet.length} уникальных анимированных стикеров
-- Эмоции: ${emotionList}
+            const recorder = new MediaRecorder(stream, {
+                mimeType: 'video/webm;codecs=vp9',
+                videoBitsPerSecond: 250000
+            });
 
-`;
-
-            if (professionInfo) {
-                description += `💼 Профессия: ${professionInfo.name}\n`;
-            } else {
-                description += `💼 Режим: Свободный промпт (ручные шутки)\n`;
-                description += `✏️ Шутки: введены пользователем\n`;
-            }
-            
-            description += `🎨 Стиль: ${currentStyle}
-
-✨ Особенности:
-- AI-подбор шуток под каждую эмоцию
-- 60 FPS плавная анимация
-- Высокое качество 512x512
-- Прозрачный фон
-
-📝 Примеры шуток:
-${humorSamples}
-
-`;
-
-            if (isLimited) {
-                description += `🔥 ТИП: Лимитированная серия
-🔢 Тираж: ${editionSize} нумерованных копий
-💰 Цена за копию: ${copyPrice.toLocaleString()} ₽
-💎 ID коллекции: ${packId}
-
-📈 Потенциальный доход: ${(editionSize * copyPrice).toLocaleString()} ₽
-`;
-            } else {
-                description += `🔄 ТИП: Бессрочная лицензия
-💎 ID набора: ${packId}
-`;
-            }
-            
-            description += `\n📅 Дата создания: ${date}`;
-            
-            return description;
-        }
-
-        // ========== ФУНКЦИЯ ДОБАВЛЕНИЯ НОМЕРА ТИРАЖА ==========
-        async function addEditionNumber(imageDataUrl, copyNum, totalCopies) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 512;
-                    canvas.height = 512;
-                    const ctx = canvas.getContext('2d');
-                    
-                    ctx.drawImage(img, 0, 0, 512, 512);
-                    
-                    ctx.font = 'bold 16px Inter, sans-serif';
-                    ctx.fillStyle = 'rgba(255,255,255,0.95)';
-                    ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                    ctx.shadowBlur = 4;
-                    ctx.shadowOffsetX = 1;
-                    ctx.shadowOffsetY = 1;
-                    
-                    const text = `#${String(copyNum).padStart(3, '0')}/${totalCopies}`;
-                    const metrics = ctx.measureText(text);
-                    const x = 512 - metrics.width - 20;
-                    const y = 480;
-                    
-                    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-                    ctx.fillRect(x - 8, y - 25, metrics.width + 16, 28);
-                    
-                    ctx.fillStyle = 'white';
-                    ctx.fillText(text, x, y);
-                    
-                    resolve(canvas.toDataURL('image/png'));
+            return new Promise((resolve, reject) => {
+                const chunks = [];
+                recorder.ondataavailable = e => chunks.push(e.data);
+                recorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: 'video/webm' });
+                    addLogMessage(`✅ WEBM готов`, 'success');
+                    resolve(URL.createObjectURL(blob));
                 };
-                img.src = imageDataUrl;
+                recorder.onerror = reject;
+
+                recorder.start();
+                video.currentTime = 0;
+                video.play().catch(reject);
+
+                let frame = 0;
+                const interval = setInterval(() => {
+                    if (frame++ >= 90) {
+                        clearInterval(interval);
+                        video.pause();
+                        recorder.stop();
+                        return;
+                    }
+                    ctx.drawImage(video, 0, 0, 512, 512);
+                }, 33);
             });
         }
 
-        // ========== ФУНКЦИЯ СОЗДАНИЯ СЕРТИФИКАТА ==========
-        async function createCertificate(copyNum, totalCopies, masterSet, folder) {
-            const certificate = {
-                copyNumber: copyNum,
-                totalCopies: totalCopies,
-                date: new Date().toISOString(),
-                editionId: `EDITION-${Date.now()}`,
-                authenticity: `This is authentic copy #${String(copyNum).padStart(3, '0')} of ${totalCopies}`,
-                stickers: masterSet.map(s => ({
-                    emotion: s.emotion.name,
-                    icon: s.emotion.icon,
-                    humor: s.humor
-                }))
-            };
+        // ========== ГЕНЕРАЦИЯ МАСТЕР-НАБОРА ==========
+        async function generateMasterSet(character, professionInfo) {
+            const masterSet = [];
+            const isCustom = professionInfo === null;
             
-            const certificateBlob = new Blob(
-                [JSON.stringify(certificate, null, 2)], 
-                { type: 'application/json' }
-            );
+            let customHumors = [];
+            if (isCustom) {
+                customHumors = document.getElementById('customHumors').value
+                    .split(';').map(h => h.trim()).filter(h => h.length > 0);
+            }
             
-            const url = URL.createObjectURL(certificateBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${folder}/certificate_${String(copyNum).padStart(3, '0')}.json`;
-            a.click();
-        }
-
-        // ========== ФУНКЦИЯ СОЗДАНИЯ МАНИФЕСТА ==========
-        async function createManifest(editionSize, copyPrice, masterSet, folder) {
-            const manifest = {
-                editionId: `EDITION-${Date.now()}`,
-                totalCopies: editionSize,
-                pricePerCopy: copyPrice,
-                totalValue: editionSize * copyPrice,
-                date: new Date().toISOString(),
-                masterSet: {
-                    professions: [...new Set(masterSet.map(s => s.profession))],
-                    emotions: masterSet.map(s => s.emotion.name),
-                    humorSamples: masterSet.slice(0, 3).map(s => s.humor)
+            for (let i = 0; i < selectedEmotions.length; i++) {
+                const emotion = EMOTIONS.find(e => e.id === selectedEmotions[i]);
+                
+                let humorItem;
+                if (professionInfo) {
+                    const result = getHumorWithAnalysis(professionInfo, emotion.id);
+                    humorItem = result.humor;
+                    addLogMessage(`🎨 ${i+1}/${selectedEmotions.length}: ${emotion.name}`, 'info');
+                    addLogMessage(`${result.isCompatible ? '✅' : '⚠️'} Шутка: "${humorItem.ru}"`, 'info');
+                } else {
+                    const humorText = customHumors[i % customHumors.length] || 'шутка';
+                    humorItem = { ru: humorText, en: humorText };
+                    addLogMessage(`🎨 ${i+1}/${selectedEmotions.length}: ${emotion.name} (ручная шутка)`, 'info');
+                    addLogMessage(`💬 "${humorText}"`, 'info');
                 }
-            };
-            
-            const manifestBlob = new Blob(
-                [JSON.stringify(manifest, null, 2)], 
-                { type: 'application/json' }
-            );
-            
-            const url = URL.createObjectURL(manifestBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${folder}/manifest.json`;
-            a.click();
+                
+                const pngDataUrl = await generatePNG(professionInfo, emotion, humorItem, character);
+                if (!pngDataUrl) throw new Error('Не удалось сгенерировать PNG');
+                
+                // ЗДЕСЬ ВЫЗЫВАЕМ KLING AI - ЕСЛИ ОШИБКА, ПРОЦЕСС ОСТАНАВЛИВАЕТСЯ
+                const videoUrl = await animateWithKling(pngDataUrl, emotion.id);
+                const webmUrl = await convertToWEBM(videoUrl);
+                
+                masterSet.push({
+                    emotion, humor: humorItem.ru,
+                    dataUrl: pngDataUrl, webmUrl
+                });
+            }
+            return masterSet;
         }
 
-        // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
+        // ========== ГЕНЕРАЦИЯ ОПИСАНИЯ ==========
+        function generatePackDescription(character, professionInfo, masterSet, isLimited, editionSize, copyPrice) {
+            const emotions = masterSet.map(s => `${s.emotion.name} ${s.emotion.icon}`).join(', ');
+            const samples = masterSet.slice(0, 3).map(s => `• "${s.humor}" (${s.emotion.icon})`).join('\n');
+            const date = new Date().toLocaleDateString('ru-RU');
+            const packId = `STICKER-${Date.now().toString().slice(-6)}`;
+            
+            let desc = `🎨 ПРЕМИУМ НАБОР СТИКЕРОВ "${character}"\n\n📦 Состав: ${masterSet.length} стикеров\nЭмоции: ${emotions}\n\n`;
+            desc += professionInfo ? `💼 Профессия: ${professionInfo.name}\n` : `💼 Режим: ручные шутки\n`;
+            desc += `🎨 Стиль: ${currentStyle}\n\n📝 Примеры:\n${samples}\n\n`;
+            desc += isLimited 
+                ? `🔥 Лимитированная серия\n🔢 Тираж: ${editionSize} копий\n💰 Цена: ${copyPrice} ₽\n💎 ID: ${packId}`
+                : `🔄 Бессрочная лицензия\n💎 ID: ${packId}`;
+            desc += `\n📅 ${date}`;
+            return desc;
+        }
+
+        // ========== ОСНОВНАЯ ФУНКЦИЯ ==========
         window.generatePack = async () => {
             const character = document.getElementById('characterPrompt').value.trim();
-            
             if (!character || selectedEmotions.length === 0) {
                 alert('Введите персонажа и выберите эмоции');
                 return;
             }
 
-            const mode = document.getElementById('batchMode').value;
-            const isLimited = mode === 'limited';
+            const isLimited = document.getElementById('batchMode').value === 'limited';
             const editionSize = isLimited ? parseInt(document.getElementById('editionSize').value) : 1;
             const copyPrice = isLimited ? parseInt(document.getElementById('copyPrice').value) : 0;
             
@@ -3303,105 +2783,47 @@ ${humorSamples}
             document.getElementById('generateBtn').disabled = true;
             
             addLogMessage('🚀 Начинаем генерацию...', 'info');
-            addLogMessage(`📝 Персонаж: ${character}`, 'info');
             
             try {
-                generatedPNG = [];
-                generatedWEBM = [];
+                const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS, ...TREND_PROFESSIONS];
+                const professionInfo = selectedProfession ? allProfessions.find(p => p.id === selectedProfession) : null;
                 
-                // Получаем информацию о профессии (если выбрана)
-                let professionInfo = null;
-                if (selectedProfession) {
-                    const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS, ...TREND_PROFESSIONS];
-                    professionInfo = allProfessions.find(p => p.id === selectedProfession);
-                    addLogMessage(`💼 Профессия: ${professionInfo?.name || 'не выбрана'}`, 'info');
-                } else {
-                    addLogMessage(`💼 Режим: свободный промпт с ручными шутками`, 'info');
-                }
+                addLogMessage(`📝 Персонаж: ${character}`, 'info');
+                addLogMessage(professionInfo ? `💼 Профессия: ${professionInfo.name}` : `💼 Режим: свободный промпт`, 'info');
                 
-                addLogMessage(`😊 Выбрано эмоций: ${selectedEmotions.length}`, 'info');
-
-                // 1. Генерируем мастер-набор
-                addLogMessage(`🎨 Генерируем мастер-набор из ${selectedEmotions.length} стикеров...`, 'info');
                 const masterSet = await generateMasterSet(character, professionInfo);
                 
-                if (masterSet.length === 0) {
-                    throw new Error('Не удалось создать мастер-набор');
-                }
+                // Сохраняем описание
+                const desc = generatePackDescription(character, professionInfo, masterSet, isLimited, editionSize, copyPrice);
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(new Blob([desc], { type: 'text/plain;charset=utf-8' }));
+                link.download = `pack_description_${Date.now()}.txt`;
+                link.click();
                 
-                // 2. Генерируем описание пакета
-                const packDescription = generatePackDescription(
-                    character, 
-                    professionInfo, 
-                    masterSet, 
-                    isLimited, 
-                    editionSize, 
-                    copyPrice
-                );
-                
-                // Сохраняем описание в файл
-                const descriptionBlob = new Blob([packDescription], { type: 'text/plain;charset=utf-8' });
-                const descriptionUrl = URL.createObjectURL(descriptionBlob);
-                const descriptionLink = document.createElement('a');
-                descriptionLink.href = descriptionUrl;
-                descriptionLink.download = `pack_description_${Date.now()}.txt`;
-                descriptionLink.click();
-                
-                addLogMessage(`📝 Описание пакета сохранено`, 'success');
-                
-                // 3. Для каждой копии (если лимитированная серия)
-                const timestamp = Date.now();
-                for (let copyNum = 1; copyNum <= editionSize; copyNum++) {
-                    updateLogCounter(copyNum, editionSize);
+                // Генерируем копии
+                for (let copy = 1; copy <= editionSize; copy++) {
+                    updateLogCounter(copy, editionSize);
+                    if (isLimited) addLogMessage(`📀 Копия #${copy.toString().padStart(3,'0')}`, 'info');
                     
-                    if (isLimited) {
-                        addLogMessage(`📀 Копия #${String(copyNum).padStart(3, '0')} / ${editionSize}`, 'info');
+                    for (let s = 0; s < masterSet.length; s++) {
+                        const response = await fetch(masterSet[s].webmUrl);
+                        const blob = await response.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = isLimited 
+                            ? `copy_${copy.toString().padStart(3,'0')}_${(s+1).toString().padStart(2,'0')}.webm`
+                            : `sticker_${(s+1).toString().padStart(2,'0')}.webm`;
+                        a.click();
+                        URL.revokeObjectURL(url);
                     }
-                    
-                    // Для каждого стикера в наборе
-                    for (let stickerIdx = 0; stickerIdx < masterSet.length; stickerIdx++) {
-                        const sticker = masterSet[stickerIdx];
-                        
-                        // Добавляем номер копии (если лимитированная)
-                        let finalImage = sticker.dataUrl;
-                        if (isLimited) {
-                            finalImage = await addEditionNumber(sticker.dataUrl, copyNum, editionSize);
-                        }
-                        
-                        // Сохраняем PNG
-                        let filename;
-                        if (isLimited) {
-                            filename = `copy_${String(copyNum).padStart(3, '0')}_${String(stickerIdx + 1).padStart(2, '0')}.png`;
-                        } else {
-                            filename = `sticker_${String(stickerIdx + 1).padStart(2, '0')}.png`;
-                        }
-                        
-                        const link = document.createElement('a');
-                        link.download = filename;
-                        link.href = finalImage;
-                        link.click();
-                    }
-                    
-                    // Если лимитированная, создаем сертификат
-                    if (isLimited) {
-                        const folder = `edition_${timestamp}`;
-                        await createCertificate(copyNum, editionSize, masterSet, folder);
-                    }
-                    
-                    // Небольшая задержка между копиями
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-                
-                // Если лимитированная, создаем манифест
-                if (isLimited) {
-                    const folder = `edition_${timestamp}`;
-                    await createManifest(editionSize, copyPrice, masterSet, folder);
                 }
                 
                 addLogMessage(`✅ ГЕНЕРАЦИЯ ЗАВЕРШЕНА!`, 'success');
                 
             } catch (error) {
-                addLogMessage(`❌ Ошибка: ${error.message}`, 'error');
+                addLogMessage(`❌ КРИТИЧЕСКАЯ ОШИБКА: ${error.message}`, 'error');
+                addLogMessage(`🛑 Процесс остановлен. Запасные анимации не используются.`, 'error');
             }
             
             document.getElementById('loading').style.display = 'none';
@@ -3409,20 +2831,17 @@ ${humorSamples}
         };
 
         // ========== ИНИЦИАЛИЗАЦИЯ ==========
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             renderProfessions();
             renderEmotions();
             initStyles();
             checkAPIs();
             updateRevenue();
-
+            
             setTimeout(() => {
-                EMOTIONS.slice(0, 5).forEach(emotion => {
-                    const checkbox = document.querySelector(`input[value="${emotion.id}"]`);
-                    if (checkbox) {
-                        checkbox.checked = true;
-                        toggleEmotion(emotion.id, true);
-                    }
+                EMOTIONS.slice(0, 5).forEach(e => {
+                    const cb = document.querySelector(`input[value="${e.id}"]`);
+                    if (cb) { cb.checked = true; toggleEmotion(e.id, true); }
                 });
             }, 100);
         });
