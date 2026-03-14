@@ -2610,15 +2610,15 @@ async function checkProxy() {
 
         // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
 // ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
-// ========== KLING AI С BEARER ТОКЕНОМ ЧЕРЕЗ ПРОКСИ ==========
+// ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
 async function animateWithKling(imageDataUrl, emotionId) {
     addLogMessage(`🎬 Kling AI: отправляем через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. ПОЛУЧАЕМ TOKEN
-        addLogMessage(`🔄 Получаем токен доступа...`, 'info');
+        // 1. ПОЛУЧАЕМ JWT ТОКЕН [citation:3]
+        addLogMessage(`🔄 Получаем токен...`, 'info');
         
         const tokenResponse = await fetch('http://localhost:3000/api/kling/token', {
             method: 'POST',
@@ -2636,7 +2636,12 @@ async function animateWithKling(imageDataUrl, emotionId) {
         }
 
         const tokenData = await tokenResponse.json();
-        const accessToken = tokenData.access_token;
+        
+        if (tokenData.code !== 0) {
+            throw new Error(`Ошибка получения токена: ${tokenData.message || 'Unknown error'}`);
+        }
+        
+        const accessToken = tokenData.data.access_token;
         
         if (!accessToken) {
             throw new Error('Токен не получен');
@@ -2644,7 +2649,9 @@ async function animateWithKling(imageDataUrl, emotionId) {
 
         addLogMessage(`✅ Токен получен`, 'success');
 
-        // 2. СОЗДАЕМ ЗАДАЧУ С TOKEN
+        // 2. СОЗДАЕМ ЗАДАЧУ [citation:4]
+        addLogMessage(`📤 Отправляем изображение в Kling...`, 'info');
+        
         const createResponse = await fetch('http://localhost:3000/api/kling/create', {
             method: 'POST',
             headers: {
@@ -2664,6 +2671,10 @@ async function animateWithKling(imageDataUrl, emotionId) {
 
         const createData = await createResponse.json();
         
+        if (createData.code !== 0) {
+            throw new Error(`Ошибка: ${createData.message || 'Unknown error'}`);
+        }
+        
         if (!createData.data?.task_id) {
             throw new Error('Не получен task_id');
         }
@@ -2671,9 +2682,10 @@ async function animateWithKling(imageDataUrl, emotionId) {
         const taskId = createData.data.task_id;
         addLogMessage(`⏳ Задача создана: ${taskId}`, 'info');
 
-        // 3. ОПРАШИВАЕМ СТАТУС
+        // 3. ОПРАШИВАЕМ СТАТУС [citation:2]
         let attempts = 0;
         let videoUrl = null;
+        let taskStatus = '';
         
         while (attempts < 30 && !videoUrl) {
             await new Promise(r => setTimeout(r, 3000));
@@ -2685,12 +2697,17 @@ async function animateWithKling(imageDataUrl, emotionId) {
             if (statusResponse.ok) {
                 const statusData = await statusResponse.json();
                 
-                if (statusData.code === 0) {
-                    if (statusData.data?.status === 'succeed' || statusData.data?.task_status === 'succeed') {
-                        videoUrl = statusData.data?.result?.video_url;
+                if (statusData.code === 0 && statusData.data) {
+                    taskStatus = statusData.data.task_status;
+                    
+                    addLogMessage(`📊 Статус: ${taskStatus}`, 'info');
+                    
+                    if (taskStatus === 'succeed') {
+                        // В зависимости от API, результат может быть в разных полях [citation:4]
+                        videoUrl = statusData.data?.result?.video_url || 
+                                  statusData.data?.video_url;
                         if (videoUrl) break;
-                    }
-                    if (statusData.data?.status === 'failed') {
+                    } else if (taskStatus === 'failed') {
                         throw new Error('Генерация не удалась');
                     }
                 }
@@ -2714,6 +2731,8 @@ async function animateWithKling(imageDataUrl, emotionId) {
         }
 
         const videoBlob = await downloadResponse.blob();
+        addLogMessage(`📦 Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
+        
         return videoBlob;
 
     } catch (error) {
