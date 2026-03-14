@@ -2610,14 +2610,14 @@ async function checkProxy() {
 
         // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
 // ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
-// ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
+// ========== KLING AI ЧЕРЕЗ ПРОКСИ (УПРОЩЕННАЯ) ==========
 async function animateWithKling(imageDataUrl, emotionId) {
     addLogMessage(`🎬 Kling AI: отправляем через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. ПОЛУЧАЕМ JWT ТОКЕН [citation:3]
+        // 1. ПОЛУЧАЕМ JWT ТОКЕН (просто запрос к прокси)
         addLogMessage(`🔄 Получаем токен...`, 'info');
         
         const tokenResponse = await fetch('http://localhost:3000/api/kling/token', {
@@ -2649,7 +2649,7 @@ async function animateWithKling(imageDataUrl, emotionId) {
 
         addLogMessage(`✅ Токен получен`, 'success');
 
-        // 2. СОЗДАЕМ ЗАДАЧУ [citation:4]
+        // 2. СОЗДАЕМ ЗАДАЧУ
         addLogMessage(`📤 Отправляем изображение в Kling...`, 'info');
         
         const createResponse = await fetch('http://localhost:3000/api/kling/create', {
@@ -2671,10 +2671,6 @@ async function animateWithKling(imageDataUrl, emotionId) {
 
         const createData = await createResponse.json();
         
-        if (createData.code !== 0) {
-            throw new Error(`Ошибка: ${createData.message || 'Unknown error'}`);
-        }
-        
         if (!createData.data?.task_id) {
             throw new Error('Не получен task_id');
         }
@@ -2682,10 +2678,9 @@ async function animateWithKling(imageDataUrl, emotionId) {
         const taskId = createData.data.task_id;
         addLogMessage(`⏳ Задача создана: ${taskId}`, 'info');
 
-        // 3. ОПРАШИВАЕМ СТАТУС [citation:2]
+        // 3. ОПРАШИВАЕМ СТАТУС
         let attempts = 0;
         let videoUrl = null;
-        let taskStatus = '';
         
         while (attempts < 30 && !videoUrl) {
             await new Promise(r => setTimeout(r, 3000));
@@ -2698,14 +2693,12 @@ async function animateWithKling(imageDataUrl, emotionId) {
                 const statusData = await statusResponse.json();
                 
                 if (statusData.code === 0 && statusData.data) {
-                    taskStatus = statusData.data.task_status;
+                    const taskStatus = statusData.data.task_status;
                     
                     addLogMessage(`📊 Статус: ${taskStatus}`, 'info');
                     
                     if (taskStatus === 'succeed') {
-                        // В зависимости от API, результат может быть в разных полях [citation:4]
-                        videoUrl = statusData.data?.result?.video_url || 
-                                  statusData.data?.video_url;
+                        videoUrl = statusData.data?.result?.video_url || statusData.data?.video_url;
                         if (videoUrl) break;
                     } else if (taskStatus === 'failed') {
                         throw new Error('Генерация не удалась');
