@@ -2614,42 +2614,14 @@ async function checkProxy() {
 
         // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
 // ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
-// ========== KLING AI ЧЕРЕЗ ПРОКСИ С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
+// ========== KLING AI С ПРАВИЛЬНЫМИ ЭНДПОИНТАМИ ==========
 async function animateWithKling(imageDataUrl, emotionId) {
-    addLogMessage(`🎬 Kling AI: отправляем через прокси...`, 'info');
+    addLogMessage(`🎬 Kling AI: отправляем запрос...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. Сначала получаем токен доступа через OAuth
-        addLogMessage(`🔄 Получаем токен доступа...`, 'info');
-        
-        const tokenResponse = await fetch('https://api.klingai.com/v1/auth/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                access_key: KLING_ACCESS_KEY,
-                secret_key: KLING_SECRET_KEY
-            })
-        });
-
-        if (!tokenResponse.ok) {
-            const errorText = await tokenResponse.text();
-            throw new Error(`Ошибка получения токена: ${tokenResponse.status} - ${errorText}`);
-        }
-
-        const tokenData = await tokenResponse.json();
-        const accessToken = tokenData.data?.access_token;
-        
-        if (!accessToken) {
-            throw new Error('Не удалось получить токен доступа');
-        }
-
-        addLogMessage(`✅ Токен получен`, 'success');
-
-        // 2. Конвертируем data URL в Blob
+        // 1. Конвертируем data URL в Blob для отправки
         const base64Data = imageDataUrl.split(',')[1];
         const binaryData = atob(base64Data);
         const arrayBuffer = new Uint8Array(binaryData.length);
@@ -2658,7 +2630,7 @@ async function animateWithKling(imageDataUrl, emotionId) {
         }
         const imageBlob = new Blob([arrayBuffer], { type: 'image/png' });
 
-        // 3. Создаем FormData для отправки
+        // 2. Создаем FormData для отправки
         const formData = new FormData();
         formData.append('image', imageBlob, 'image.png');
         formData.append('prompt', motionPrompt);
@@ -2666,13 +2638,16 @@ async function animateWithKling(imageDataUrl, emotionId) {
         formData.append('duration', '5');
         formData.append('cfg_scale', '0.8');
 
-        // 4. Отправляем запрос на создание видео с Bearer токеном
-        addLogMessage(`📤 Отправляем запрос на создание видео...`, 'info');
+        // 3. Создаем Basic Auth заголовок (access_key:secret_key в base64)
+        const authString = btoa(`${KLING_ACCESS_KEY}:${KLING_SECRET_KEY}`);
+
+        // 4. Отправляем запрос на создание видео
+        addLogMessage(`📤 Отправляем запрос в Kling AI...`, 'info');
         
-        const createResponse = await fetch('https://api.klingai.com/v1/images/generations', {
+        const createResponse = await fetch('https://api.klingai.com/v1/videos/generations', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `Basic ${authString}`
             },
             body: formData
         });
@@ -2699,10 +2674,10 @@ async function animateWithKling(imageDataUrl, emotionId) {
             await new Promise(r => setTimeout(r, 3000));
             
             const statusResponse = await fetch(
-                `https://api.klingai.com/v1/tasks/${taskId}`,
+                `https://api.klingai.com/v1/videos/tasks/${taskId}`,
                 {
                     headers: {
-                        'Authorization': `Bearer ${accessToken}`
+                        'Authorization': `Basic ${authString}`
                     }
                 }
             );
