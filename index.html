@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sticker Generator ULTIMATE - KLING AI PREMIUM</title>
     <style>
-        /* ========== СТИЛИ ПОЛНОСТЬЮ СОХРАНЕНЫ ========== */
+        /* ========== ОСНОВНЫЕ СТИЛИ ========== */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
         * {
@@ -27,6 +27,7 @@
             margin: 0 auto;
         }
 
+        /* ========== ШАПКА ========== */
         .header {
             text-align: center;
             margin-bottom: 40px;
@@ -41,6 +42,14 @@
             margin-bottom: 10px;
         }
 
+        .header h1 span {
+            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 0.4em;
+            vertical-align: middle;
+        }
+
         .premium-badge {
             background: linear-gradient(145deg, #fbbf24, #f59e0b);
             color: #1a1f2e;
@@ -52,6 +61,27 @@
             margin-top: 10px;
         }
 
+        .stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .stat-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .stat-badge span {
+            color: #fbbf24;
+            font-weight: 800;
+        }
+
+        /* ========== ОСНОВНАЯ КАРТОЧКА ========== */
         .creator-card {
             background: rgba(255, 255, 255, 0.97);
             backdrop-filter: blur(20px);
@@ -61,6 +91,7 @@
             margin-bottom: 30px;
         }
 
+        /* ========== СТАТУСЫ API ========== */
         .api-status-container {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -89,12 +120,25 @@
             color: #166534;
         }
 
-        .api-status.bgremover {
+        .api-status.analysis {
             background: #fef9c3;
             border: 2px solid #facc15;
             color: #854d0e;
         }
 
+        .api-status.checking {
+            background: #fef9c3;
+            border-color: #facc15;
+            color: #854d0e;
+        }
+
+        .api-status.error {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        /* ========== ДЕБАГ ПАНЕЛЬ ========== */
         .debug-panel {
             background: #1e293b;
             border-radius: 16px;
@@ -108,6 +152,28 @@
             display: none;
         }
 
+        .debug-panel .timestamp {
+            color: #fbbf24;
+            margin-right: 10px;
+        }
+
+        .debug-panel .error {
+            color: #ef4444;
+        }
+
+        .debug-panel .success {
+            color: #4ade80;
+        }
+
+        .debug-panel .info {
+            color: #38bdf8;
+        }
+
+        .debug-panel .warning {
+            color: #fbbf24;
+        }
+
+        /* ========== ПОЛЯ ВВОДА ========== */
         .input-group {
             margin-bottom: 30px;
         }
@@ -126,10 +192,18 @@
             border: 2px solid #e2e8f0;
             border-radius: 24px;
             font-size: 1.1em;
+            transition: all 0.3s;
             font-family: 'Inter', sans-serif;
         }
 
-        .professions-grid {
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        /* ========== СЕТКИ ПРОФЕССИЙ И ЭМОЦИЙ ========== */
+        .professions-grid, .emotions-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 12px;
@@ -142,7 +216,7 @@
             border: 2px solid #e2e8f0;
         }
 
-        .profession-item {
+        .profession-item, .emotion-item {
             background: white;
             border: 2px solid #e2e8f0;
             border-radius: 20px;
@@ -154,38 +228,26 @@
             gap: 10px;
         }
 
-        .profession-item:hover {
+        .profession-item:hover, .emotion-item:hover {
             border-color: #667eea;
             transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
         }
 
-        .profession-item.selected {
+        .profession-item.selected, .emotion-item.selected {
             background: linear-gradient(145deg, #667eea, #764ba2);
+            border-color: transparent;
             color: white;
         }
 
-        .emotions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 12px;
-            margin: 20px 0 30px;
-            max-height: 600px;
-            overflow-y: auto;
-            padding: 15px;
-            background: #f8fafc;
-            border-radius: 24px;
-            border: 2px solid #e2e8f0;
+        .profession-icon, .emotion-icon {
+            font-size: 1.3em;
         }
 
-        .emotion-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 20px;
-            padding: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .profession-name, .emotion-name {
+            font-weight: 600;
+            flex: 1;
+            font-size: 0.9em;
         }
 
         .emotion-item input[type="checkbox"] {
@@ -194,6 +256,7 @@
             cursor: pointer;
         }
 
+        /* ========== СТИЛИ ========== */
         .styles-grid {
             display: flex;
             gap: 10px;
@@ -204,6 +267,7 @@
             padding: 15px;
             background: #f8fafc;
             border-radius: 24px;
+            border: 2px solid #e2e8f0;
         }
 
         .style-tag {
@@ -211,20 +275,33 @@
             padding: 10px 16px;
             border-radius: 40px;
             border: 2px solid #e2e8f0;
+            color: #4a5568;
             cursor: pointer;
+            transition: all 0.2s;
             font-weight: 600;
+            font-size: 0.85em;
+            flex: 0 0 auto;
         }
 
-        .style-tag.selected {
+        .style-tag:hover {
+            border-color: #667eea;
             background: #667eea;
             color: white;
         }
 
-        .motion-controls {
+        .style-tag.selected {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        /* ========== НАСТРОЙКИ АНИМАЦИИ ========== */
+        .animation-controls {
             background: linear-gradient(145deg, #f8fafc, #f1f5f9);
             border-radius: 32px;
             padding: 30px;
             margin: 30px 0;
+            border: 2px solid #e2e8f0;
         }
 
         .motion-selector {
@@ -241,28 +318,32 @@
             cursor: pointer;
             border: 2px solid #e2e8f0;
             transition: all 0.3s;
+            text-align: center;
         }
 
         .motion-option.selected {
             border-color: #fbbf24;
             background: #fffbeb;
+            transform: scale(1.02);
         }
 
         .motion-option .icon {
-            font-size: 2em;
+            font-size: 2.5em;
             margin-bottom: 10px;
         }
 
         .motion-option .title {
             font-weight: 700;
             margin-bottom: 5px;
+            font-size: 1.1em;
         }
 
         .motion-option .desc {
-            font-size: 0.8em;
-            color: #666;
+            font-size: 0.85em;
+            color: #64748b;
         }
 
+        /* ========== ПРЕВЬЮ ========== */
         .preview-area {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -280,18 +361,104 @@
         .preview-canvas {
             width: 300px;
             height: 300px;
-            margin: 0 auto;
+            margin: 20px auto;
             background: white;
             border-radius: 20px;
             overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
 
         canvas, video {
             width: 100%;
             height: 100%;
             display: block;
+            object-fit: contain;
         }
 
+        /* ========== ЛОГ ВЫПОЛНЕНИЯ ========== */
+        .progress-log {
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #e2e8f0;
+            border: 2px solid #334155;
+            font-family: 'Inter', monospace;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+            font-weight: 600;
+            color: #fbbf24;
+        }
+
+        .log-counter {
+            background: #0f172a;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.9em;
+            color: #4ade80;
+        }
+
+        .log-messages {
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .log-message {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background: #0f172a;
+            border-radius: 12px;
+            border-left: 4px solid transparent;
+            animation: slideIn 0.3s ease;
+        }
+
+        .log-message.success {
+            border-left-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+        }
+
+        .log-message.error {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .log-message.info {
+            border-left-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .log-message.warning {
+            border-left-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .log-timestamp {
+            color: #94a3b8;
+            font-size: 11px;
+            margin-right: 10px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== ЦЕНЫ ========== */
         .price-section {
             background: linear-gradient(145deg, #1a1f2e, #0f172a);
             border-radius: 32px;
@@ -312,6 +479,7 @@
             border-radius: 24px;
             padding: 20px;
             text-align: center;
+            backdrop-filter: blur(10px);
         }
 
         .price-card .price {
@@ -321,6 +489,13 @@
             margin: 15px 0;
         }
 
+        .price-card .old-price {
+            color: #94a3b8;
+            text-decoration: line-through;
+            font-size: 0.9em;
+        }
+
+        /* ========== КНОПКА ГЕНЕРАЦИИ ========== */
         .generate-btn {
             width: 100%;
             background: linear-gradient(145deg, #fbbf24, #f59e0b);
@@ -331,9 +506,22 @@
             font-size: 1.8em;
             font-weight: 800;
             cursor: pointer;
+            transition: all 0.3s;
             margin: 30px 0;
+            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.3);
         }
 
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 30px 50px rgba(251, 191, 36, 0.5);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ========== ЗАГРУЗКА ========== */
         .loading {
             text-align: center;
             padding: 50px;
@@ -358,6 +546,7 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* ========== РЕЗУЛЬТАТЫ ========== */
         .results {
             margin-top: 40px;
         }
@@ -377,10 +566,17 @@
             border-radius: 16px;
             padding: 15px;
             text-align: center;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .sticker-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
 
         .sticker-card.premium {
-            border: 2px solid #fbbf24;
+            border-color: #fbbf24;
             background: #fffbeb;
         }
 
@@ -397,6 +593,22 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+        }
+
+        .sticker-humor {
+            font-size: 0.7em;
+            color: #fbbf24;
+            margin-top: 5px;
+            padding: 2px 5px;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .sticker-info {
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
         .sticker-badge {
@@ -418,7 +630,7 @@
             color: #1a1f2e;
         }
 
-        .sticker-badge.ai {
+        .sticker-badge.analysis {
             background: #48bb78;
             color: white;
         }
@@ -430,145 +642,118 @@
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s;
             margin-top: 10px;
             background: linear-gradient(145deg, #667eea, #764ba2);
             color: white;
+            font-size: 0.9em;
         }
 
+        .download-btn.premium {
+            background: linear-gradient(145deg, #fbbf24, #f59e0b);
+            color: #1a1f2e;
+        }
+
+        /* ========== ФУТЕР ========== */
         footer {
             text-align: center;
             margin-top: 30px;
             color: rgba(255,255,255,0.5);
         }
-		
-		.progress-log {
-    background: #1e293b;
-    border-radius: 24px;
-    padding: 20px;
-    margin: 20px 0;
-    color: #e2e8f0;
-    border: 2px solid #334155;
-    font-family: 'Inter', monospace;
-}
 
-.log-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #334155;
-    font-weight: 600;
-    color: #fbbf24;
-}
+        /* ========== СЕКЦИИ ========== */
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #1a1f2e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.log-counter {
-    background: #0f172a;
-    padding: 5px 12px;
-    border-radius: 30px;
-    font-size: 0.9em;
-    color: #4ade80;
-}
-
-.log-messages {
-    max-height: 200px;
-    overflow-y: auto;
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-.log-message {
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    background: #0f172a;
-    border-radius: 12px;
-    border-left: 4px solid transparent;
-    animation: slideIn 0.3s ease;
-}
-
-.log-message.success {
-    border-left-color: #4ade80;
-    background: rgba(74, 222, 128, 0.1);
-}
-
-.log-message.error {
-    border-left-color: #ef4444;
-    background: rgba(239, 68, 68, 0.1);
-}
-
-.log-message.info {
-    border-left-color: #38bdf8;
-    background: rgba(56, 189, 248, 0.1);
-}
-
-.log-message.warning {
-    border-left-color: #fbbf24;
-    background: rgba(251, 191, 36, 0.1);
-}
-
-.log-timestamp {
-    color: #94a3b8;
-    font-size: 11px;
-    margin-right: 10px;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        .section-title .count {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.8em;
+        }
     </style>
+    
+    <!-- Подключаем MediaPipe -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎨 Sticker Generator <span>KLING AI</span></h1>
-            <div class="premium-badge">✨ 30+30 профессий • 30 эмоций • AI-анимация • WEBM</div>
+            <h1>🎨 Sticker Generator <span>ULTIMATE</span></h1>
+            <div class="premium-badge">✨ 38 профессий • 30 эмоций • AI-анализ • Kling AI</div>
+            <div class="stats">
+                <div class="stat-badge"><span id="professionCount">38</span> профессий</div>
+                <div class="stat-badge"><span>30</span> эмоций</div>
+                <div class="stat-badge"><span>1200+</span> шуток</div>
+                <div class="stat-badge"><span>AI</span> анализ</div>
+            </div>
         </div>
 
         <div class="creator-card">
+            <!-- Статусы API -->
             <div class="api-status-container">
-                <div id="recraftStatus" class="api-status recraft checking">🔄 Recraft V4: Проверка...</div>
-                <div id="klingStatus" class="api-status kling checking">🔄 Kling AI: Проверка...</div>
-                <div id="bgStatus" class="api-status bgremover checking">🔄 Удаление фона: Готово</div>
+                <div id="recraftStatus" class="api-status recraft checking">
+                    <span class="status-icon">🔄</span>
+                    <span>Recraft V4: Проверка...</span>
+                </div>
+                <div id="klingStatus" class="api-status kling checking">
+                    <span class="status-icon">🔄</span>
+                    <span>Kling AI: Проверка...</span>
+                </div>
+                <div id="analysisStatus" class="api-status analysis checking">
+                    <span class="status-icon">🔄</span>
+                    <span>Анализ эмоций: Готов</span>
+                </div>
             </div>
 
+            <!-- Кнопка дебага -->
             <button onclick="toggleDebug()" style="margin-bottom: 20px; padding: 10px 20px; background: #4a5568; color: white; border: none; border-radius: 40px; cursor: pointer;">
                 🐛 Показать логи
             </button>
 
+            <!-- Панель дебага -->
             <div id="debugPanel" class="debug-panel">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <strong>📋 Логи</strong>
+                    <button onclick="clearDebug()" style="background: none; border: none; color: #fbbf24; cursor: pointer;">Очистить</button>
+                </div>
                 <div id="debugLogs"></div>
             </div>
 
+            <!-- Поле персонажа -->
             <div class="input-group">
                 <label>📝 Персонаж</label>
-                <input type="text" id="characterPrompt" value="милый антропоморфный" placeholder="например: милый кот, программист, панда...">
+                <input type="text" id="characterPrompt" placeholder="например: милый кот, программист, панда..." value="милый антропоморфный">
             </div>
 
+            <!-- Сетка профессий -->
             <div class="section-title">
-                💼 Выберите профессию (30 основных + 8 тематических) <span class="count" id="selectedProfessionCount">не выбрано</span>
+                💼 Выберите профессию (38 вариантов) <span class="count" id="selectedProfessionCount">не выбрано</span>
             </div>
             <div class="professions-grid" id="professionsGrid"></div>
 
+            <!-- Сетка эмоций -->
             <div class="section-title">
                 😊 Выберите эмоции (30 доступно) <span class="count" id="selectedCount">0</span>
             </div>
             <div class="emotions-grid" id="emotionsGrid"></div>
 
+            <!-- Сетка стилей -->
             <div class="section-title">
                 🎨 Выберите стиль (23 варианта)
             </div>
             <div class="styles-grid" id="styleTags"></div>
 
-            <!-- Выбор типа движения для Kling AI -->
-            <div class="motion-controls">
+            <!-- Выбор типа анимации -->
+            <div class="animation-controls">
                 <h3>🎬 Тип анимации (Kling AI)</h3>
                 <div class="motion-selector" id="motionSelector">
                     <div class="motion-option selected" data-motion="subtle">
@@ -592,6 +777,7 @@
                 </p>
             </div>
 
+            <!-- Превью область -->
             <div class="preview-area">
                 <div class="preview-box">
                     <h3>🖼️ PNG оригинал (с текстом)</h3>
@@ -608,91 +794,70 @@
                 </div>
             </div>
 
+            <!-- Цены -->
             <div class="price-section">
                 <h3>💰 Премиум цены</h3>
                 <div class="price-grid">
                     <div class="price-card">
                         <div>1 стикер</div>
                         <div class="price">999 ₽</div>
+                        <div class="old-price">1 499 ₽</div>
                     </div>
                     <div class="price-card">
                         <div>10 стикеров</div>
                         <div class="price">7 990 ₽</div>
+                        <div class="old-price">14 990 ₽</div>
                     </div>
                     <div class="price-card">
                         <div>30 стикеров</div>
                         <div class="price">19 990 ₽</div>
+                        <div class="old-price">29 990 ₽</div>
                     </div>
                     <div class="price-card">
                         <div>900 стикеров</div>
                         <div class="price">99 990 ₽</div>
+                        <div class="old-price">149 990 ₽</div>
                     </div>
                 </div>
             </div>
 
+            <!-- ЛОГ ВЫПОЛНЕНИЯ -->
+            <div class="progress-log" id="progressLog" style="display: none;">
+                <div class="log-header">
+                    <span>📋 Журнал генерации</span>
+                    <span class="log-counter" id="logCounter">0/0</span>
+                </div>
+                <div class="log-messages" id="logMessages">
+                    <!-- Сюда будут добавляться сообщения -->
+                </div>
+            </div>
+
+            <!-- Кнопка генерации -->
             <button class="generate-btn" onclick="generatePack()" id="generateBtn">
                 🚀 СОЗДАТЬ ПРЕМИУМ НАБОР
             </button>
-			
-			<!-- ЛОГ ВЫПОЛНЕНИЯ (новый элемент) -->
-<div class="progress-log" id="progressLog" style="display: none;">
-    <div class="log-header">
-        <span>📋 Журнал генерации</span>
-        <span class="log-counter" id="logCounter">0/0</span>
-    </div>
-    <div class="log-messages" id="logMessages">
-        <!-- Сюда будут добавляться сообщения -->
-    </div>
-</div>
 
+            <!-- Загрузка -->
             <div id="loading" class="loading">
                 <div class="loading-spinner"></div>
-                <p id="loadingProgress">Подготовка к генерации...</p>
+                <p id="loadingProgress" style="font-size: 1.2em;">Подготовка к генерации...</p>
             </div>
 
+            <!-- Результаты -->
             <div id="results" class="results"></div>
         </div>
 
         <footer>
-            <p>30 основных + 8 тематических профессий • 30 эмоций • 23 стиля • Kling AI анимация • WEBM Premium</p>
+            <p>38 профессий • 30 эмоций • AI-анализ • Kling AI анимация • WEBM Premium</p>
         </footer>
     </div>
 
-    <style>
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 25px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-
     <script>
-        // ========== API КЛЮЧИ ==========
-        const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
+        // ========== ⚠️ ВАЖНО: СЮДА ВСТАВЬТЕ ВАШИ МАССИВЫ ПРОФЕССИЙ ==========
         
-        // ВАШИ КЛЮЧИ KLING AI
-        const KLING_ACCESS_KEY = 'ADPABabYdgNpEteCLG9KayNthPL8Pahb';
-        const KLING_SECRET_KEY = 'GQ4M3b3DaKkHPKPJEtFN4GNNeMr4fnAJ';
-        
-        console.log('✅ Ключи загружены');
-
-        // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
-        let selectedProfession = null;
-        let selectedEmotions = [];
-        let currentStyle = '';
-        let generatedPNG = [];
-        let generatedWEBM = [];
-        let selectedMotionType = 'subtle'; // По умолчанию легкая анимация
-
-// ========== 30 ПРОФЕССИЙ С 20+ УНИКАЛЬНЫМИ ШУТКАМИ ==========
+        // ========== ВСТАВЬТЕ ВАШ const PROFESSIONS = [ ... ] ==========
+        // СКОПИРУЙТЕ СЮДА ВАШ МАССИВ ИЗ 30 ПРОФЕССИЙ
+// ========== 30 ПРОФЕССИЙ С 30+ УНИКАЛЬНЫМИ ШУТКАМИ ==========
 const PROFESSIONS = [
     {
         id: 'zoomer',
@@ -724,7 +889,15 @@ const PROFESSIONS = [
             { ru: 'мой экран: 8 часов скроллинга', en: 'zoomer showing screen time, 8 hours of scrolling, tired but proud' },
             { ru: 'мой мозг после 3 часов рилс', en: 'zoomer brain fried after 3 hours of reels, empty stare' },
             { ru: 'когда тренд умер а я только узнал', en: 'zoomer discovering dead trend, late to party, sad' },
-            { ru: 'мой фейспалм достиг уровня бога', en: 'zoomer facepalming at boomer meme, god level facepalm' }
+            { ru: 'мой фейспалм достиг уровня бога', en: 'zoomer facepalming at boomer meme, god level facepalm' },
+            { ru: 'когда зумер пытается объяснить что такое NFT', en: 'zoomer explaining NFTs to confused boomer, using hand gestures' },
+            { ru: 'мой гриндер: всегда в работе, всегда в минусе', en: 'zoomer showing grindset, always working but always broke' },
+            { ru: 'когда мама попросила выйти на улицу', en: 'zoomer shocked at idea of going outside, dramatic reaction' },
+            { ru: 'мой рейтинг в доте: 5000, в жизни: 0', en: 'zoomer with high gaming rank but low life achievements' },
+            { ru: 'когда понял что учеба важнее крипты', en: 'zoomer realizing education is important, shocked expression' },
+            { ru: 'мой вайб: чилл, релакс, ничего не делаю', en: 'zoomer chilling in vibe mode, relaxed expression' },
+            { ru: 'когда тиктокер сказал что это база', en: 'zoomer agreeing with tiktoker, nodding enthusiastically' },
+            { ru: 'мой флекс: новый айфон, старые проблемы', en: 'zoomer flexing new iphone but same old problems' }
         ]
     },
     {
@@ -756,7 +929,15 @@ const PROFESSIONS = [
             { ru: 'проблема между креслом и монитором', en: 'programmer pointing at chair and monitor, user error' },
             { ru: 'сеньор: "это просто", джуниор: "я ничего не понял"', en: 'senior says its simple, junior completely confused, blank stare' },
             { ru: 'мой компилятор меня ненавидит', en: 'programmer fighting with compiler, errors everywhere' },
-            { ru: 'код работает? не спрашивай как', en: 'code works, dont ask how, programmer hiding' }
+            { ru: 'код работает? не спрашивай как', en: 'code works, dont ask how, programmer hiding' },
+            { ru: 'закоммитил в прод без тестов', en: 'programmer committing to production without tests, nervous expression' },
+            { ru: 'мой код прошел ревью (невероятно)', en: 'programmer shocked that code passed review, surprised face' },
+            { ru: 'удалил базу данных вместо продакшена', en: 'programmer in panic after deleting wrong database' },
+            { ru: 'я программист, я умею гуглить', en: 'programmers main skill is googling errors, proud expression' },
+            { ru: 'мой код: 1000 строк, мои комментарии: 0', en: 'programmer proud of no comments in code' },
+            { ru: 'когда проект наконец скомпилился', en: 'programmer celebrating successful compilation after hours' },
+            { ru: 'мой босс: "это просто", я: "это не просто"', en: 'programmer arguing with boss about complexity' },
+            { ru: 'рефакторинг: удалил 500 строк, добавил 600', en: 'programmer doing refactoring, code grew larger' }
         ]
     },
     {
@@ -788,10 +969,18 @@ const PROFESSIONS = [
             { ru: 'пациент: "больно?" я: "потерпите"', en: 'doctor saying be patient, patient in pain, classic' },
             { ru: 'выписал рецепт, сам не понял что', en: 'doctor looking at prescription they wrote, cant read it either' },
             { ru: 'когда сказали "просто укол"', en: 'patient fainting at sight of needle, just a shot' },
-            { ru: 'мой пациент здоровее меня', en: 'doctor checking patient, patient healthier than doctor' }
+            { ru: 'мой пациент здоровее меня', en: 'doctor checking patient, patient healthier than doctor' },
+            { ru: 'дежурство в новогоднюю ночь', en: 'doctor on duty during new year, sad expression' },
+            { ru: 'когда скорая привезла того же пациента', en: 'doctor seeing same patient again, tired expression' },
+            { ru: 'мой диплом: с отличием, зарплата: без отличий', en: 'doctor comparing diploma to salary, disappointed' },
+            { ru: 'пациент: "у меня аллергия на уколы"', en: 'patient claiming allergy to needles, doctor skeptical' },
+            { ru: 'мой кабинет: 1000 пациентов, 1 ручка', en: 'doctor with many patients but no pen' },
+            { ru: 'когда пациент принес цветы', en: 'doctor surprised by grateful patient with flowers' },
+            { ru: 'моя смена закончилась, но пациенты не ушли', en: 'doctor trying to leave but patients keep coming' },
+            { ru: 'когда нашел редкий диагноз', en: 'doctor excited about rare diagnosis' }
         ]
     },
-    {
+{
         id: 'teacher',
         name: '👩‍🏫 Учитель',
         icon: '👩‍🏫',
@@ -820,7 +1009,15 @@ const PROFESSIONS = [
             { ru: 'перемена: 5 минут на выдох', en: 'teacher during break, 5 minutes of peace' },
             { ru: 'учительская: место силы', en: 'teachers lounge, sanctuary, coffee, rest' },
             { ru: 'звонок с урока: счастье на 5 секунд', en: 'bell rings, moment of happiness, then next class' },
-            { ru: 'олимпиады: готовим, надеемся, плачем', en: 'preparing for olympiads, hope, tears' }
+            { ru: 'олимпиады: готовим, надеемся, плачем', en: 'preparing for olympiads, hope, tears' },
+            { ru: 'когда ученик назвал мамой', en: 'student accidentally calling teacher mom, awkward moment' },
+            { ru: 'мой класс: 30 учеников, 30 характеров', en: 'teacher dealing with 30 different personalities' },
+            { ru: 'когда звонок сломался', en: 'teacher stuck with class because bell broken' },
+            { ru: 'мой любимчик: тот кто приносит кофе', en: 'teacher loving student who brings coffee' },
+            { ru: 'когда ученик умнее учителя', en: 'student correcting teacher, awkward moment' },
+            { ru: 'мой отпуск: 3 месяца счастья', en: 'teacher dreaming about 3 months vacation' },
+            { ru: 'когда класс сорвал урок', en: 'class chaos, teacher giving up' },
+            { ru: 'моя доска: исписана, стерта, снова исписана', en: 'teacher at whiteboard, endless cycle' }
         ]
     },
     {
@@ -851,7 +1048,16 @@ const PROFESSIONS = [
             { ru: 'гость: "можно без соли?"', en: 'customer asks no salt, chef sighs' },
             { ru: 'мой колпак выше моей самооценки', en: 'chef hat tall, self esteem low' },
             { ru: 'заготовки: делаем, замораживаем, забываем', en: 'prep work: make, freeze, forget' },
-            { ru: 'мой ресторан: 5 столов, 100 проблем', en: 'small restaurant, many problems' }
+            { ru: 'мой ресторан: 5 столов, 100 проблем', en: 'small restaurant, many problems' },
+            { ru: 'когда клиент просит веганское в мясном ресторане', en: 'chef confused by vegan request in steakhouse' },
+            { ru: 'мой шеф-повар орет, я плачу, блюдо готово', en: 'chef yelling, crying cook, food done' },
+            { ru: 'когда перепутал соль с сахаром', en: 'chef realizing they mixed up salt and sugar' },
+            { ru: 'мой фирменный рецепт: мамины котлеты', en: 'chefs secret recipe is actually moms' },
+            { ru: 'когда клиент сказал что у меня руки не оттуда растут', en: 'chef offended by customer comment' },
+            { ru: 'мой день: готовка, готовка, немного готовки', en: 'chefs endless cycle of cooking' },
+            { ru: 'когда закончился кофе на кухне', en: 'chef panicking because coffee finished' },
+            { ru: 'мой суп: варится, переварился, выкинул', en: 'chef burning soup, starting over' },
+            { ru: 'когда повар заболел, а я за него', en: 'chef covering for sick colleague, stressed' }
         ]
     },
     {
@@ -883,10 +1089,18 @@ const PROFESSIONS = [
             { ru: 'рисую 10 лет, умею рисовать палку', en: '10 years of practice, still drawing stick figures' },
             { ru: 'моя мастерская - мой храм', en: 'studio is sanctuary, holy place' },
             { ru: 'вдохновение: приходит редко, уходит быстро', en: 'inspiration rare, leaves quickly' },
-            { ru: 'скульптура: отрубил лишнее, получилось хуже', en: 'sculpture: cut too much, made it worse' }
+            { ru: 'скульптура: отрубил лишнее, получилось хуже', en: 'sculpture: cut too much, made it worse' },
+            { ru: 'когда клиент просит переделать уже готовое', en: 'artist frustrated by client wanting changes' },
+            { ru: 'мой автопортрет: как я вижу себя и как видят другие', en: 'artist comparing self portrait to reality' },
+            { ru: 'когда художник берет в руки кисть после года перерыва', en: 'artist rusty after long break' },
+            { ru: 'мой шедевр: продал за 100$, купил краски за 200$', en: 'artist losing money on art' },
+            { ru: 'когда искусство не продается', en: 'artist with unsold paintings, sad' },
+            { ru: 'моя галерея: стена в моей комнате', en: 'artists gallery is just bedroom wall' },
+            { ru: 'когда ребенок нарисовал лучше', en: 'artist comparing work to childs drawing' },
+            { ru: 'мой черный квадрат: продал как Малевич', en: 'artist selling black square as art' }
         ]
     },
-    {
+{
         id: 'musician',
         name: '🎸 Музыкант',
         icon: '🎸',
@@ -915,7 +1129,15 @@ const PROFESSIONS = [
             { ru: 'мой первый альбом: записал, никто не услышал', en: 'debut album recorded, nobody heard' },
             { ru: 'гитара: 6 струн, 100500 проблем', en: '6 strings, infinite problems' },
             { ru: 'мой вокал: беру ноты, но не все', en: 'hitting notes, not all of them' },
-            { ru: 'дирижёр: машу палкой, все смотрят', en: 'conductor waving stick, everyone watching' }
+            { ru: 'дирижёр: машу палкой, все смотрят', en: 'conductor waving stick, everyone watching' },
+            { ru: 'когда гитара расстроилась перед концертом', en: 'musician panicking about out of tune guitar' },
+            { ru: 'мой сольник: я и пустой зал', en: 'musician playing to empty room' },
+            { ru: 'когда басист играет соло (никто не заметил)', en: 'bass solo ignored by everyone' },
+            { ru: 'мой музыкальный вкус: лучше чем у всех', en: 'musician elitist about music taste' },
+            { ru: 'когда барабанщик уронил палочки', en: 'drummer dropping sticks, awkward' },
+            { ru: 'мой райдер: зефир, вода и хорошее настроение', en: 'musician rider: marshmallows and good vibes' },
+            { ru: 'когда соседи попросили играть тише', en: 'musician annoyed by neighbors complaints' },
+            { ru: 'мой кавер: лучше оригинала (спорно)', en: 'musician proud of cover song' }
         ]
     },
     {
@@ -947,7 +1169,15 @@ const PROFESSIONS = [
             { ru: 'клиент: "сколько стоит?" я: "дороже чем вы думаете"', en: 'how much? more than you think' },
             { ru: 'моя визитка: адвокат (всех мастей)', en: 'business card: lawyer of all trades' },
             { ru: 'судья: слушаю, но не слышу', en: 'judge listening but not hearing' },
-            { ru: 'дело закрыто? наконец-то', en: 'case closed? finally' }
+            { ru: 'дело закрыто? наконец-то', en: 'case closed? finally' },
+            { ru: 'когда клиент сам себе адвокат', en: 'lawyer watching client represent themselves, disaster' },
+            { ru: 'мой счет: 1000$ за консультацию (5 минут)', en: 'expensive 5 minute consultation' },
+            { ru: 'когда судья не согласен с твоими аргументами', en: 'lawyer losing argument with judge' },
+            { ru: 'мой кейс: выиграл, клиент не заплатил', en: 'winning case but not getting paid' },
+            { ru: 'когда клиент звонит в 2 часа ночи', en: 'lawyer getting late night client calls' },
+            { ru: 'мой договор: 100 страниц, никто не читал', en: 'contract nobody read' },
+            { ru: 'когда прокурор зевает во время твоей речи', en: 'prosecutor yawning during lawyers speech' },
+            { ru: 'моя судебная практика: 50% побед, 50% проигрышей', en: 'lawyers 50% success rate' }
         ]
     },
     {
@@ -979,7 +1209,15 @@ const PROFESSIONS = [
             { ru: 'моя улыбка: профессиональная', en: 'my smile: professional' },
             { ru: 'сессия онлайн: связь прервалась (удобно)', en: 'online session, connection lost, convenient' },
             { ru: 'мой диплом: висит на стене, я рядом', en: 'diploma on wall, me next to it' },
-            { ru: 'пациент: вылечил, больше не приходит', en: 'patient cured, never comes back' }
+            { ru: 'пациент: вылечил, больше не приходит', en: 'patient cured, never comes back' },
+            { ru: 'когда пациент платит за час молчания', en: 'patient paying for silent therapy' },
+            { ru: 'мой психолог: я сам себе психолог', en: 'psychologist being their own therapist' },
+            { ru: 'когда пациент приводит всю семью', en: 'psychologist overwhelmed by family session' },
+            { ru: 'моя книга: "как стать счастливым" (сам не знаю)', en: 'psychologist writing book they dont believe in' },
+            { ru: 'когда пациент влюбился в психолога', en: 'awkward situation with patient feelings' },
+            { ru: 'мой курс терапии: 10 сессий, потом еще 10', en: 'endless therapy sessions' },
+            { ru: 'когда психолог сам нуждается в психологе', en: 'psychologist needing therapy themselves' },
+            { ru: 'мой совет: просто будьте счастливы (профит)', en: 'simple but useless advice' }
         ]
     },
     {
@@ -1011,7 +1249,15 @@ const PROFESSIONS = [
             { ru: 'мой скафандр: чесался, но терпел', en: 'spacesuit itchy, endured' },
             { ru: 'приземление: упал, очнулся, гипс', en: 'landing: fell, woke up, cast' },
             { ru: 'мой отряд: 10 человек, 1 полетел', en: 'my crew: 10 people, 1 flew' },
-            { ru: 'космодром: Байконур, пыль, надежда', en: 'cosmodrome: Baikonur, dust, hope' }
+            { ru: 'космодром: Байконур, пыль, надежда', en: 'cosmodrome: Baikonur, dust, hope' },
+            { ru: 'когда на МКС закончилась еда', en: 'astronauts running out of food in space' },
+            { ru: 'мой выход в космос: забыл фотоаппарат', en: 'spacewalk with no camera to capture moment' },
+            { ru: 'когда гравитация вернулась слишком резко', en: 'returning to gravity too fast' },
+            { ru: 'мой космический корабль: 3 метра счастья', en: 'tiny spaceship but happy' },
+            { ru: 'когда космонавт хочет пиццу', en: 'astronaut craving pizza in space' },
+            { ru: 'мой полет: видел инопланетян (это было облако)', en: 'thinking cloud was alien' },
+            { ru: 'когда отключилась связь с центром управления', en: 'lost contact with ground control, panic' },
+            { ru: 'мой рекорд: 365 дней на орбите', en: '365 days in space, new record' }
         ]
     },
     {
@@ -1043,10 +1289,18 @@ const PROFESSIONS = [
             { ru: 'моя каска: греет голову', en: 'helmet: keeps head warm' },
             { ru: 'вызов: горит сарай, тушим как ТЦ', en: 'call: shed on fire, treat like mall' },
             { ru: 'моя форма: пахнет дымом', en: 'uniform: smells like smoke' },
-            { ru: 'пожарный щит: там топор и ведро', en: 'fire shield: axe and bucket' }
+            { ru: 'пожарный щит: там топор и ведро', en: 'fire shield: axe and bucket' },
+            { ru: 'когда пожарный тушит свечу', en: 'overkill extinguishing a candle' },
+            { ru: 'мой герой: кот, который залез на дерево', en: 'firefighter annoyed by cat rescues' },
+            { ru: 'когда диспетчер сказал "ложный вызов" после 3 ночи', en: 'false alarm after driving across city' },
+            { ru: 'мой обед: прервали 5 раз', en: 'interrupted lunch multiple times' },
+            { ru: 'когда соседи вызвали из-за шашлыков', en: 'neighbors calling fire dept for bbq smoke' },
+            { ru: 'мой пожарный рукав: всегда путается', en: 'hose always tangled' },
+            { ru: 'когда в части закончился кофе', en: 'fire station out of coffee, emergency' },
+            { ru: 'мой день: тушим, моем, спим, снова тушим', en: 'endless cycle of firefighting' }
         ]
     },
-    {
+{
         id: 'archaeologist',
         name: '🔦 Археолог',
         icon: '🔦',
@@ -1075,7 +1329,15 @@ const PROFESSIONS = [
             { ru: 'мой коллега: спит на раскопе', en: 'colleague: sleeps on dig site' },
             { ru: 'находка века: монета 1995 года', en: 'find of century: 1995 coin' },
             { ru: 'моя щётка: нежная, как кисть художника', en: 'brush: gentle as artists brush' },
-            { ru: 'экспедиция закончена: нашли только усталость', en: 'expedition over: found only exhaustion' }
+            { ru: 'экспедиция закончена: нашли только усталость', en: 'expedition over: found only exhaustion' },
+            { ru: 'когда нашли скелет динозавра (это корова)', en: 'finding cow bones thinking its dinosaur' },
+            { ru: 'мой профессор: говорит что это важно, но сам не верит', en: 'professor unsure about importance' },
+            { ru: 'когда туристы спрашивают что мы ищем', en: 'tourists asking annoying questions' },
+            { ru: 'мой раскоп: разграблен местными', en: 'dig site looted by locals' },
+            { ru: 'когда в пустыне закончилась вода', en: 'running out of water in desert' },
+            { ru: 'моя находка: древний унитаз (артефакт)', en: 'finding ancient toilet as artifact' },
+            { ru: 'когда музей отказался брать находку', en: 'museum rejecting found artifact' },
+            { ru: 'мой отпуск: опять копаю, но бесплатно', en: 'vacation is also digging' }
         ]
     },
     {
@@ -1107,7 +1369,15 @@ const PROFESSIONS = [
             { ru: 'мой пациент: попугай, орёт громче всех', en: 'patient: parrot, screams loudest' },
             { ru: 'хозяин: "он как человек" (нет)', en: 'owner: hes like a human, no' },
             { ru: 'моя зарплата: меньше чем корм для собак', en: 'salary: less than dog food' },
-            { ru: 'лечу хомяка: стресс размером с слон', en: 'treating hamster: elephant sized stress' }
+            { ru: 'лечу хомяка: стресс размером с слон', en: 'treating hamster: elephant sized stress' },
+            { ru: 'когда хозяин привел льва (шок)', en: 'owner bringing lion to clinic, shock' },
+            { ru: 'мой пациент: змея (она не слушается)', en: 'treating snake, uncooperative patient' },
+            { ru: 'когда собака съела тапок (опять)', en: 'dog ate another shoe, surgery needed' },
+            { ru: 'мой день: уколы, царапины, укусы', en: 'daily routine of injections and bites' },
+            { ru: 'когда кот застрял в картонной коробке', en: 'cat stuck in box, rescue mission' },
+            { ru: 'мой пациент: попугай, научился ругаться', en: 'parrot learned to curse at vet' },
+            { ru: 'когда хомяк сбежал из клетки', en: 'hamster escape, chase begins' },
+            { ru: 'моя клиника: зоопарк по выходным', en: 'clinic like zoo on weekends' }
         ]
     },
     {
@@ -1139,7 +1409,15 @@ const PROFESSIONS = [
             { ru: 'мой пациент: держится за кресло', en: 'patient: holding chair tight' },
             { ru: 'удаление зуба: 5 секунд, 5 дней боли', en: 'extraction: 5 seconds, 5 days pain' },
             { ru: 'моя маска: скрывает улыбку', en: 'mask: hiding smile' },
-            { ru: 'пациент: "когда закончим?" я: "никогда"', en: 'when will it end? never' }
+            { ru: 'пациент: "когда закончим?" я: "никогда"', en: 'when will it end? never' },
+            { ru: 'когда пациент пришел с флюсом', en: 'patient with abscess, emergency' },
+            { ru: 'мой день: зубы, зубы, зубы', en: 'dentists daily routine' },
+            { ru: 'когда пациент сказал что боится бормашины', en: 'patient afraid of drill, calming needed' },
+            { ru: 'мой рекорд: 10 зубов за день', en: '10 teeth extracted in one day' },
+            { ru: 'когда у пациента аллергия на анестезию', en: 'patient allergic to anesthesia' },
+            { ru: 'мой пациент: ребенок, который не открывает рот', en: 'child refusing to open mouth' },
+            { ru: 'когда пациент платит картой (и она не работает)', en: 'card declined after treatment' },
+            { ru: 'моя бормашина: сломалась в самый ответственный момент', en: 'drill breaks mid procedure' }
         ]
     },
     {
@@ -1171,7 +1449,15 @@ const PROFESSIONS = [
             { ru: 'моя работа: выдавать, принимать, штрафовать', en: 'job: give, receive, fine' },
             { ru: 'читатель: шепчет, но я слышу', en: 'reader: whispers, i hear' },
             { ru: 'мой фонд: тысячи книг, сотни пыли', en: 'collection: thousands books, hundreds dust' },
-            { ru: 'библиотека ночью: книги оживают', en: 'library at night: books come alive' }
+            { ru: 'библиотека ночью: книги оживают', en: 'library at night: books come alive' },
+            { ru: 'когда читатель принес книгу с закладкой из еды', en: 'book returned with food bookmark' },
+            { ru: 'мой день: тишина, порядок, счастье', en: 'peaceful library day' },
+            { ru: 'когда студенты приходят учиться перед сессией', en: 'students flooding library before exams' },
+            { ru: 'моя любимая книга: та, которую никто не берет', en: 'favorite book is untouched' },
+            { ru: 'когда читатель громко разговаривает по телефону', en: 'reader on phone in quiet zone' },
+            { ru: 'мой библиотечный совет: принесите книгу обратно', en: 'reminding about overdue books' },
+            { ru: 'когда в библиотеке появился бездомный', en: 'homeless person in library' },
+            { ru: 'мой стеллаж: рухнул (катастрофа)', en: 'shelf collapsed, disaster' }
         ]
     },
     {
@@ -1203,10 +1489,18 @@ const PROFESSIONS = [
             { ru: 'мой домкрат: держит, но страшно', en: 'jack: holds, scary' },
             { ru: 'клиент: "я сам пробовал чинить" (всё сломал)', en: 'i tried fixing, broke everything' },
             { ru: 'мой гаражный кооператив: 50 мужиков, 100 проблем', en: 'garage co-op: 50 men, 100 problems' },
-            { ru: 'мой инструмент: купил, потерял, купил снова', en: 'tools: buy, lose, buy again' }
+            { ru: 'мой инструмент: купил, потерял, купил снова', en: 'tools: buy, lose, buy again' },
+            { ru: 'когда приехала тачка за миллион', en: 'million dollar car in garage' },
+            { ru: 'мой день: гайки, болты, масло', en: 'daily routine of nuts and bolts' },
+            { ru: 'когда клиент говорит "я сам всё починю"', en: 'client saying theyll fix it themselves' },
+            { ru: 'мой гараж: в нем живет кот', en: 'garage cat, unofficial mascot' },
+            { ru: 'когда закончился кофе в гараже', en: 'garage out of coffee, crisis' },
+            { ru: 'мой подъемник: застрял (и машина наверху)', en: 'lift stuck with car up' },
+            { ru: 'когда клиент не забирает машину месяц', en: 'car abandoned at shop for month' },
+            { ru: 'мой инструмент: украли (все)', en: 'all tools stolen, restart' }
         ]
     },
-    {
+{
         id: 'electrician',
         name: '⚡ Электрик',
         icon: '⚡',
@@ -1235,7 +1529,15 @@ const PROFESSIONS = [
             { ru: 'моя схема: нарисовал, понял, переделал', en: 'diagram: drew, understood, redid' },
             { ru: 'клиент: "почему дорого?" (потому что)', en: 'why expensive? because' },
             { ru: 'мой счётчик: крутится, я рад', en: 'meter: spinning, im happy' },
-            { ru: 'короткое замыкание: бах, темно, весело', en: 'short circuit: boom, dark, fun' }
+            { ru: 'короткое замыкание: бах, темно, весело', en: 'short circuit: boom, dark, fun' },
+            { ru: 'когда клиент сунул пальцы в розетку', en: 'client sticking fingers in socket' },
+            { ru: 'мой день: провода, провода, провода', en: 'electricians daily routine' },
+            { ru: 'когда забыл выключить рубильник', en: 'forgetting to turn off power' },
+            { ru: 'мой инструмент: ударило током (больно)', en: 'getting shocked by tools' },
+            { ru: 'когда клиент говорит "а у соседа дешевле"', en: 'client comparing prices with neighbor' },
+            { ru: 'мой проект: освещение в подвале', en: 'basement lighting project' },
+            { ru: 'когда проводка загорелась', en: 'wiring caught fire, panic' },
+            { ru: 'мой генератор: не работает (ирония)', en: 'generator not working, irony' }
         ]
     },
     {
@@ -1267,7 +1569,15 @@ const PROFESSIONS = [
             { ru: 'мой молоток: иногда помогает', en: 'hammer: sometimes helps' },
             { ru: 'прорыв: вода, соседи, крики', en: 'burst: water, neighbors, screams' },
             { ru: 'мой трос: чистит, но не всё', en: 'snake: cleans, not everything' },
-            { ru: 'сантехника: вечная борьба', en: 'plumbing: eternal struggle' }
+            { ru: 'сантехника: вечная борьба', en: 'plumbing: eternal struggle' },
+            { ru: 'когда клиент смыл ключи от машины', en: 'car keys flushed down toilet' },
+            { ru: 'мой день: трубы, трубы, трубы', en: 'plumbers daily routine' },
+            { ru: 'когда в подвале нет света', en: 'basement with no light' },
+            { ru: 'мой инструмент: упал в унитаз', en: 'tool dropped in toilet' },
+            { ru: 'когда клиент говорит "а вчера все работало"', en: 'client insisting it worked yesterday' },
+            { ru: 'мой заказ: заменить унитаз (тяжело)', en: 'toilet replacement, heavy work' },
+            { ru: 'когда труба лопнула в мороз', en: 'pipe burst in freezing weather' },
+            { ru: 'мой трос: застрял в трубе', en: 'snake stuck in pipe' }
         ]
     },
     {
@@ -1299,7 +1609,15 @@ const PROFESSIONS = [
             { ru: 'мой объектив: фикс, зум, мечта', en: 'lens: prime, zoom, dream' },
             { ru: 'клиент: "а можно без обработки?" (нельзя)', en: 'no editing? cant' },
             { ru: 'мой свет: студийный, дорогой, горячий', en: 'light: studio, expensive, hot' },
-            { ru: 'фотоохота: ждал 3 часа, снял палец', en: 'photo hunt: waited 3 hours, shot finger' }
+            { ru: 'фотоохота: ждал 3 часа, снял палец', en: 'photo hunt: waited 3 hours, shot finger' },
+            { ru: 'когда клиент опоздал на фотосессию', en: 'client late for photoshoot' },
+            { ru: 'мой день: щелк, щелк, обработка', en: 'photographers daily routine' },
+            { ru: 'когда модель не вышла на съемку', en: 'model no-show for shoot' },
+            { ru: 'мой реквизит: сломался', en: 'props broken, improvise' },
+            { ru: 'когда дождь испортил outdoor съемку', en: 'rain ruining outdoor shoot' },
+            { ru: 'мой заказ: детская фотосессия (кошмар)', en: 'children photoshoot nightmare' },
+            { ru: 'когда клиент просит фото "как в кино"', en: 'client wanting movie quality photos' },
+            { ru: 'мой фотоаппарат: украли (конец света)', en: 'camera stolen, end of world' }
         ]
     },
     {
@@ -1331,10 +1649,18 @@ const PROFESSIONS = [
             { ru: 'мой разнос: горячее, холодное, всё сразу', en: 'tray: hot, cold, all at once' },
             { ru: 'ресторан: красиво, дорого, я устал', en: 'restaurant: beautiful, expensive, im tired' },
             { ru: 'мой график: 5/2 (5 работаю, 2 сплю)', en: 'schedule: 5 work, 2 sleep' },
-            { ru: 'клиент: "улыбнитесь" (улыбаюсь через силу)', en: 'smile, smiling through pain' }
+            { ru: 'клиент: "улыбнитесь" (улыбаюсь через силу)', en: 'smile, smiling through pain' },
+            { ru: 'когда клиент просит салфетку', en: 'client asking for napkin' },
+            { ru: 'мой день: беготня, заказы, чаевые', en: 'waiters daily routine' },
+            { ru: 'когда клиент не может выбрать блюдо', en: 'client indecisive about meal' },
+            { ru: 'мой поднос: упал (опять)', en: 'dropped tray again' },
+            { ru: 'когда клиент сказал что еда холодная', en: 'client complaining about cold food' },
+            { ru: 'мой ресторан: закрытие через 5 минут', en: 'restaurant closing in 5 minutes' },
+            { ru: 'когда пришла большая компания без брони', en: 'large group without reservation' },
+            { ru: 'мой заказ: 20 блюд за раз', en: '20 dishes at once' }
         ]
     },
-    {
+{
         id: 'barista',
         name: '☕ Бариста',
         icon: '☕',
@@ -1363,7 +1689,15 @@ const PROFESSIONS = [
             { ru: 'мой кофе: бодрит, но не спасает', en: 'coffee: energizes, not saves' },
             { ru: 'кофемолка: мелет, шумит, будит', en: 'grinder: grinds, noisy, wakes' },
             { ru: 'мой латте: молоко, кофе, любовь', en: 'latte: milk, coffee, love' },
-            { ru: 'клиент: "посоветуйте" (раф, ппц)', en: 'recommend? raf, chaos' }
+            { ru: 'клиент: "посоветуйте" (раф, ппц)', en: 'recommend? raf, chaos' },
+            { ru: 'когда клиент просит латте с соевым молоком', en: 'client asking for soy latte' },
+            { ru: 'мой день: эспрессо, капучино, американо', en: 'baristas daily routine' },
+            { ru: 'когда закончились стаканчики', en: 'run out of cups, panic' },
+            { ru: 'мой сироп: закончился (катастрофа)', en: 'syrup finished, disaster' },
+            { ru: 'когда клиент говорит "кофе без кофеина"', en: 'client ordering decaf with straight face' },
+            { ru: 'мой латте-арт: получился заяц (ну почти)', en: 'latte art looks like rabbit (kind of)' },
+            { ru: 'когда кофемашина сломалась в утренний час пик', en: 'machine broken during morning rush' },
+            { ru: 'мой рекорд: 100 чашек за смену', en: '100 cups in one shift, new record' }
         ]
     },
     {
@@ -1395,7 +1729,15 @@ const PROFESSIONS = [
             { ru: 'мой флаг: развивается, я горжусь', en: 'flag: waving, im proud' },
             { ru: 'морская душа: тошнит, но красиво', en: 'sea soul: nauseous, but beautiful' },
             { ru: 'мой порт: берег, выпивка, снова в море', en: 'port: shore, drink, back to sea' },
-            { ru: 'морской волк: я или седой или лысый', en: 'sea wolf: gray or bald' }
+            { ru: 'морской волк: я или седой или лысый', en: 'sea wolf: gray or bald' },
+            { ru: 'когда штиль (скучно)', en: 'calm sea, boring' },
+            { ru: 'мой день: палуба, штурвал, горизонт', en: 'sailors daily routine' },
+            { ru: 'когда акула рядом с кораблем', en: 'shark sighting, excitement' },
+            { ru: 'мой улов: поймал рыбу (ура)', en: 'caught a fish, celebration' },
+            { ru: 'когда кончилась пресная вода', en: 'fresh water ran out, crisis' },
+            { ru: 'мой компас: сломался (мы потерялись)', en: 'compass broken, lost at sea' },
+            { ru: 'когда шторм застал врасплох', en: 'sudden storm, panic' },
+            { ru: 'мой рейс: 6 месяцев в море', en: '6 months at sea, long journey' }
         ]
     },
     {
@@ -1427,7 +1769,15 @@ const PROFESSIONS = [
             { ru: 'мой проходчик: идёт вперёд, я за ним', en: 'miner: goes forward, i follow' },
             { ru: 'обвал: страшно, быстро, повезло', en: 'collapse: scary, fast, lucky' },
             { ru: 'моя лампа: горит, пока я жив', en: 'lamp: burns while i live' },
-            { ru: 'на-гора: выдал уголь, получил деньги', en: 'surface: gave coal, got money' }
+            { ru: 'на-гора: выдал уголь, получил деньги', en: 'surface: gave coal, got money' },
+            { ru: 'когда нашёл золото (мечта)', en: 'found gold, dream come true' },
+            { ru: 'мой день: уголь, уголь, уголь', en: 'miners daily routine' },
+            { ru: 'когда шахта затопило', en: 'mine flooding, emergency' },
+            { ru: 'мой инструмент: сломался (беда)', en: 'tool broken, trouble' },
+            { ru: 'когда метан (газ, бежать)', en: 'methane leak, run' },
+            { ru: 'мой напарник: уснул в забое', en: 'partner fell asleep at face' },
+            { ru: 'когда закончился кислород', en: 'oxygen running out, panic' },
+            { ru: 'мой рекорд: 100 тонн угля за смену', en: '100 tons of coal in one shift' }
         ]
     },
     {
@@ -1459,7 +1809,15 @@ const PROFESSIONS = [
             { ru: 'мой план полёта: бумага, карта, надежда', en: 'flight plan: paper, map, hope' },
             { ru: 'турбулентность: потрясло, пронесло', en: 'turbulence: shook, survived' },
             { ru: 'мой навигатор: знает где я (я нет)', en: 'nav: knows where i am, i dont' },
-            { ru: 'посадка: шасси, касание, торможение', en: 'landing: gear, touch, brake' }
+            { ru: 'посадка: шасси, касание, торможение', en: 'landing: gear, touch, brake' },
+            { ru: 'когда пассажир встал в туалет в турбулентность', en: 'passenger standing during turbulence' },
+            { ru: 'мой день: небо, облака, закаты', en: 'pilots daily routine' },
+            { ru: 'когда самолет попал в грозу', en: 'plane in thunderstorm' },
+            { ru: 'мой рейс: задержали (опять)', en: 'flight delayed again' },
+            { ru: 'когда топливо на исходе', en: 'fuel running low, stress' },
+            { ru: 'мой второй пилот: спит', en: 'copilot sleeping, alone' },
+            { ru: 'когда диспетчер дал не тот курс', en: 'wrong course from control' },
+            { ru: 'мой самолет: техническая неисправность', en: 'technical issues with plane' }
         ]
     },
     {
@@ -1491,10 +1849,18 @@ const PROFESSIONS = [
             { ru: 'мой объект: сдал, приняли, забыли', en: 'site: finished, accepted, forgotten' },
             { ru: 'перекрытие: держит, но скрипит', en: 'floor: holds, creaks' },
             { ru: 'мой напарник: подаёт, держит, падает', en: 'partner: hands, holds, falls' },
-            { ru: 'техника безопасности: написана, прочитана, нарушена', en: 'safety: written, read, broken' }
+            { ru: 'техника безопасности: написана, прочитана, нарушена', en: 'safety: written, read, broken' },
+            { ru: 'когда заказчик просит переделать', en: 'client asking to redo work' },
+            { ru: 'мой день: кирпичи, бетон, арматура', en: 'builders daily routine' },
+            { ru: 'когда закончились кирпичи', en: 'ran out of bricks, delay' },
+            { ru: 'мой кран: сломался (простой)', en: 'crane broken, downtime' },
+            { ru: 'когда дождь смыл цемент', en: 'rain washing away cement' },
+            { ru: 'мой прораб: уволился (хаос)', en: 'foreman quit, chaos' },
+            { ru: 'когда объект не сдали в срок', en: 'deadline missed, stress' },
+            { ru: 'мой рекорд: 1000 кирпичей за день', en: '1000 bricks in one day' }
         ]
     },
-    {
+{
         id: 'farmer',
         name: '🚜 Фермер',
         icon: '🚜',
@@ -1523,7 +1889,15 @@ const PROFESSIONS = [
             { ru: 'сенокос: косил, сушил, стоговал', en: 'haymaking: mow, dry, stack' },
             { ru: 'мой плуг: пашет, я за ним', en: 'plow: plows, i follow' },
             { ru: 'фермерский рынок: продал, купил, опять', en: 'farmers market: sold, bought, again' },
-            { ru: 'мой пёс: сторожит, лает, любит', en: 'dog: guards, barks, loves' }
+            { ru: 'мой пёс: сторожит, лает, любит', en: 'dog: guards, barks, loves' },
+            { ru: 'когда курица перестала нести яйца', en: 'chicken stopped laying eggs' },
+            { ru: 'мой день: поле, коровы, трактор', en: 'farmers daily routine' },
+            { ru: 'когда град побил урожай', en: 'hail destroyed crops, sad' },
+            { ru: 'мой трактор: застрял в грязи', en: 'tractor stuck in mud' },
+            { ru: 'когда корова убежала', en: 'cow escaped, chase' },
+            { ru: 'мой сосед: фермер с лучшим урожаем', en: 'neighbor has better harvest' },
+            { ru: 'когда засуха (все погибает)', en: 'drought, crops dying' },
+            { ru: 'мой рекорд: 100 литров молока в день', en: '100 liters of milk in one day' }
         ]
     },
     {
@@ -1555,7 +1929,15 @@ const PROFESSIONS = [
             { ru: 'лабораторный журнал: записи, каракули, отчёты', en: 'lab journal: notes, scribbles, reports' },
             { ru: 'мой коллега: гений, но странный', en: 'colleague: genius, weird' },
             { ru: 'открытие: сделал, проверил, опроверг', en: 'discovery: made, tested, disproved' },
-            { ru: 'научный совет: 10 человек, 100 вопросов', en: 'science council: 10 people, 100 questions' }
+            { ru: 'научный совет: 10 человек, 100 вопросов', en: 'science council: 10 people, 100 questions' },
+            { ru: 'когда пробирка взорвалась', en: 'test tube exploded, shock' },
+            { ru: 'мой день: пробирки, формулы, открытия', en: 'scientists daily routine' },
+            { ru: 'когда закончились реактивы', en: 'reagents ran out, experiment paused' },
+            { ru: 'мой эксперимент: не работает (опять)', en: 'experiment failed again' },
+            { ru: 'когда коллега украл идею', en: 'colleague stole idea, anger' },
+            { ru: 'мой грант: не одобрили (финансирования нет)', en: 'grant rejected, no funding' },
+            { ru: 'когда открытие случайное', en: 'accidental discovery, surprise' },
+            { ru: 'мой рекорд: 10 статей в год', en: '10 papers in one year' }
         ]
     },
     {
@@ -1587,7 +1969,15 @@ const PROFESSIONS = [
             { ru: 'мой источник: сказал, я написал, все в суде', en: 'source: spoke, i wrote, all in court' },
             { ru: 'интервью со звездой: 5 минут рая', en: 'celebrity interview: 5 minutes paradise' },
             { ru: 'моя пресса: четвёртая власть (после кофе)', en: 'press: fourth power, after coffee' },
-            { ru: 'журналистское расследование: копал, нашёл, промолчал', en: 'investigation: dug, found, stayed silent' }
+            { ru: 'журналистское расследование: копал, нашёл, промолчал', en: 'investigation: dug, found, stayed silent' },
+            { ru: 'когда новость оказалась фейком', en: 'news turned out fake' },
+            { ru: 'мой день: интервью, статьи, дедлайны', en: 'journalists daily routine' },
+            { ru: 'когда интервью отменили', en: 'interview canceled' },
+            { ru: 'мой редактор: требует сенсацию', en: 'editor demanding sensation' },
+            { ru: 'когда закончились темы для статей', en: 'ran out of topics, writers block' },
+            { ru: 'мой конкурент: опубликовал первым', en: 'competitor published first' },
+            { ru: 'когда герой интервью не пришел', en: 'interview subject no-show' },
+            { ru: 'мой рекорд: 10 статей за день', en: '10 articles in one day' }
         ]
     },
     {
@@ -1619,7 +2009,15 @@ const PROFESSIONS = [
             { ru: 'моя растяжка: сяду, но не встану', en: 'stretch: sit, wont stand' },
             { ru: 'спортивный лагерь: сборы, режим, ад', en: 'camp: training, routine, hell' },
             { ru: 'мой рекорд: побил, горжусь, болит', en: 'record: broke, proud, hurts' },
-            { ru: 'травма: часто, больно, лечим', en: 'injury: often, painful, treat' }
+            { ru: 'травма: часто, больно, лечим', en: 'injury: often, painful, treat' },
+            { ru: 'когда тренер сказал "еще 10 раз"', en: 'coach saying 10 more reps' },
+            { ru: 'мой день: тренировка, еда, сон', en: 'athletes daily routine' },
+            { ru: 'когда соревнования отменили', en: 'competition canceled' },
+            { ru: 'мой тренер: уволился (что делать?)', en: 'coach quit, lost' },
+            { ru: 'когда проиграл сопернику', en: 'lost to rival, sad' },
+            { ru: 'мой рекорд: побил (радость)', en: 'broke record, joy' },
+            { ru: 'когда допинг-тест (страшно)', en: 'doping test, scary' },
+            { ru: 'моя карьера: взлеты и падения', en: 'career: ups and downs' }
         ]
     },
     {
@@ -1651,272 +2049,356 @@ const PROFESSIONS = [
             { ru: 'мой калькулятор: считает, но я проверю', en: 'calculator: calculates, i check' },
             { ru: 'налоговый кодекс: толстый, сложный, страшный', en: 'tax code: thick, complex, scary' },
             { ru: 'мой отчёт: готов, проверил, переделал', en: 'report: done, checked, redid' },
-            { ru: 'бухгалтерская проводка: сделал, провёл, забыл', en: 'entry: made, posted, forgot' }
+            { ru: 'бухгалтерская проводка: сделал, провёл, забыл', en: 'entry: made, posted, forgot' },
+            { ru: 'когда баланс сошелся (чудо)', en: 'balance matched, miracle' },
+            { ru: 'мой день: цифры, отчёты, Excel', en: 'accountants daily routine' },
+            { ru: 'когда налоговая заблокировала счет', en: 'tax office blocked account' },
+            { ru: 'мой главбух: заболел (я один)', en: 'chief accountant sick, alone' },
+            { ru: 'когда клиент потерял чек', en: 'client lost receipt' },
+            { ru: 'мой отчёт: не приняли (переделывать)', en: 'report rejected, redo' },
+            { ru: 'когда дедлайн завтра (ночь без сна)', en: 'deadline tomorrow, sleepless night' },
+            { ru: 'мой рекорд: 100 отчётов за месяц', en: '100 reports in one month' }
         ]
     }
 ];
 
-        // ========== ДОПОЛНИТЕЛЬНЫЕ ТЕМАТИЧЕСКИЕ ПРОФЕССИИ (ПОЛНОСТЬЮ) ==========
-        const ADDITIONAL_PROFESSIONS = [
-            {
-                id: 'wedding',
-                name: '💒 Свадьба',
-                icon: '💒',
-                basePrompt: 'wedding ceremony, bride and groom, marriage celebration',
-                humor: [
-                    { ru: 'план: идеальный, реальность: дождь', en: 'wedding plan perfect, reality rain, couple standing under umbrella' },
-                    { ru: 'тамада: "горько!" в 100й раз', en: 'toastmaster saying bitterly for 100th time, couple exhausted' },
-                    { ru: 'свадебный торт: красивый, но невкусный', en: 'wedding cake beautiful but tasteless, guests pretending to enjoy' },
-                    { ru: 'гость: пришёл поесть и уйти', en: 'guest came to eat and leave, sneaking towards exit' },
-                    { ru: 'невеста: платье дороже машины', en: 'bride dress more expensive than car, groom shocked' },
-                    { ru: 'жених: забыл кольца дома', en: 'groom forgot rings at home, panicking' },
-                    { ru: 'свадебный фотограф: "улыбнитесь" уже 3 часа', en: 'wedding photographer saying smile for 3 hours, couple with frozen smiles' },
-                    { ru: 'конкурсы: для пьяных и смелых', en: 'wedding games for drunk and brave, guests participating reluctantly' },
-                    { ru: 'первый танец: наступил на платье', en: 'first dance, groom stepped on dress, both falling' },
-                    { ru: 'свадебный тост: говорили все, кроме молодых', en: 'toasts: everyone spoke except couple, couple bored' },
-                    { ru: 'букет невесты: поймала та, кто не хотела', en: 'bouquet caught by someone who didnt want it, awkward' },
-                    { ru: 'свадебный лимузин: сломался по дороге', en: 'wedding limo broke down, couple on side of road' },
-                    { ru: 'теща: "мой ребенок лучше всех"', en: 'mother in law: my child is best, everyone nods' },
-                    { ru: 'свекровь: советует как жить', en: 'mother in law giving life advice, bride annoyed' },
-                    { ru: 'свадебное меню: оливье закончилось через 5 минут', en: 'wedding menu: olivier salad gone in 5 minutes' },
-                    { ru: 'гость в белом: позор на всю свадьбу', en: 'guest wearing white, disgrace, everyone staring' },
-                    { ru: 'свадебный торт: упал перед подачей', en: 'wedding cake fell before serving, disaster' },
-                    { ru: 'молодожены: хотят спать после фотосессии', en: 'newlyweds want to sleep after photoshoot, exhausted' },
-                    { ru: 'свадебный оркестр: играет не в такт', en: 'wedding band playing out of sync, couple dancing awkwardly' },
-                    { ru: 'гость: "за ваше здоровье!" (снова)', en: 'guest: to your health, again, everyone drinks' },
-                    { ru: 'свадебные бокалы: разбились сами', en: 'wedding glasses broke by themselves, bad omen' },
-                    { ru: 'фата: зацепилась за декор', en: 'veil caught on decor, bride stuck' },
-                    { ru: 'свадебный кортеж: все сигналят, никто не поздравляет', en: 'wedding procession: everyone honks, no one congratulates' },
-                    { ru: 'тамада: шутит, но не смешно', en: 'toastmaster jokes, not funny, awkward silence' }
-                ]
-            },
-            {
-                id: 'birthday',
-                name: '🎂 День рождения',
-                icon: '🎂',
-                basePrompt: 'birthday party, celebration, birthday cake',
-                humor: [
-                    { ru: 'годы идут, а торт все тот же', en: 'years pass, same cake, birthday person staring' },
-                    { ru: 'когда задуваешь свечи, но не все', en: 'blowing candles, not all go out, awkward' },
-                    { ru: 'подарок: носки от бабушки (снова)', en: 'gift: socks from grandma, again, fake smile' },
-                    { ru: 'день рождения: повод напиться в будний день', en: 'birthday: excuse to drink on weekday, friends celebrating' },
-                    { ru: 'возраст: уже не спрашивают', en: 'age: no one asks anymore, relieved' },
-                    { ru: 'именинник: "я не старею, я матерею"', en: 'birthday person: im not aging, im maturing' },
-                    { ru: 'гости: пришли, поели, ушли', en: 'guests: came, ate, left, birthday person alone' },
-                    { ru: 'когда твой день рождения совпал с понедельником', en: 'birthday on monday, everyone working, sad' },
-                    { ru: 'тосты: "чтоб ты жил до 100 лет" (а надо ли)', en: 'toasts: live to 100, questionable' },
-                    { ru: 'свечи на торте: пожарная сигнализация сработала', en: 'candles on cake, fire alarm went off' },
-                    { ru: 'поздравления в соцсетях: от тех, кто не позвонил', en: 'social media greetings from those who didnt call' },
-                    { ru: 'день рождения и разбитое зеркало', en: 'birthday and broken mirror, bad luck' },
-                    { ru: 'когда тебе дарят второй тостер', en: 'receiving second toaster as gift, confused' },
-                    { ru: 'именинный пирог: подгорел снизу', en: 'birthday cake burnt on bottom, still served' },
-                    { ru: 'гость с плюсом: никто не знает кто это', en: 'guest plus one, nobody knows them' },
-                    { ru: 'день рождения на удаленке: zoom и колпак', en: 'birthday remote: zoom and party hat' },
-                    { ru: 'возраст: 29 лет (в 5й раз)', en: 'age: 29 for the 5th time' },
-                    { ru: 'подарок своими руками: неловко', en: 'homemade gift: awkward' },
-                    { ru: 'когда твой день рождения високосный', en: 'birthday on leap day, celebrate every 4 years' },
-                    { ru: 'гость: "а где моя порция?"', en: 'guest: where is my portion' },
-                    { ru: 'именинник: загадал желание, свеча не задувается', en: 'birthday person made wish, candle wont blow out' },
-                    { ru: 'день рождения и развод (плохой подарок)', en: 'birthday and divorce, bad gift' },
-                    { ru: 'подарочная карта: "на что хочешь" (лень выбирать)', en: 'gift card: get what you want, too lazy to choose' },
-                    { ru: 'когда перепутали твой возраст на торте', en: 'they got your age wrong on cake' }
-                ]
-            },
-            {
-                id: 'newyear',
-                name: '🎄 Новый год',
-                icon: '🎄',
-                basePrompt: 'new year celebration, christmas tree, holiday',
-                humor: [
-                    { ru: 'оливье: закончилось, началась драма', en: 'olivier salad finished, drama begins' },
-                    { ru: 'ёлка: упала в 12 ночи', en: 'christmas tree fell at midnight' },
-                    { ru: 'президент: говорит, никто не слушает', en: 'president speaking, no one listening' },
-                    { ru: 'подарки: носки и гель для душа', en: 'gifts: socks and shower gel, classic' },
-                    { ru: 'бой курантов: загадал желание, но передумал', en: 'chimes: made wish, changed mind' },
-                    { ru: 'салют: соседи жгут деньги', en: 'fireworks: neighbors burning money' },
-                    { ru: 'новогодний стол: готовили 3 дня, съели за 30 минут', en: 'new year table: cooked 3 days, ate in 30 min' },
-                    { ru: 'шампанское: выстрелило в люстру', en: 'champagne: shot into chandelier' },
-                    { ru: 'дед мороз: пришёл, но это папа', en: 'santa came, its dad' },
-                    { ru: 'снегурочка: внучка деда (которому 40)', en: 'snow maiden: granddaughter of 40yo grandpa' },
-                    { ru: 'новогодний корпоратив: пьяный начальник пляшет', en: 'corporate party: drunk boss dancing' },
-                    { ru: 'оливье: с колбасой или с мясом? вечный спор', en: 'olivier: with sausage or meat, eternal debate' },
-                    { ru: 'мандарины: закончились первыми', en: 'tangerines: finished first' },
-                    { ru: 'новогоднее обращение: все ждут боя курантов', en: 'new year address: everyone waiting for chimes' },
-                    { ru: 'утро 1 января: "что было вчера?"', en: 'jan 1 morning: what happened yesterday' },
-                    { ru: 'новогодний фильм: "ирония судьбы" в 100й раз', en: 'new year movie: irony of fate for 100th time' },
-                    { ru: 'ёлочные игрушки: разбил кот', en: 'tree ornaments: cat broke them' },
-                    { ru: 'гирлянда: запуталась как жизнь', en: 'fairy lights: tangled like life' },
-                    { ru: 'новогодний костюм: надел, вспотел, снял', en: 'new year costume: wore, sweated, took off' },
-                    { ru: 'фейерверк: не взлетел', en: 'firework: didnt fly' },
-                    { ru: 'новогодние обещания: сбросить вес (опять)', en: 'new year resolutions: lose weight again' },
-                    { ru: 'детский утренник: ребёнок плачет, дед мороз в ужасе', en: 'childrens party: child cries, santa horrified' },
-                    { ru: 'новый год в поезде: романтика или ад', en: 'new year on train: romance or hell' },
-                    { ru: 'остатки оливье: едят до 8 марта', en: 'olivier leftovers: eaten until march 8' }
-                ]
-            },
-            {
-                id: 'halloween',
-                name: '🎃 Хеллоуин',
-                icon: '🎃',
-                basePrompt: 'halloween celebration, spooky, pumpkins',
-                humor: [
-                    { ru: 'костюм: купил, но страшно выйти', en: 'costume: bought, too scared to go out' },
-                    { ru: 'тыква: вырезал, сгнила через день', en: 'pumpkin: carved, rotted next day' },
-                    { ru: 'конфеты: "сладость или гадость" закончились быстро', en: 'candy: trick or treat ran out fast' },
-                    { ru: 'привидение: простыня с дырками', en: 'ghost: sheet with holes' },
-                    { ru: 'хеллоуин в офисе: никто не понял', en: 'halloween at office: no one got it' },
-                    { ru: 'страшный грим: смывается неделю', en: 'scary makeup: washes off for a week' },
-                    { ru: 'паутина: купил, развесил, запутался сам', en: 'cobwebs: bought, hung, got tangled' },
-                    { ru: 'скелет в шкафу: буквально', en: 'skeleton in closet: literally' },
-                    { ru: 'хеллоуинская вечеринка: пришли все в одинаковых костюмах', en: 'halloween party: everyone in same costume' },
-                    { ru: 'летучая мышь: залетела, испугала всех', en: 'bat: flew in, scared everyone' },
-                    { ru: 'зомби апокалипсис: утром на работу', en: 'zombie apocalypse: morning at work' },
-                    { ru: 'ведьма: метла не летает', en: 'witch: broom wont fly' },
-                    { ru: 'вампир: чеснок в супе', en: 'vampire: garlic in soup' },
-                    { ru: 'оборотень: полнолуние, а он забыл', en: 'werewolf: full moon, forgot' },
-                    { ru: 'хеллоуин у детей: "дайте конфету или я заплачу"', en: 'halloween kids: give candy or ill cry' },
-                    { ru: 'соседи: не открывают, боятся', en: 'neighbors: dont open, scared' },
-                    { ru: 'хеллоуинский декор: дороже чем подарки', en: 'halloween decor: more expensive than gifts' },
-                    { ru: 'страшные истории: никто не пугается', en: 'scary stories: no one scared' },
-                    { ru: 'хеллоуин в россии: "а это наш праздник?"', en: 'halloween in russia: is this our holiday' },
-                    { ru: 'костюм скелета: кости нарисованы криво', en: 'skeleton costume: bones drawn crooked' },
-                    { ru: 'сладости: съел сам, детям не досталось', en: 'candy: ate myself, none for kids' },
-                    { ru: 'хеллоуинский тыквенный суп: никто не ест', en: 'pumpkin soup: no one eats' },
-                    { ru: 'призрак: простыня сломала вайфай', en: 'ghost: sheet broke wifi' },
-                    { ru: 'хеллоуин закончился, а ты в гриме неделю', en: 'halloween over, still in makeup for week' }
-                ]
-            },
-            {
-                id: 'gta',
-                name: '🎮 Игра GTA',
-                icon: '🎮',
-                basePrompt: 'GTA game style, Grand Theft Auto, video game character',
-                humor: [
-                    { ru: 'звезды полиции: 5, а ты в танке', en: 'wanted stars: 5, youre in tank' },
-                    { ru: 'украл машину, а бензин закончился', en: 'stole car, ran out of gas' },
-                    { ru: 'код на деньги: rosebud? не та игра', en: 'money cheat: rosebud? wrong game' },
-                    { ru: 'сбил прохожего, а он встал и пошел', en: 'hit pedestrian, they got up and walked' },
-                    { ru: 'миссия: угнать самолет, а у тебя права только на машину', en: 'mission: steal plane, you only have car license' },
-                    { ru: 'GTA в реальной жизни: штраф 5000 рублей', en: 'GTA in real life: 5000 ruble fine' },
-                    { ru: 'прохожий: "эй, ты!" и началась стрельба', en: 'pedestrian: hey you, shooting starts' },
-                    { ru: 'полицейская погоня: застрял в заборе', en: 'police chase: stuck in fence' },
-                    { ru: 'вертолет: сбил, упал на себя', en: 'helicopter: shot down, fell on self' },
-                    { ru: 'GTA онлайн: ребенок сказал, что спал с твоей мамой', en: 'GTA online: kid said they slept with your mom' },
-                    { ru: 'прохождение сюжета: 100 часов, побочные квесты: 500 часов', en: 'story: 100 hours, side quests: 500 hours' },
-                    { ru: 'стриптиз-клуб: потратил все деньги', en: 'strip club: spent all money' },
-                    { ru: 'танк: выехал, город в руинах', en: 'tank: drove out, city in ruins' },
-                    { ru: 'парашют: забыл открыть', en: 'parachute: forgot to open' },
-                    { ru: 'гонка: проиграл, взорвал всех', en: 'race: lost, blew everyone up' },
-                    { ru: 'GTA: игра где ты преступник, но герой', en: 'GTA: game where youre criminal but hero' },
-                    { ru: 'моды: добавил халка, игра сломалась', en: 'mods: added hulk, game crashed' },
-                    { ru: 'полицейский вертолет: сбить сложно, но приятно', en: 'police helicopter: hard to shoot, satisfying' },
-                    { ru: 'GTA V: три героя, а играешь за одного', en: 'GTA V: three characters, play as one' },
-                    { ru: 'радар: ищешь коллекционные предметы', en: 'radar: looking for collectibles' },
-                    { ru: 'GTA: читы на бессмертие, но машина взрывается', en: 'GTA: god mode cheats, car still explodes' },
-                    { ru: 'онлайн режим: купил квартиру, сосед - 12-летний', en: 'online mode: bought apartment, neighbor is 12yo' },
-                    { ru: 'GTA: единственная игра где боишься полиции', en: 'GTA: only game where you fear police' },
-                    { ru: 'мотоцикл: прыжок, переворот, смерть', en: 'motorcycle: jump, flip, death' }
-                ]
-            },
-            {
-                id: 'minecraft',
-                name: '⛏️ Майнкрафт',
-                icon: '⛏️',
-                basePrompt: 'Minecraft game style, blocky, pixelated',
-                humor: [
-                    { ru: 'крипер: подкрался, бабах, дома нет', en: 'creeper: snuck up, boom, no house' },
-                    { ru: 'алмаз: нашёл, упал в лаву', en: 'diamond: found, fell in lava' },
-                    { ru: 'ночь наступила, а кровати нет', en: 'night came, no bed, monsters everywhere' },
-                    { ru: 'построил замок, залили гасты', en: 'built castle, ghasts blew it up' },
-                    { ru: 'ресурсы: копал 3 часа, нашёл булыжник', en: 'resources: mined 3 hours, got cobblestone' },
-                    { ru: 'первая ночь: закопался в землю', en: 'first night: dug into ground' },
-                    { ru: 'эндермен: смотришь на него, он бесится', en: 'enderman: look at him, he rages' },
-                    { ru: 'портал в ад: построил, страшно заходить', en: 'nether portal: built, scared to enter' },
-                    { ru: 'деревянная кирка: сломалась через 2 удара', en: 'wooden pickaxe: broke after 2 hits' },
-                    { ru: 'кровать в аду: взорвалась', en: 'bed in nether: exploded' },
-                    { ru: 'серебряный рыбак: выпрыгнул из стены', en: 'silverfish: jumped out of wall' },
-                    { ru: 'скелет: стреляет, попал в крипера', en: 'skeleton: shot, hit creeper, chain reaction' },
-                    { ru: 'выживание: построил дом, пришел крипер', en: 'survival: built house, creeper came' },
-                    { ru: 'творческий режим: построил всё, скучно', en: 'creative mode: built everything, bored' },
-                    { ru: 'редстоун: пытался сделать механизм, взорвалось', en: 'redstone: tried to make mechanism, exploded' },
-                    { ru: 'майнкрафт с модами: 200 модов, игра не грузится', en: 'minecraft with mods: 200 mods, game wont load' },
-                    { ru: 'деревня: нашел, жители странные', en: 'village: found, villagers weird' },
-                    { ru: 'торговец ламой: пришел, лама сбежала', en: 'trader llama: came, llama ran' },
-                    { ru: 'элитры: нашел, упал с неба', en: 'elytra: found, fell from sky' },
-                    { ru: 'дракон края: убил, скучно стало', en: 'ender dragon: killed, got bored' },
-                    { ru: 'подводный храм: вода, страшно, тону', en: 'ocean monument: water, scary, drowning' },
-                    { ru: 'грибной остров: милый, но одиноко', en: 'mushroom island: cute, lonely' },
-                    { ru: 'майнкрафт с друзьями: они сломали твой дом', en: 'minecraft with friends: they broke your house' },
-                    { ru: 'ресурс пак: поставил, всё стало розовым', en: 'resource pack: installed, everything pink' }
-                ]
-            },
-            {
-                id: 'cyberpunk',
-                name: '🌃 Киберпанк',
-                icon: '🌃',
-                basePrompt: 'cyberpunk style, futuristic, neon, high tech low life',
-                humor: [
-                    { ru: 'импланты: поставил, забыл выключить wifi', en: 'implants: installed, forgot to turn off wifi' },
-                    { ru: 'кибердека: хакнул, вырубили свет во всем районе', en: 'cyberdeck: hacked, blackout in whole district' },
-                    { ru: 'неоновые вывески: красиво, но глаза болят', en: 'neon signs: beautiful, eyes hurt' },
-                    { ru: 'андроид: кофе сварил, но обиделся', en: 'android: made coffee, got offended' },
-                    { ru: 'киберпанк 2077: багов больше чем контента', en: 'cyberpunk 2077: more bugs than content' },
-                    { ru: 'чип в голове: реклама играет даже во сне', en: 'head chip: ads playing even in sleep' },
-                    { ru: 'киберрука: сила есть, мелкую моторику потерял', en: 'cyberarm: strong, no fine motor skills' },
-                    { ru: 'нейросеть: нарисовала, но пальцы кривые', en: 'neural net: drew, but fingers crooked' },
-                    { ru: 'технологии: все есть, денег нет', en: 'technology: everything, no money' },
-                    { ru: 'корпорации: правят миром, а ты пьёшь синт-кофе', en: 'corporations rule world, you drink synth coffee' },
-                    { ru: 'киберпсихоз: напал на торговый автомат', en: 'cyberpsychosis: attacked vending machine' },
-                    { ru: 'репликант: плакал, значит человек', en: 'replicant: cried, so human' },
-                    { ru: 'хакер в подворотне: ломает твой тостер', en: 'hacker in alley: hacking your toaster' },
-                    { ru: 'неоновый дождь: мокро, но красиво', en: 'neon rain: wet, but beautiful' },
-                    { ru: 'виртуальная реальность: там лучше, чем в реале', en: 'virtual reality: better than real life' },
-                    { ru: 'андроид-бармен: наливает, но не пьет', en: 'android bartender: pours, doesnt drink' },
-                    { ru: 'био-чип: обновился, теперь сядешь на 15 лет', en: 'biochip: updated, now 15 years jail' },
-                    { ru: 'робот-полицейский: ловит за превышение скорости мысли', en: 'robot cop: catches speeding thoughts' },
-                    { ru: 'киберпанк: будущее, где нет котиков', en: 'cyberpunk: future with no cats' },
-                    { ru: 'нано-боты: лечат, но жужжат под кожей', en: 'nanobots: heal, but buzz under skin' },
-                    { ru: 'флаер: летишь, но пробки в воздухе', en: 'flyer: flying, but air traffic' },
-                    { ru: 'кибер-глаз: видишь рекламу даже с закрытыми', en: 'cybereye: see ads even with eyes closed' },
-                    { ru: 'квантовый компьютер: считает, но ответ "42"', en: 'quantum computer: computes, answer 42' },
-                    { ru: 'кожа с подогревом: зимой хорошо, летом ад', en: 'heated skin: good in winter, hell in summer' }
-                ]
-            },
-            {
-                id: 'kdrama',
-                name: '💕 Корейская дорама',
-                icon: '💕',
-                basePrompt: 'Korean drama style, romantic, emotional, korean actors',
-                humor: [
-                    { ru: 'главный герой: богатый, красивый, но с травмой', en: 'male lead: rich, handsome, traumatized' },
-                    { ru: 'главная героиня: бедная, но добрая, спотыкается', en: 'female lead: poor, kind, trips' },
-                    { ru: 'сценарист: зачем 16 серий, если можно за 10', en: 'writer: why 16 episodes if 10 enough' },
-                    { ru: 'злодейка: красивая, но злая, все ее ненавидят', en: 'villainess: beautiful, evil, everyone hates' },
-                    { ru: 'первая любовь: возвращается из США', en: 'first love: returns from USA' },
-                    { ru: 'поцелуй в дораме: 5 минут смотреть друг на друга', en: 'drama kiss: 5 minutes staring' },
-                    { ru: 'флешбеки: каждый эпизод одно и то же', en: 'flashbacks: same thing every episode' },
-                    { ru: 'OST: слушаешь неделю после серии', en: 'OST: listen for week after episode' },
-                    { ru: 'главный герой падает, героиня ловит', en: 'male lead falls, female lead catches' },
-                    { ru: 'мать героя: против бедной невестки', en: 'heros mom: against poor daughter in law' },
-                    { ru: 'тайное прошлое: все связаны', en: 'secret past: everyone connected' },
-                    { ru: 'авария: потеря памяти перед свадьбой', en: 'accident: amnesia before wedding' },
-                    { ru: 'лучший друг: влюблен в героиню, но молчит', en: 'best friend: loves heroine, silent' },
-                    { ru: 'еда в дораме: едят и хвалят каждую секунду', en: 'food in drama: eat and praise every second' },
-                    { ru: 'главный герой: плачет красиво', en: 'male lead: cries beautifully' },
-                    { ru: 'смотреть дораму: начал в 22, закончил в 6 утра', en: 'watching drama: started 10pm, ended 6am' },
-                    { ru: 'второстепенная пара: интереснее главной', en: 'second couple: more interesting than main' },
-                    { ru: 'рабочее место: все влюблены друг в друга', en: 'workplace: everyone in love with each other' },
-                    { ru: 'путешествие во времени: встретил себя', en: 'time travel: met self' },
-                    { ru: 'король/президент: влюбляется в простую девушку', en: 'king/president: falls for common girl' },
-                    { ru: 'сестры/братья: вечно ссорятся, но любят', en: 'siblings: fight, but love' },
-                    { ru: 'свадьба в последней серии: все счастливы', en: 'wedding in last episode: everyone happy' },
-                    { ru: 'дорама закончилась: депрессия на неделю', en: 'drama ended: depression for week' },
-                    { ru: 'смотреть с субтитрами: пропустил момент, перематываю', en: 'watch with subs: missed moment, rewind' }
-                ]
-            }
-        ];
+// КОНЕЦ ОБЫЧНЫХ
+        // ========== ВСТАВЬТЕ ВАШ const ADDITIONAL_PROFESSIONS = [ ... ] ==========
+        // СКОПИРУЙТЕ СЮДА ВАШ МАССИВ ИЗ 8 ТЕМАТИЧЕСКИХ ПРОФЕССИЙ
+// ========== ДОПОЛНИТЕЛЬНЫЕ ТЕМАТИЧЕСКИЕ ПРОФЕССИИ С 30+ ШУТКАМИ ==========
+const ADDITIONAL_PROFESSIONS = [
+    {
+        id: 'wedding',
+        name: '💒 Свадьба',
+        icon: '💒',
+        basePrompt: 'wedding ceremony, bride and groom, marriage celebration',
+        humor: [
+            { ru: 'план: идеальный, реальность: дождь', en: 'wedding plan perfect, reality rain, couple standing under umbrella' },
+            { ru: 'тамада: "горько!" в 100й раз', en: 'toastmaster saying bitterly for 100th time, couple exhausted' },
+            { ru: 'свадебный торт: красивый, но невкусный', en: 'wedding cake beautiful but tasteless, guests pretending to enjoy' },
+            { ru: 'гость: пришёл поесть и уйти', en: 'guest came to eat and leave, sneaking towards exit' },
+            { ru: 'невеста: платье дороже машины', en: 'bride dress more expensive than car, groom shocked' },
+            { ru: 'жених: забыл кольца дома', en: 'groom forgot rings at home, panicking' },
+            { ru: 'свадебный фотограф: "улыбнитесь" уже 3 часа', en: 'wedding photographer saying smile for 3 hours, couple with frozen smiles' },
+            { ru: 'конкурсы: для пьяных и смелых', en: 'wedding games for drunk and brave, guests participating reluctantly' },
+            { ru: 'первый танец: наступил на платье', en: 'first dance, groom stepped on dress, both falling' },
+            { ru: 'свадебный тост: говорили все, кроме молодых', en: 'toasts: everyone spoke except couple, couple bored' },
+            { ru: 'букет невесты: поймала та, кто не хотела', en: 'bouquet caught by someone who didnt want it, awkward' },
+            { ru: 'свадебный лимузин: сломался по дороге', en: 'wedding limo broke down, couple on side of road' },
+            { ru: 'теща: "мой ребенок лучше всех"', en: 'mother in law: my child is best, everyone nods' },
+            { ru: 'свекровь: советует как жить', en: 'mother in law giving life advice, bride annoyed' },
+            { ru: 'свадебное меню: оливье закончилось через 5 минут', en: 'wedding menu: olivier salad gone in 5 minutes' },
+            { ru: 'гость в белом: позор на всю свадьбу', en: 'guest wearing white, disgrace, everyone staring' },
+            { ru: 'свадебный торт: упал перед подачей', en: 'wedding cake fell before serving, disaster' },
+            { ru: 'молодожены: хотят спать после фотосессии', en: 'newlyweds want to sleep after photoshoot, exhausted' },
+            { ru: 'свадебный оркестр: играет не в такт', en: 'wedding band playing out of sync, couple dancing awkwardly' },
+            { ru: 'гость: "за ваше здоровье!" (снова)', en: 'guest: to your health, again, everyone drinks' },
+            { ru: 'свадебные бокалы: разбились сами', en: 'wedding glasses broke by themselves, bad omen' },
+            { ru: 'фата: зацепилась за декор', en: 'veil caught on decor, bride stuck' },
+            { ru: 'свадебный кортеж: все сигналят, никто не поздравляет', en: 'wedding procession: everyone honks, no one congratulates' },
+            { ru: 'тамада: шутит, но не смешно', en: 'toastmaster jokes, not funny, awkward silence' },
+            { ru: 'когда невеста перепутала имена', en: 'bride saying wrong name at altar, groom shocked' },
+            { ru: 'свадебный бюджет: как бюджет маленькой страны', en: 'looking at wedding costs like national budget' },
+            { ru: 'когда гости начали драку', en: 'guests fighting at wedding, couple watching in horror' },
+            { ru: 'моя свадьба: 500 гостей, 10 друзей', en: '500 guests but only 10 real friends' },
+            { ru: 'когда жених уснул на банкете', en: 'groom falling asleep at own wedding' },
+            { ru: 'свадебное платье: красивое, но тяжелое', en: 'bride struggling with heavy wedding dress' },
+            { ru: 'когда свидетель украл невесту', en: 'best man stealing bride, chaos' },
+            { ru: 'мой свадебный танец: все смеялись', en: 'wedding dance, everyone laughing' }
+        ]
+    },
+    {
+        id: 'birthday',
+        name: '🎂 День рождения',
+        icon: '🎂',
+        basePrompt: 'birthday party, celebration, birthday cake',
+        humor: [
+            { ru: 'годы идут, а торт все тот же', en: 'years pass, same cake, birthday person staring' },
+            { ru: 'когда задуваешь свечи, но не все', en: 'blowing candles, not all go out, awkward' },
+            { ru: 'подарок: носки от бабушки (снова)', en: 'gift: socks from grandma, again, fake smile' },
+            { ru: 'день рождения: повод напиться в будний день', en: 'birthday: excuse to drink on weekday, friends celebrating' },
+            { ru: 'возраст: уже не спрашивают', en: 'age: no one asks anymore, relieved' },
+            { ru: 'именинник: "я не старею, я матерею"', en: 'birthday person: im not aging, im maturing' },
+            { ru: 'гости: пришли, поели, ушли', en: 'guests: came, ate, left, birthday person alone' },
+            { ru: 'когда твой день рождения совпал с понедельником', en: 'birthday on monday, everyone working, sad' },
+            { ru: 'тосты: "чтоб ты жил до 100 лет" (а надо ли)', en: 'toasts: live to 100, questionable' },
+            { ru: 'свечи на торте: пожарная сигнализация сработала', en: 'candles on cake, fire alarm went off' },
+            { ru: 'поздравления в соцсетях: от тех, кто не позвонил', en: 'social media greetings from those who didnt call' },
+            { ru: 'день рождения и разбитое зеркало', en: 'birthday and broken mirror, bad luck' },
+            { ru: 'когда тебе дарят второй тостер', en: 'receiving second toaster as gift, confused' },
+            { ru: 'именинный пирог: подгорел снизу', en: 'birthday cake burnt on bottom, still served' },
+            { ru: 'гость с плюсом: никто не знает кто это', en: 'guest plus one, nobody knows them' },
+            { ru: 'день рождения на удаленке: zoom и колпак', en: 'birthday remote: zoom and party hat' },
+            { ru: 'возраст: 29 лет (в 5й раз)', en: 'age: 29 for the 5th time' },
+            { ru: 'подарок своими руками: неловко', en: 'homemade gift: awkward' },
+            { ru: 'когда твой день рождения високосный', en: 'birthday on leap day, celebrate every 4 years' },
+            { ru: 'гость: "а где моя порция?"', en: 'guest: where is my portion' },
+            { ru: 'именинник: загадал желание, свеча не задувается', en: 'birthday person made wish, candle wont blow out' },
+            { ru: 'день рождения и развод (плохой подарок)', en: 'birthday and divorce, bad gift' },
+            { ru: 'подарочная карта: "на что хочешь" (лень выбирать)', en: 'gift card: get what you want, too lazy to choose' },
+            { ru: 'когда перепутали твой возраст на торте', en: 'they got your age wrong on cake' },
+            { ru: 'когда друг подарил то же, что и ты', en: 'friend giving same gift, awkward moment' },
+            { ru: 'мой день рождения: 30 лет, а чувствую на 60', en: '30th birthday but feeling 60' },
+            { ru: 'когда гости поют караоке', en: 'guests singing karaoke badly, birthday person suffering' },
+            { ru: 'мой подарок: подарочная упаковка от айфона, внутри носки', en: 'iphone box with socks inside, disappointment' },
+            { ru: 'когда друзья забыли про день рождения', en: 'friends forgot birthday, sad person alone' },
+            { ru: 'именинник: ждет подарки, получает внимание', en: 'expecting gifts but getting attention' },
+            { ru: 'когда торт упал на пол', en: 'cake fell on floor, disaster' },
+            { ru: 'мой день рождения: 40 лет, кризис', en: '40th birthday, midlife crisis' }
+        ]
+    },
+    {
+        id: 'newyear',
+        name: '🎄 Новый год',
+        icon: '🎄',
+        basePrompt: 'new year celebration, christmas tree, holiday',
+        humor: [
+            { ru: 'оливье: закончилось, началась драма', en: 'olivier salad finished, drama begins' },
+            { ru: 'ёлка: упала в 12 ночи', en: 'christmas tree fell at midnight' },
+            { ru: 'президент: говорит, никто не слушает', en: 'president speaking, no one listening' },
+            { ru: 'подарки: носки и гель для душа', en: 'gifts: socks and shower gel, classic' },
+            { ru: 'бой курантов: загадал желание, но передумал', en: 'chimes: made wish, changed mind' },
+            { ru: 'салют: соседи жгут деньги', en: 'fireworks: neighbors burning money' },
+            { ru: 'новогодний стол: готовили 3 дня, съели за 30 минут', en: 'new year table: cooked 3 days, ate in 30 min' },
+            { ru: 'шампанское: выстрелило в люстру', en: 'champagne: shot into chandelier' },
+            { ru: 'дед мороз: пришёл, но это папа', en: 'santa came, its dad' },
+            { ru: 'снегурочка: внучка деда (которому 40)', en: 'snow maiden: granddaughter of 40yo grandpa' },
+            { ru: 'новогодний корпоратив: пьяный начальник пляшет', en: 'corporate party: drunk boss dancing' },
+            { ru: 'оливье: с колбасой или с мясом? вечный спор', en: 'olivier: with sausage or meat, eternal debate' },
+            { ru: 'мандарины: закончились первыми', en: 'tangerines: finished first' },
+            { ru: 'новогоднее обращение: все ждут боя курантов', en: 'new year address: everyone waiting for chimes' },
+            { ru: 'утро 1 января: "что было вчера?"', en: 'jan 1 morning: what happened yesterday' },
+            { ru: 'новогодний фильм: "ирония судьбы" в 100й раз', en: 'new year movie: irony of fate for 100th time' },
+            { ru: 'ёлочные игрушки: разбил кот', en: 'tree ornaments: cat broke them' },
+            { ru: 'гирлянда: запуталась как жизнь', en: 'fairy lights: tangled like life' },
+            { ru: 'новогодний костюм: надел, вспотел, снял', en: 'new year costume: wore, sweated, took off' },
+            { ru: 'фейерверк: не взлетел', en: 'firework: didnt fly' },
+            { ru: 'новогодние обещания: сбросить вес (опять)', en: 'new year resolutions: lose weight again' },
+            { ru: 'детский утренник: ребёнок плачет, дед мороз в ужасе', en: 'childrens party: child cries, santa horrified' },
+            { ru: 'новый год в поезде: романтика или ад', en: 'new year on train: romance or hell' },
+            { ru: 'остатки оливье: едят до 8 марта', en: 'olivier leftovers: eaten until march 8' },
+            { ru: 'когда подарок не понравился', en: 'gift not liked, fake smile' },
+            { ru: 'мой новый год: один дома', en: 'new year alone at home' },
+            { ru: 'когда соседи слишком громко', en: 'neighbors too loud, annoyed' },
+            { ru: 'мой салют: упал на машину', en: 'firework fell on car, disaster' },
+            { ru: 'когда закончилось шампанское', en: 'champagne finished, sad' },
+            { ru: 'мой новый год: работа (смена)', en: 'new year working shift' },
+            { ru: 'когда ёлка загорелась', en: 'christmas tree caught fire' },
+            { ru: 'мой подарок: получил, что хотел (чудо)', en: 'got exactly what wanted, miracle' }
+        ]
+    },
+    {
+        id: 'halloween',
+        name: '🎃 Хеллоуин',
+        icon: '🎃',
+        basePrompt: 'halloween celebration, spooky, pumpkins',
+        humor: [
+            { ru: 'костюм: купил, но страшно выйти', en: 'costume: bought, too scared to go out' },
+            { ru: 'тыква: вырезал, сгнила через день', en: 'pumpkin: carved, rotted next day' },
+            { ru: 'конфеты: "сладость или гадость" закончились быстро', en: 'candy: trick or treat ran out fast' },
+            { ru: 'привидение: простыня с дырками', en: 'ghost: sheet with holes' },
+            { ru: 'хеллоуин в офисе: никто не понял', en: 'halloween at office: no one got it' },
+            { ru: 'страшный грим: смывается неделю', en: 'scary makeup: washes off for a week' },
+            { ru: 'паутина: купил, развесил, запутался сам', en: 'cobwebs: bought, hung, got tangled' },
+            { ru: 'скелет в шкафу: буквально', en: 'skeleton in closet: literally' },
+            { ru: 'хеллоуинская вечеринка: пришли все в одинаковых костюмах', en: 'halloween party: everyone in same costume' },
+            { ru: 'летучая мышь: залетела, испугала всех', en: 'bat: flew in, scared everyone' },
+            { ru: 'зомби апокалипсис: утром на работу', en: 'zombie apocalypse: morning at work' },
+            { ru: 'ведьма: метла не летает', en: 'witch: broom wont fly' },
+            { ru: 'вампир: чеснок в супе', en: 'vampire: garlic in soup' },
+            { ru: 'оборотень: полнолуние, а он забыл', en: 'werewolf: full moon, forgot' },
+            { ru: 'хеллоуин у детей: "дайте конфету или я заплачу"', en: 'halloween kids: give candy or ill cry' },
+            { ru: 'соседи: не открывают, боятся', en: 'neighbors: dont open, scared' },
+            { ru: 'хеллоуинский декор: дороже чем подарки', en: 'halloween decor: more expensive than gifts' },
+            { ru: 'страшные истории: никто не пугается', en: 'scary stories: no one scared' },
+            { ru: 'хеллоуин в россии: "а это наш праздник?"', en: 'halloween in russia: is this our holiday' },
+            { ru: 'костюм скелета: кости нарисованы криво', en: 'skeleton costume: bones drawn crooked' },
+            { ru: 'сладости: съел сам, детям не досталось', en: 'candy: ate myself, none for kids' },
+            { ru: 'хеллоуинский тыквенный суп: никто не ест', en: 'pumpkin soup: no one eats' },
+            { ru: 'призрак: простыня сломала вайфай', en: 'ghost: sheet broke wifi' },
+            { ru: 'хеллоуин закончился, а ты в гриме неделю', en: 'halloween over, still in makeup for week' },
+            { ru: 'когда тыква оказалась слишком большой', en: 'pumpkin too big to carry' },
+            { ru: 'мой костюм: все подумали что я клоун', en: 'costume mistaken for clown' },
+            { ru: 'когда дети не пришли за конфетами', en: 'no kids came for candy' },
+            { ru: 'мой хеллоуин: сидел дома один', en: 'halloween alone at home' },
+            { ru: 'когда настоящий призрак (шутим)', en: 'real ghost appeared, kidding' },
+            { ru: 'мой тыквенный фонарь: потух', en: 'pumpkin lantern went out' },
+            { ru: 'когда страшно даже от своего отражения', en: 'scared of own reflection' },
+            { ru: 'мой хеллоуин: лучший праздник', en: 'halloween best holiday' }
+        ]
+    },
+    {
+        id: 'gta',
+        name: '🎮 Игра GTA',
+        icon: '🎮',
+        basePrompt: 'GTA game style, Grand Theft Auto, video game character',
+        humor: [
+            { ru: 'звезды полиции: 5, а ты в танке', en: 'wanted stars: 5, youre in tank' },
+            { ru: 'украл машину, а бензин закончился', en: 'stole car, ran out of gas' },
+            { ru: 'код на деньги: rosebud? не та игра', en: 'money cheat: rosebud? wrong game' },
+            { ru: 'сбил прохожего, а он встал и пошел', en: 'hit pedestrian, they got up and walked' },
+            { ru: 'миссия: угнать самолет, а у тебя права только на машину', en: 'mission: steal plane, you only have car license' },
+            { ru: 'GTA в реальной жизни: штраф 5000 рублей', en: 'GTA in real life: 5000 ruble fine' },
+            { ru: 'прохожий: "эй, ты!" и началась стрельба', en: 'pedestrian: hey you, shooting starts' },
+            { ru: 'полицейская погоня: застрял в заборе', en: 'police chase: stuck in fence' },
+            { ru: 'вертолет: сбил, упал на себя', en: 'helicopter: shot down, fell on self' },
+            { ru: 'GTA онлайн: ребенок сказал, что спал с твоей мамой', en: 'GTA online: kid said they slept with your mom' },
+            { ru: 'прохождение сюжета: 100 часов, побочные квесты: 500 часов', en: 'story: 100 hours, side quests: 500 hours' },
+            { ru: 'стриптиз-клуб: потратил все деньги', en: 'strip club: spent all money' },
+            { ru: 'танк: выехал, город в руинах', en: 'tank: drove out, city in ruins' },
+            { ru: 'парашют: забыл открыть', en: 'parachute: forgot to open' },
+            { ru: 'гонка: проиграл, взорвал всех', en: 'race: lost, blew everyone up' },
+            { ru: 'GTA: игра где ты преступник, но герой', en: 'GTA: game where youre criminal but hero' },
+            { ru: 'моды: добавил халка, игра сломалась', en: 'mods: added hulk, game crashed' },
+            { ru: 'полицейский вертолет: сбить сложно, но приятно', en: 'police helicopter: hard to shoot, satisfying' },
+            { ru: 'GTA V: три героя, а играешь за одного', en: 'GTA V: three characters, play as one' },
+            { ru: 'радар: ищешь коллекционные предметы', en: 'radar: looking for collectibles' },
+            { ru: 'GTA: читы на бессмертие, но машина взрывается', en: 'GTA: god mode cheats, car still explodes' },
+            { ru: 'онлайн режим: купил квартиру, сосед - 12-летний', en: 'online mode: bought apartment, neighbor is 12yo' },
+            { ru: 'GTA: единственная игра где боишься полиции', en: 'GTA: only game where you fear police' },
+            { ru: 'мотоцикл: прыжок, переворот, смерть', en: 'motorcycle: jump, flip, death' },
+            { ru: 'когда полиция вызывает спецназ', en: 'police calling swat, panic' },
+            { ru: 'мой дом в GTA: заставлен машинами', en: 'gta house full of stolen cars' },
+            { ru: 'когда друга сбил поезд', en: 'friend hit by train, laughing' },
+            { ru: 'мой вертолет: упал на здание', en: 'helicopter crashed into building' },
+            { ru: 'когда читы перестали работать', en: 'cheats stopped working, sad' },
+            { ru: 'моя банда: 5 человек, все тупые', en: 'my gang: 5 people, all dumb' },
+            { ru: 'когда миссия провалена (опять)', en: 'mission failed, again' },
+            { ru: 'мой GTA: 1000 часов, 0% прогресса', en: '1000 hours, 0% progress' }
+        ]
+    },
+    {
+        id: 'minecraft',
+        name: '⛏️ Майнкрафт',
+        icon: '⛏️',
+        basePrompt: 'Minecraft game style, blocky, pixelated',
+        humor: [
+            { ru: 'крипер: подкрался, бабах, дома нет', en: 'creeper: snuck up, boom, no house' },
+            { ru: 'алмаз: нашёл, упал в лаву', en: 'diamond: found, fell in lava' },
+            { ru: 'ночь наступила, а кровати нет', en: 'night came, no bed, monsters everywhere' },
+            { ru: 'построил замок, залили гасты', en: 'built castle, ghasts blew it up' },
+            { ru: 'ресурсы: копал 3 часа, нашёл булыжник', en: 'resources: mined 3 hours, got cobblestone' },
+            { ru: 'первая ночь: закопался в землю', en: 'first night: dug into ground' },
+            { ru: 'эндермен: смотришь на него, он бесится', en: 'enderman: look at him, he rages' },
+            { ru: 'портал в ад: построил, страшно заходить', en: 'nether portal: built, scared to enter' },
+            { ru: 'деревянная кирка: сломалась через 2 удара', en: 'wooden pickaxe: broke after 2 hits' },
+            { ru: 'кровать в аду: взорвалась', en: 'bed in nether: exploded' },
+            { ru: 'серебряный рыбак: выпрыгнул из стены', en: 'silverfish: jumped out of wall' },
+            { ru: 'скелет: стреляет, попал в крипера', en: 'skeleton: shot, hit creeper, chain reaction' },
+            { ru: 'выживание: построил дом, пришел крипер', en: 'survival: built house, creeper came' },
+            { ru: 'творческий режим: построил всё, скучно', en: 'creative mode: built everything, bored' },
+            { ru: 'редстоун: пытался сделать механизм, взорвалось', en: 'redstone: tried to make mechanism, exploded' },
+            { ru: 'майнкрафт с модами: 200 модов, игра не грузится', en: 'minecraft with mods: 200 mods, game wont load' },
+            { ru: 'деревня: нашел, жители странные', en: 'village: found, villagers weird' },
+            { ru: 'торговец ламой: пришел, лама сбежала', en: 'trader llama: came, llama ran' },
+            { ru: 'элитры: нашел, упал с неба', en: 'elytra: found, fell from sky' },
+            { ru: 'дракон края: убил, скучно стало', en: 'ender dragon: killed, got bored' },
+            { ru: 'подводный храм: вода, страшно, тону', en: 'ocean monument: water, scary, drowning' },
+            { ru: 'грибной остров: милый, но одиноко', en: 'mushroom island: cute, lonely' },
+            { ru: 'майнкрафт с друзьями: они сломали твой дом', en: 'minecraft with friends: they broke your house' },
+            { ru: 'ресурс пак: поставил, всё стало розовым', en: 'resource pack: installed, everything pink' },
+            { ru: 'когда крипер взорвал алмазы', en: 'creeper blew up diamonds' },
+            { ru: 'мой дом: из грязи (бедность)', en: 'dirt house, poor' },
+            { ru: 'когда заспавнился в пустыне', en: 'spawned in desert, no wood' },
+            { ru: 'мой питомец волк: умер (грустно)', en: 'pet wolf died, sad' },
+            { ru: 'когда нашел деревню (радость)', en: 'found village, joy' },
+            { ru: 'моя ферма: 100 грядок', en: 'farm with 100 crops' },
+            { ru: 'когда эндермен забрал блок', en: 'enderman stole block' },
+            { ru: 'мой маяк: построил, горжусь', en: 'built beacon, proud' }
+        ]
+    },
+    {
+        id: 'cyberpunk',
+        name: '🌃 Киберпанк',
+        icon: '🌃',
+        basePrompt: 'cyberpunk style, futuristic, neon, high tech low life',
+        humor: [
+            { ru: 'импланты: поставил, забыл выключить wifi', en: 'implants: installed, forgot to turn off wifi' },
+            { ru: 'кибердека: хакнул, вырубили свет во всем районе', en: 'cyberdeck: hacked, blackout in whole district' },
+            { ru: 'неоновые вывески: красиво, но глаза болят', en: 'neon signs: beautiful, eyes hurt' },
+            { ru: 'андроид: кофе сварил, но обиделся', en: 'android: made coffee, got offended' },
+            { ru: 'киберпанк 2077: багов больше чем контента', en: 'cyberpunk 2077: more bugs than content' },
+            { ru: 'чип в голове: реклама играет даже во сне', en: 'head chip: ads playing even in sleep' },
+            { ru: 'киберрука: сила есть, мелкую моторику потерял', en: 'cyberarm: strong, no fine motor skills' },
+            { ru: 'нейросеть: нарисовала, но пальцы кривые', en: 'neural net: drew, but fingers crooked' },
+            { ru: 'технологии: все есть, денег нет', en: 'technology: everything, no money' },
+            { ru: 'корпорации: правят миром, а ты пьёшь синт-кофе', en: 'corporations rule world, you drink synth coffee' },
+            { ru: 'киберпсихоз: напал на торговый автомат', en: 'cyberpsychosis: attacked vending machine' },
+            { ru: 'репликант: плакал, значит человек', en: 'replicant: cried, so human' },
+            { ru: 'хакер в подворотне: ломает твой тостер', en: 'hacker in alley: hacking your toaster' },
+            { ru: 'неоновый дождь: мокро, но красиво', en: 'neon rain: wet, but beautiful' },
+            { ru: 'виртуальная реальность: там лучше, чем в реале', en: 'virtual reality: better than real life' },
+            { ru: 'андроид-бармен: наливает, но не пьет', en: 'android bartender: pours, doesnt drink' },
+            { ru: 'био-чип: обновился, теперь сядешь на 15 лет', en: 'biochip: updated, now 15 years jail' },
+            { ru: 'робот-полицейский: ловит за превышение скорости мысли', en: 'robot cop: catches speeding thoughts' },
+            { ru: 'киберпанк: будущее, где нет котиков', en: 'cyberpunk: future with no cats' },
+            { ru: 'нано-боты: лечат, но жужжат под кожей', en: 'nanobots: heal, but buzz under skin' },
+            { ru: 'флаер: летишь, но пробки в воздухе', en: 'flyer: flying, but air traffic' },
+            { ru: 'кибер-глаз: видишь рекламу даже с закрытыми', en: 'cybereye: see ads even with eyes closed' },
+            { ru: 'квантовый компьютер: считает, но ответ "42"', en: 'quantum computer: computes, answer 42' },
+            { ru: 'кожа с подогревом: зимой хорошо, летом ад', en: 'heated skin: good in winter, hell in summer' },
+            { ru: 'когда имплант сломался', en: 'implant broke, malfunction' },
+            { ru: 'мой хак: взломал банк, получил 1$', en: 'hacked bank, got 1$' },
+            { ru: 'когда нейросеть нарисовала монстра', en: 'neural net drew monster' },
+            { ru: 'мой кибер-психоз: лечат', en: 'cyberpsychosis treatment' },
+            { ru: 'когда робот-полицейский арестовал', en: 'robot cop arrested me' },
+            { ru: 'мой киберпанк: будущее уже здесь', en: 'cyberpunk future is now' },
+            { ru: 'когда отключили интернет (конец света)', en: 'internet down, end of world' },
+            { ru: 'мой нейроинтерфейс: завис', en: 'neural interface frozen' }
+        ]
+    },
+    {
+        id: 'kdrama',
+        name: '💕 Корейская дорама',
+        icon: '💕',
+        basePrompt: 'Korean drama style, romantic, emotional, korean actors',
+        humor: [
+            { ru: 'главный герой: богатый, красивый, но с травмой', en: 'male lead: rich, handsome, traumatized' },
+            { ru: 'главная героиня: бедная, но добрая, спотыкается', en: 'female lead: poor, kind, trips' },
+            { ru: 'сценарист: зачем 16 серий, если можно за 10', en: 'writer: why 16 episodes if 10 enough' },
+            { ru: 'злодейка: красивая, но злая, все ее ненавидят', en: 'villainess: beautiful, evil, everyone hates' },
+            { ru: 'первая любовь: возвращается из США', en: 'first love: returns from USA' },
+            { ru: 'поцелуй в дораме: 5 минут смотреть друг на друга', en: 'drama kiss: 5 minutes staring' },
+            { ru: 'флешбеки: каждый эпизод одно и то же', en: 'flashbacks: same thing every episode' },
+            { ru: 'OST: слушаешь неделю после серии', en: 'OST: listen for week after episode' },
+            { ru: 'главный герой падает, героиня ловит', en: 'male lead falls, female lead catches' },
+            { ru: 'мать героя: против бедной невестки', en: 'heros mom: against poor daughter in law' },
+            { ru: 'тайное прошлое: все связаны', en: 'secret past: everyone connected' },
+            { ru: 'авария: потеря памяти перед свадьбой', en: 'accident: amnesia before wedding' },
+            { ru: 'лучший друг: влюблен в героиню, но молчит', en: 'best friend: loves heroine, silent' },
+            { ru: 'еда в дораме: едят и хвалят каждую секунду', en: 'food in drama: eat and praise every second' },
+            { ru: 'главный герой: плачет красиво', en: 'male lead: cries beautifully' },
+            { ru: 'смотреть дораму: начал в 22, закончил в 6 утра', en: 'watching drama: started 10pm, ended 6am' },
+            { ru: 'второстепенная пара: интереснее главной', en: 'second couple: more interesting than main' },
+            { ru: 'рабочее место: все влюблены друг в друга', en: 'workplace: everyone in love with each other' },
+            { ru: 'путешествие во времени: встретил себя', en: 'time travel: met self' },
+            { ru: 'король/президент: влюбляется в простую девушку', en: 'king/president: falls for common girl' },
+            { ru: 'сестры/братья: вечно ссорятся, но любят', en: 'siblings: fight, but love' },
+            { ru: 'свадьба в последней серии: все счастливы', en: 'wedding in last episode: everyone happy' },
+            { ru: 'дорама закончилась: депрессия на неделю', en: 'drama ended: depression for week' },
+            { ru: 'смотреть с субтитрами: пропустил момент, перематываю', en: 'watch with subs: missed moment, rewind' },
+            { ru: 'когда главный герой улыбнулся', en: 'male lead smiled, melting' },
+            { ru: 'моя дорама: 100 серий, хочу еще', en: '100 episodes, want more' },
+            { ru: 'когда злодейка получила по заслугам', en: 'villainess got what deserved' },
+            { ru: 'мой любимый актер: красавчик', en: 'favorite actor, handsome' },
+            { ru: 'когда поцелуй прервали', en: 'kiss interrupted, annoyed' },
+            { ru: 'моя дорама: пересматриваю в 10й раз', en: 'rewatching for 10th time' },
+            { ru: 'когда OST заиграл в нужный момент', en: 'OST played at perfect moment' },
+            { ru: 'моя дорама: лучшая', en: 'best drama ever' }
+        ]
+    }
+];
+// КОНЕЦ ТЕМАТИЧЕСКИХ
 
-        // ========== 30 ЭМОЦИЙ (ПОЛНОСТЬЮ) ==========
+
+        // ========== ⚠️ ДАЛЬШЕ НИЧЕГО НЕ МЕНЯЙТЕ ==========
+
+        // ========== API КЛЮЧИ ==========
+        const RECRAFT_API_KEY = 'Z3tHS0n7uXUgUOU6o6olUB82Lm4mL4e6qVbuCc7wYz7nUweHtYaduYxuH6t1pKFt';
+        const KLING_ACCESS_KEY = 'ADPABabYdgNpEteCLG9KayNthPL8Pahb';
+        const KLING_SECRET_KEY = 'GQ4M3b3DaKkHPKPJEtFN4GNNeMr4fnAJ';
+
+        // ========== 30 ЭМОЦИЙ ==========
         const EMOTIONS = [
             { id: 'happy', name: 'Счастье', icon: '😊', prompt: 'happy, smiling, joyful' },
             { id: 'sad', name: 'Грусть', icon: '😢', prompt: 'sad, crying, unhappy' },
@@ -1940,7 +2422,7 @@ const PROFESSIONS = [
             { id: 'proud', name: 'Гордый', icon: '🦚', prompt: 'proud, confident, pleased' }
         ];
 
-        // ========== СТИЛИ (23 ВАРИАНТА) ==========
+        // ========== 23 СТИЛЯ ==========
         const STYLES = [
             { name: '✨ 3D мультяшный', style: '3d render, pixar style, volumetric' },
             { name: '🎯 Плоский (Flat)', style: 'flat vector, minimalism, bright colors' },
@@ -1963,11 +2445,10 @@ const PROFESSIONS = [
             { name: '🎃 Хеллоуин', style: 'halloween style, spooky, carved pumpkins, ghosts, skeletons, horror theme, creepy but fun, cobwebs' },
             { name: '🎮 GTA стиль', style: 'GTA game style, grand theft auto, video game aesthetic, urban, criminal underworld, action packed, wanted stars' },
             { name: '⛏️ Майнкрафт', style: 'Minecraft style, blocky, pixelated, cubic, game characters, voxel art, pixel perfect, crafting' },
-            { name: '🌃 Киберпанк', style: 'cyberpunk style, neon lights, futuristic city, high tech, dark rainy streets, holograms, cybernetic implants' },
             { name: '💕 Корейская дорама', style: 'korean drama style, romantic, emotional, soft lighting, aesthetic, korean fashion, melodramatic, beautiful scenes' }
         ];
 
-        // ========== ПРОМПТЫ ДЛЯ KLING AI ПО ТИПАМ ДВИЖЕНИЙ (ПОЛНОСТЬЮ) ==========
+        // ========== ПРОМПТЫ ДЛЯ KLING AI ==========
         const MOTION_PROMPTS = {
             subtle: {
                 happy: 'subtle happy movement, slight smile, gentle nod, peaceful atmosphere, minimal motion',
@@ -2040,17 +2521,489 @@ const PROFESSIONS = [
             }
         };
 
-        // ========== ФУНКЦИИ ЛОГИРОВАНИЯ ==========
+        // ========== СИСТЕМА АВТОМАТИЧЕСКОГО АНАЛИЗА ЭМОЦИЙ И ШУТОК ==========
+
+        // 1. РАСШИРЕННЫЙ СЛОВАРЬ ТОНАЛЬНОСТИ С ВЕСАМИ
+        const TONE_KEYWORDS = {
+            positive: {
+                words: ['👍', '✅', '❤️', '😊', 'счастье', 'радость', 'круто', 'супер', 'отлично', 'класс', 'love', 'happy', 'good', 'great', 'лучший', 'победа', 'успех', 'топ', 'клёво', 'заебись', 'шикарно', 'прекрасно', 'восхитительно', 'обалдеть', 'крутяк', 'nice', 'awesome', 'fantastic', 'wonderful', 'amazing'],
+                weight: 1.0
+            },
+            negative: {
+                words: ['👎', '❌', '😢', '😭', 'плохо', 'грустно', 'ужас', 'кринж', 'фейл', 'fail', 'bad', 'sad', 'terrible', 'кошмар', 'проблема', 'беда', 'печаль', 'тоска', 'депрессия', 'отвратительно', 'мерзко', 'гадко', 'паршиво', 'хреново'],
+                weight: 1.0
+            },
+            angry: {
+                words: ['😠', '😤', '🤬', 'злость', 'ярость', 'бесит', 'ненавижу', 'убью', 'damn', 'angry', 'mad', 'furious', 'терпеть', 'достало', 'заколебало', 'бешенство', 'злой', 'раздражение', 'гнев', 'яростный', 'взбешен'],
+                weight: 1.5
+            },
+            funny: {
+                words: ['😂', '🤣', '😆', '😁', 'прикол', 'смех', 'угар', 'ржу', 'lol', 'laugh', 'funny', 'hilarious', 'ахаха', 'поржать', 'смешно', 'умора', 'хохма', 'юмор', 'приколист', 'шутка', 'стеб', 'ирония'],
+                weight: 1.2
+            },
+            romantic: {
+                words: ['😍', '🥰', '💕', '💖', '💗', 'любовь', 'романтика', 'сердце', 'love', 'romance', 'heart', 'sweet', 'нежность', 'обожаю', 'целовать', 'милота', 'лапочка', 'дорогой', 'родной', 'милый', 'зайка', 'солнышко'],
+                weight: 1.3
+            },
+            stressed: {
+                words: ['😫', '😩', '🤯', '😰', 'стресс', 'дедлайн', 'работа', 'устал', 'stress', 'deadline', 'tired', 'exhausted', 'выгорание', 'бессонница', 'утомление', 'изнеможение', 'перегруз', 'напряг', 'завал'],
+                weight: 1.2
+            },
+            surprised: {
+                words: ['😮', '😲', '🤯', '😳', 'вау', 'нифига', 'неожиданно', 'wow', 'surprise', 'shock', 'unexpected', 'охренеть', 'ничего себе', 'обалдеть', 'офигеть', 'не может быть', 'да ладно', 'серьезно'],
+                weight: 1.0
+            },
+            sarcastic: {
+                words: ['😏', '🙄', '😒', 'ну-ну', 'конечно', 'ага', 'sarcasm', 'yeah right', 'sure', 'естественно', 'разумеется', 'как же', 'безусловно', 'непременно', 'куда уж нам'],
+                weight: 0.8
+            },
+            proud: {
+                words: ['🦚', '🦁', 'гордость', 'лучший', 'сигма', 'гриндет', 'proud', 'sigma', 'grind', 'успех', 'достижение', 'элита', 'топчик', 'номер один', 'чемпион', 'победитель', 'легенда'],
+                weight: 1.1
+            },
+            scared: {
+                words: ['😨', '😱', '😰', 'страх', 'боюсь', 'scared', 'fear', 'terrified', 'ужас', 'кошмар', 'паника', 'испуг', 'тревога', 'боязнь', 'жутко', 'страшно'],
+                weight: 1.2
+            },
+            confused: {
+                words: ['😕', '😖', '🤔', '🧐', 'непонятно', 'странно', 'confused', 'weird', 'че за', 'что за', 'объясните', 'в тупике', 'не понимаю', 'запутался', 'не ясно'],
+                weight: 0.9
+            },
+            tired: {
+                words: ['😴', '💤', '🥱', 'устал', 'спать', 'сон', 'tired', 'sleepy', 'exhausted', 'вымотан', 'без сил', 'хочу спать', 'клонит в сон', 'утомлен', 'изнурен'],
+                weight: 1.1
+            },
+            work: {
+                words: ['💼', '👔', 'работа', 'офис', 'босс', 'начальник', 'work', 'job', 'office', 'boss', 'карьера', 'зарплата', 'повышение', 'увольнение', 'коллеги'],
+                weight: 1.0
+            },
+            family: {
+                words: ['👨‍👩‍👧', '👪', 'семья', 'мама', 'папа', 'дети', 'family', 'mom', 'dad', 'kids', 'child', 'родители', 'бабушка', 'дедушка', 'родные'],
+                weight: 1.0
+            },
+            money: {
+                words: ['💰', '💵', '💸', 'деньги', 'бабло', 'капуста', 'cash', 'money', 'rich', 'богатый', 'бедный', 'зарплата', 'финансы', 'бюджет'],
+                weight: 1.0
+            },
+            health: {
+                words: ['🏥', '💊', '💉', 'здоровье', 'болезнь', 'больница', 'врач', 'лечение', 'health', 'hospital', 'doctor', 'sick', 'medication'],
+                weight: 1.0
+            }
+        };
+
+        // 2. СООТВЕТСТВИЕ ТОНАЛЬНОСТИ ЭМОЦИЯМ С ПРИОРИТЕТАМИ
+        const TONE_TO_EMOTIONS = {
+            positive: [
+                { emotion: 'happy', priority: 1.0 },
+                { emotion: 'proud', priority: 0.8 },
+                { emotion: 'love', priority: 0.6 },
+                { emotion: 'celebrating', priority: 0.7 },
+                { emotion: 'laughing', priority: 0.5 },
+                { emotion: 'cool', priority: 0.4 }
+            ],
+            negative: [
+                { emotion: 'sad', priority: 1.0 },
+                { emotion: 'crying', priority: 0.9 },
+                { emotion: 'scared', priority: 0.5 },
+                { emotion: 'sick', priority: 0.4 },
+                { emotion: 'tired', priority: 0.3 }
+            ],
+            angry: [
+                { emotion: 'angry', priority: 1.0 },
+                { emotion: 'frustrated', priority: 0.8 },
+                { emotion: 'annoyed', priority: 0.7 },
+                { emotion: 'mad', priority: 0.9 }
+            ],
+            funny: [
+                { emotion: 'laughing', priority: 1.0 },
+                { emotion: 'silly', priority: 0.9 },
+                { emotion: 'happy', priority: 0.6 },
+                { emotion: 'winking', priority: 0.5 },
+                { emotion: 'amused', priority: 0.8 }
+            ],
+            romantic: [
+                { emotion: 'love', priority: 1.0 },
+                { emotion: 'shy', priority: 0.8 },
+                { emotion: 'blushing', priority: 0.7 },
+                { emotion: 'happy', priority: 0.5 },
+                { emotion: 'winking', priority: 0.4 }
+            ],
+            stressed: [
+                { emotion: 'tired', priority: 1.0 },
+                { emotion: 'stressed', priority: 0.9 },
+                { emotion: 'bored', priority: 0.5 },
+                { emotion: 'working', priority: 0.4 },
+                { emotion: 'sick', priority: 0.3 }
+            ],
+            surprised: [
+                { emotion: 'surprised', priority: 1.0 },
+                { emotion: 'shocked', priority: 0.8 },
+                { emotion: 'amazed', priority: 0.7 },
+                { emotion: 'scared', priority: 0.3 }
+            ],
+            sarcastic: [
+                { emotion: 'smug', priority: 0.9 },
+                { emotion: 'skeptical', priority: 0.8 },
+                { emotion: 'amused', priority: 0.6 },
+                { emotion: 'winking', priority: 0.5 }
+            ],
+            proud: [
+                { emotion: 'proud', priority: 1.0 },
+                { emotion: 'confident', priority: 0.8 },
+                { emotion: 'cool', priority: 0.6 },
+                { emotion: 'happy', priority: 0.4 }
+            ],
+            scared: [
+                { emotion: 'scared', priority: 1.0 },
+                { emotion: 'terrified', priority: 0.9 },
+                { emotion: 'panicked', priority: 0.7 },
+                { emotion: 'surprised', priority: 0.4 }
+            ],
+            confused: [
+                { emotion: 'confused', priority: 1.0 },
+                { emotion: 'thinking', priority: 0.8 },
+                { emotion: 'surprised', priority: 0.5 },
+                { emotion: 'skeptical', priority: 0.4 }
+            ],
+            tired: [
+                { emotion: 'sleepy', priority: 1.0 },
+                { emotion: 'tired', priority: 0.9 },
+                { emotion: 'bored', priority: 0.6 },
+                { emotion: 'sick', priority: 0.3 }
+            ],
+            work: [
+                { emotion: 'working', priority: 1.0 },
+                { emotion: 'tired', priority: 0.7 },
+                { emotion: 'stressed', priority: 0.6 },
+                { emotion: 'bored', priority: 0.4 }
+            ],
+            family: [
+                { emotion: 'love', priority: 0.8 },
+                { emotion: 'happy', priority: 0.7 },
+                { emotion: 'proud', priority: 0.5 },
+                { emotion: 'caring', priority: 0.6 }
+            ],
+            money: [
+                { emotion: 'happy', priority: 0.5 },
+                { emotion: 'proud', priority: 0.6 },
+                { emotion: 'shocked', priority: 0.4 },
+                { emotion: 'stressed', priority: 0.3 }
+            ],
+            health: [
+                { emotion: 'sick', priority: 1.0 },
+                { emotion: 'tired', priority: 0.6 },
+                { emotion: 'scared', priority: 0.5 },
+                { emotion: 'grateful', priority: 0.4 }
+            ]
+        };
+
+        // 3. ПРЯМЫЕ СООТВЕТСТВИЯ ЭМОДЗИ
+        const EMOJI_TO_EMOTION = {
+            '😂': 'laughing',
+            '🤣': 'laughing',
+            '😊': 'happy',
+            '😍': 'love',
+            '🥰': 'love',
+            '😘': 'love',
+            '😢': 'sad',
+            '😭': 'crying',
+            '😠': 'angry',
+            '😤': 'angry',
+            '🤬': 'angry',
+            '😱': 'scared',
+            '😨': 'scared',
+            '😮': 'surprised',
+            '😲': 'surprised',
+            '🤔': 'thinking',
+            '😴': 'sleepy',
+            '🥱': 'tired',
+            '😎': 'cool',
+            '😏': 'smug',
+            '🙄': 'skeptical',
+            '🥺': 'shy',
+            '🤪': 'silly',
+            '😜': 'silly'
+        };
+
+        // 4. КОНФЛИКТЫ ЭМОЦИЙ
+        const EMOTION_CONFLICTS = {
+            'love': ['злость', 'ненавижу', 'убью', 'бесит', 'ненавид', 'терпеть не могу'],
+            'angry': ['любовь', 'нежность', 'обожаю', 'милота', 'лапочка', 'дорогой'],
+            'sad': ['😂', '🤣', 'угар', 'позитив', 'радость', 'счастье', 'весело'],
+            'laughing': ['грусть', 'печаль', 'депрессия', 'тоска', 'плакать'],
+            'scared': ['храбрый', 'смелый', 'бесстрашный', 'герой'],
+            'happy': ['грустно', 'печально', 'депрессия', 'тоска']
+        };
+
+        // 5. ОСНОВНЫЕ ФУНКЦИИ АНАЛИЗА
+
+        // Функция анализа тональности текста
+        function analyzeTextTone(text) {
+            const textLower = text.toLowerCase();
+            const toneScores = {};
+            
+            Object.entries(TONE_KEYWORDS).forEach(([tone, data]) => {
+                let score = 0;
+                data.words.forEach(word => {
+                    const regex = new RegExp(word.toLowerCase(), 'g');
+                    const matches = (textLower.match(regex) || []).length;
+                    score += matches * data.weight;
+                });
+                
+                if (score > 0) {
+                    toneScores[tone] = score;
+                }
+            });
+            
+            return toneScores;
+        }
+
+        // Функция получения рейтинга эмоций из тональности
+        function getEmotionScoresFromTones(toneScores) {
+            const emotionScores = {};
+            
+            Object.entries(toneScores).forEach(([tone, toneScore]) => {
+                const emotionMappings = TONE_TO_EMOTIONS[tone] || [];
+                emotionMappings.forEach(mapping => {
+                    if (!emotionScores[mapping.emotion]) {
+                        emotionScores[mapping.emotion] = 0;
+                    }
+                    emotionScores[mapping.emotion] += toneScore * mapping.priority;
+                });
+            });
+            
+            return emotionScores;
+        }
+
+        // Функция получения рейтинга эмоций из эмодзи
+        function getEmotionScoresFromEmojis(text) {
+            const emotionScores = {};
+            
+            Object.entries(EMOJI_TO_EMOTION).forEach(([emoji, emotion]) => {
+                if (text.includes(emoji)) {
+                    if (!emotionScores[emotion]) {
+                        emotionScores[emotion] = 0;
+                    }
+                    emotionScores[emotion] += 2.0;
+                }
+            });
+            
+            return emotionScores;
+        }
+
+        // Основная функция анализа текста
+        function analyzeText(text) {
+            const toneScores = analyzeTextTone(text);
+            const emotionScores = {
+                ...getEmotionScoresFromTones(toneScores),
+                ...getEmotionScoresFromEmojis(text)
+            };
+            
+            return {
+                text: text,
+                tones: Object.entries(toneScores)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([tone, score]) => ({ tone, score })),
+                emotions: Object.entries(emotionScores)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([emotion, score]) => ({ emotion, score }))
+            };
+        }
+
+        // Функция проверки совместимости шутки с эмоцией
+        function isHumorCompatible(humorText, emotionId) {
+            const analysis = analyzeText(humorText);
+            const emotionScores = analysis.emotions.reduce((acc, item) => {
+                acc[item.emotion] = item.score;
+                return acc;
+            }, {});
+            
+            // Если эмоция найдена в результатах
+            if (emotionScores[emotionId]) {
+                return true;
+            }
+            
+            // Проверка на явные конфликты
+            if (EMOTION_CONFLICTS[emotionId]) {
+                const textLower = humorText.toLowerCase();
+                for (const conflict of EMOTION_CONFLICTS[emotionId]) {
+                    if (textLower.includes(conflict)) {
+                        return false;
+                    }
+                }
+            }
+            
+            // Если есть подходящие эмоции, но не наша, то несовместимо
+            if (analysis.emotions.length > 0) {
+                return false;
+            }
+            
+            // Если совсем нет данных, считаем совместимой
+            return true;
+        }
+
+        // Функция получения лучшей эмоции для шутки
+        function getBestEmotionForHumor(humorText, availableEmotions) {
+            const analysis = analyzeText(humorText);
+            
+            if (analysis.emotions.length === 0) {
+                return availableEmotions[Math.floor(Math.random() * availableEmotions.length)];
+            }
+            
+            const emotionScores = {};
+            analysis.emotions.forEach(item => {
+                emotionScores[item.emotion] = item.score;
+            });
+            
+            let bestEmotion = null;
+            let bestScore = -1;
+            
+            availableEmotions.forEach(emotionId => {
+                const score = emotionScores[emotionId] || 0;
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestEmotion = emotionId;
+                }
+            });
+            
+            return bestEmotion || availableEmotions[Math.floor(Math.random() * availableEmotions.length)];
+        }
+
+        // Функция фильтрации шуток по эмоции
+        function filterHumorsByEmotion(humors, emotionId) {
+            return humors.filter(humor => isHumorCompatible(humor.ru, emotionId));
+        }
+
+        // Функция получения шутки с анализом
+        function getHumorWithAnalysis(profession, emotionId) {
+            const allHumors = profession.humor;
+            
+            const compatibleHumors = filterHumorsByEmotion(allHumors, emotionId);
+            
+            if (compatibleHumors.length > 0) {
+                const selected = compatibleHumors[Math.floor(Math.random() * compatibleHumors.length)];
+                const analysis = analyzeText(selected.ru);
+                
+                return {
+                    humor: selected,
+                    analysis: analysis,
+                    isCompatible: true,
+                    compatibilityScore: compatibleHumors.length / allHumors.length
+                };
+            }
+            
+            const selected = allHumors[Math.floor(Math.random() * allHumors.length)];
+            const analysis = analyzeText(selected.ru);
+            
+            return {
+                humor: selected,
+                analysis: analysis,
+                isCompatible: false,
+                compatibilityScore: 0
+            };
+        }
+
+        // Функция получения статистики по профессии
+        function getProfessionStats(profession) {
+            const stats = {
+                totalHumors: profession.humor.length,
+                toneDistribution: {},
+                emotionDistribution: {}
+            };
+            
+            profession.humor.forEach(humor => {
+                const analysis = analyzeText(humor.ru);
+                
+                analysis.tones.forEach(({ tone, score }) => {
+                    if (!stats.toneDistribution[tone]) {
+                        stats.toneDistribution[tone] = 0;
+                    }
+                    stats.toneDistribution[tone] += score;
+                });
+                
+                analysis.emotions.forEach(({ emotion, score }) => {
+                    if (!stats.emotionDistribution[emotion]) {
+                        stats.emotionDistribution[emotion] = 0;
+                    }
+                    stats.emotionDistribution[emotion] += score;
+                });
+            });
+            
+            return stats;
+        }
+
+        // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+        let selectedProfession = null;
+        let selectedEmotions = [];
+        let currentStyle = '';
+        let generatedPNG = [];
+        let generatedWEBM = [];
+        let selectedMotionType = 'subtle';
+        let pngImage = null;
+        let animationFrame = null;
+
+        // ========== ФУНКЦИИ ДЛЯ ЛОГОВ ==========
+        function showProgressLog() {
+            document.getElementById('progressLog').style.display = 'block';
+        }
+
+        function updateLogCounter(current, total) {
+            document.getElementById('logCounter').textContent = `${current}/${total}`;
+        }
+
+        function addLogMessage(message, type = 'info') {
+            const logMessages = document.getElementById('logMessages');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const messageEl = document.createElement('div');
+            messageEl.className = `log-message ${type}`;
+            messageEl.innerHTML = `
+                <span class="log-timestamp">[${timestamp}]</span>
+                <span>${message}</span>
+            `;
+            
+            logMessages.appendChild(messageEl);
+            logMessages.scrollTop = logMessages.scrollHeight;
+        }
+
+        function clearProgressLog() {
+            document.getElementById('logMessages').innerHTML = '';
+            document.getElementById('logCounter').textContent = '0/0';
+            document.getElementById('progressLog').style.display = 'none';
+        }
+
+        // ========== ФУНКЦИИ ДЛЯ ДЕБАГА ==========
         function toggleDebug() {
             const panel = document.getElementById('debugPanel');
             panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
         }
 
-        function addDebugLog(type, message) {
+        function clearDebug() {
+            document.getElementById('debugLogs').innerHTML = '';
+        }
+
+        function addDebugLog(type, message, data = null) {
             const logs = document.getElementById('debugLogs');
             if (!logs) return;
+            
             const timestamp = new Date().toLocaleTimeString();
-            logs.innerHTML += `<div><span style="color: #fbbf24;">${timestamp}</span> <span style="color: ${type === 'error' ? '#ef4444' : '#4ade80'};">${message}</span></div>`;
+            const logEntry = document.createElement('div');
+            logEntry.style.marginBottom = '8px';
+            logEntry.style.borderBottom = '1px solid #334155';
+            logEntry.style.paddingBottom = '4px';
+            
+            let icon = 'ℹ️';
+            if (type === 'error') icon = '❌';
+            else if (type === 'success') icon = '✅';
+            else if (type === 'info') icon = 'ℹ️';
+            else if (type === 'warn') icon = '⚠️';
+            
+            logEntry.innerHTML = `
+                <span style="color: #fbbf24;">${timestamp}</span>
+                <span style="color: ${type === 'error' ? '#ef4444' : (type === 'success' ? '#4ade80' : '#38bdf8')}">${icon} ${message}</span>
+                ${data ? `<pre style="font-size: 10px; color: #94a3b8;">${JSON.stringify(data, null, 2).substring(0, 200)}</pre>` : ''}
+            `;
+            logs.appendChild(logEntry);
             logs.scrollTop = logs.scrollHeight;
         }
 
@@ -2060,21 +3013,32 @@ const PROFESSIONS = [
             const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS];
             
             grid.innerHTML = '';
-            allProfessions.forEach(prof => {
+            allProfessions.forEach(profession => {
                 const div = document.createElement('div');
                 div.className = 'profession-item';
-                div.onclick = () => {
-                    selectedProfession = prof.id;
-                    document.querySelectorAll('.profession-item').forEach(i => i.classList.remove('selected'));
-                    div.classList.add('selected');
-                    document.getElementById('selectedProfessionCount').textContent = prof.name;
+                div.onclick = (e) => {
+                    selectProfession(profession.id, e);
                 };
-                div.innerHTML = `<span class="profession-icon">${prof.icon}</span><span class="profession-name">${prof.name}</span>`;
+                div.innerHTML = `<span class="profession-icon">${profession.icon}</span><span class="profession-name">${profession.name}</span>`;
                 grid.appendChild(div);
             });
             
+            document.getElementById('professionCount').textContent = allProfessions.length;
             addDebugLog('success', `✅ Загружено ${allProfessions.length} профессий`);
         }
+
+        window.selectProfession = (professionId, event) => {
+            selectedProfession = professionId;
+            document.querySelectorAll('.profession-item').forEach(item => item.classList.remove('selected'));
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('selected');
+            }
+            const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS];
+            const profession = allProfessions.find(p => p.id === professionId);
+            if (profession) {
+                document.getElementById('selectedProfessionCount').textContent = profession.name;
+            }
+        };
 
         function renderEmotions() {
             const grid = document.getElementById('emotionsGrid');
@@ -2082,6 +3046,15 @@ const PROFESSIONS = [
             EMOTIONS.forEach(emotion => {
                 const div = document.createElement('div');
                 div.className = 'emotion-item';
+                div.onclick = (e) => {
+                    if (e.target.type !== 'checkbox') {
+                        const checkbox = div.querySelector('input');
+                        if (checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                            toggleEmotion(emotion.id, checkbox.checked);
+                        }
+                    }
+                };
                 div.innerHTML = `
                     <input type="checkbox" value="${emotion.id}" onchange="toggleEmotion('${emotion.id}', this.checked)">
                     <span class="emotion-icon">${emotion.icon}</span>
@@ -2091,12 +3064,22 @@ const PROFESSIONS = [
             });
         }
 
-        window.toggleEmotion = (id, checked) => {
+        window.toggleEmotion = (emotionId, checked) => {
             if (checked) {
-                if (!selectedEmotions.includes(id)) selectedEmotions.push(id);
+                if (!selectedEmotions.includes(emotionId)) selectedEmotions.push(emotionId);
             } else {
-                selectedEmotions = selectedEmotions.filter(e => e !== id);
+                selectedEmotions = selectedEmotions.filter(id => id !== emotionId);
             }
+            
+            document.querySelectorAll('.emotion-item').forEach(item => {
+                const checkbox = item.querySelector('input');
+                if (checkbox && checkbox.checked) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+            
             document.getElementById('selectedCount').textContent = selectedEmotions.length;
             
             const generateBtn = document.getElementById('generateBtn');
@@ -2150,7 +3133,12 @@ const PROFESSIONS = [
                         'Authorization': `Bearer ${RECRAFT_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ prompt: 'test', n: 1, size: '1024x1024' })
+                    body: JSON.stringify({ 
+                        prompt: 'test', 
+                        n: 1, 
+                        size: '1024x1024',
+                        model: 'recraftv4'
+                    })
                 });
                 
                 if (recraftRes.ok) {
@@ -2161,7 +3149,7 @@ const PROFESSIONS = [
                     addDebugLog('error', '❌ Recraft API ошибка');
                 }
             } catch {
-                document.getElementById('recraftStatus').innerHTML = '❌ Recraft V4: Ошибка';
+                document.getElementById('recraftStatus').innerHTML = '❌ Recraft V4: Ошибка сети';
             }
 
             // Проверка Kling
@@ -2171,23 +3159,29 @@ const PROFESSIONS = [
             } else {
                 document.getElementById('klingStatus').innerHTML = '⚠️ Kling AI: Нет ключей';
             }
+
+            // Статус анализа
+            document.getElementById('analysisStatus').innerHTML = '✅ Анализ эмоций: Активен';
         }
 
         // ========== ГЕНЕРАЦИЯ JWT ТОКЕНА ДЛЯ KLING ==========
         function generateKlingToken() {
-            // Упрощенная версия для демо
             return btoa(`${KLING_ACCESS_KEY}:${KLING_SECRET_KEY}`);
         }
 
-        // ========== ГЕНЕРАЦИЯ PNG (Recraft) ==========
+        // ========== ГЕНЕРАЦИЯ PNG ==========
         async function generatePNG(profession, emotion, humorItem) {
             const character = document.getElementById('characterPrompt').value;
             
             const prompt = `${character}, ${profession.basePrompt}, ${emotion.prompt}, ${currentStyle}, ${humorItem.en}. The character has a speech bubble containing Russian text: "${humorItem.ru}". The Russian text must be clearly visible inside the speech bubble. The scene should match the situation described in the text.`;
             
-            addDebugLog('info', `🎨 Генерация PNG...`);
+            addLogMessage(`🎨 Recraft: отправляем запрос...`, 'info');
+            addDebugLog('info', `🎨 Промпт: ${prompt.substring(0, 150)}...`);
             
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 45000);
+                
                 const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
                     method: 'POST',
                     headers: {
@@ -2200,8 +3194,11 @@ const PROFESSIONS = [
                         size: '1024x1024',
                         model: 'recraftv4',
                         response_format: 'b64_json'
-                    })
+                    }),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
 
                 if (!response.ok) {
                     throw new Error(`Recraft error: ${response.status}`);
@@ -2209,11 +3206,12 @@ const PROFESSIONS = [
 
                 const data = await response.json();
                 if (data.data && data.data[0] && data.data[0].b64_json) {
-                    addDebugLog('success', `✅ PNG готов`);
+                    addLogMessage(`✅ Recraft: изображение готово`, 'success');
                     return await resizeImage(data.data[0].b64_json);
                 }
             } catch (e) {
-                addDebugLog('error', `❌ Ошибка PNG: ${e.message}`);
+                addLogMessage(`❌ Recraft ошибка: ${e.message}`, 'error');
+                addDebugLog('error', `❌ Recraft: ${e.message}`);
             }
             return null;
         }
@@ -2235,10 +3233,10 @@ const PROFESSIONS = [
 
         // ========== АНИМАЦИЯ ЧЕРЕЗ KLING AI ==========
         async function animateWithKling(imageDataUrl, emotionId) {
-            addDebugLog('info', `🎬 Отправка в Kling AI...`);
+            addLogMessage(`🎬 Kling AI: отправляем на анимацию...`, 'info');
             
-            // Получаем промпт для движения
             const motionPrompt = MOTION_PROMPTS[selectedMotionType][emotionId] || MOTION_PROMPTS[selectedMotionType].default;
+            addDebugLog('info', `🎬 Промпт: ${motionPrompt}`);
             
             try {
                 // 1. Отправляем задание на генерацию
@@ -2249,13 +3247,13 @@ const PROFESSIONS = [
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: "kling-v2",
+                        model: "kling-v1",
                         input: {
                             prompt: motionPrompt,
                             image: imageDataUrl
                         },
                         parameters: {
-                            duration: 5, // 5 секунд
+                            duration: 5,
                             mode: "pro",
                             cfg_scale: 0.8
                         }
@@ -2269,15 +3267,16 @@ const PROFESSIONS = [
                 const taskData = await taskResponse.json();
                 const taskId = taskData.data.task_id;
                 
-                addDebugLog('info', `⏳ Задача создана: ${taskId}, ожидаем результат...`);
+                addLogMessage(`⏳ Задача создана, ожидаем результат...`, 'info');
+                addDebugLog('info', `📋 Task ID: ${taskId}`);
 
-                // 2. Ждем завершения (опрос статуса)
+                // 2. Ждем завершения
                 let resultUrl = null;
                 let attempts = 0;
-                const maxAttempts = 30; // Максимум 30 попыток (примерно 2.5 минуты)
+                const maxAttempts = 30;
 
                 while (!resultUrl && attempts < maxAttempts) {
-                    await new Promise(resolve => setTimeout(resolve, 5000)); // Ждем 5 секунд
+                    await new Promise(resolve => setTimeout(resolve, 5000));
                     
                     const statusResponse = await fetch(`https://api.klingai.com/v1/videos/${taskId}`, {
                         headers: {
@@ -2290,7 +3289,7 @@ const PROFESSIONS = [
                     if (statusData.code === 0) {
                         if (statusData.data.task_status === 'succeed') {
                             resultUrl = statusData.data.result.video_url;
-                            addDebugLog('success', `✅ Генерация завершена`);
+                            addLogMessage(`✅ Kling AI: анимация готова`, 'success');
                         } else if (statusData.data.task_status === 'failed') {
                             throw new Error('Kling generation failed');
                         }
@@ -2307,39 +3306,34 @@ const PROFESSIONS = [
                 const videoResponse = await fetch(resultUrl);
                 const videoBlob = await videoResponse.blob();
                 
-                // 4. Конвертируем в WEBM для Telegram
-                return await convertToTelegramSticker(videoBlob, imageDataUrl);
+                return await convertToTelegramSticker(videoBlob);
 
             } catch (error) {
-                addDebugLog('error', `❌ Kling error: ${error.message}`);
-                
-                // В случае ошибки возвращаем заглушку
+                addLogMessage(`❌ Kling ошибка: ${error.message}`, 'error');
+                addDebugLog('error', `❌ Kling: ${error.message}`);
                 return await createFallbackAnimation(imageDataUrl);
             }
         }
 
-        // ========== КОНВЕРТАЦИЯ В ФОРМАТ TELEGRAM ==========
-        async function convertToTelegramSticker(videoBlob, fallbackImageUrl) {
-            addDebugLog('info', `🔄 Конвертация в WEBM...`);
+        // ========== КОНВЕРТАЦИЯ В WEBM ==========
+        async function convertToTelegramSticker(videoBlob) {
+            addLogMessage(`🔄 Конвертация в WEBM...`, 'info');
             
             try {
-                // Создаем видео элемент для обработки
                 const video = document.createElement('video');
                 video.src = URL.createObjectURL(videoBlob);
                 
                 await new Promise((resolve, reject) => {
                     video.onloadedmetadata = resolve;
                     video.onerror = reject;
-                    setTimeout(resolve, 5000); // Таймаут 5 секунд
+                    setTimeout(resolve, 5000);
                 });
 
-                // Создаем canvas для обработки кадров
                 const canvas = document.createElement('canvas');
                 canvas.width = 512;
                 canvas.height = 512;
                 const ctx = canvas.getContext('2d');
                 
-                // Настраиваем запись
                 const stream = canvas.captureStream(30);
                 const mediaRecorder = new MediaRecorder(stream, {
                     mimeType: 'video/webm;codecs=vp9',
@@ -2352,25 +3346,22 @@ const PROFESSIONS = [
                 return new Promise((resolve, reject) => {
                     mediaRecorder.onstop = () => {
                         const finalBlob = new Blob(chunks, { type: 'video/webm' });
-                        addDebugLog('success', `✅ Готово: ${(finalBlob.size/1024).toFixed(2)} KB`);
+                        const size = (finalBlob.size / 1024).toFixed(2);
+                        addLogMessage(`✅ WEBM готов: ${size} KB`, 'success');
                         resolve(URL.createObjectURL(finalBlob));
                     };
 
                     mediaRecorder.onerror = reject;
-
                     mediaRecorder.start();
                     
-                    // Проигрываем видео и рисуем кадры в canvas
                     video.currentTime = 0;
                     video.play().catch(() => {
-                        // Если не удалось проиграть, используем запасную анимацию
                         mediaRecorder.stop();
-                        resolve(createFallbackAnimation(fallbackImageUrl));
                     });
                     
                     let frame = 0;
                     const interval = setInterval(() => {
-                        if (frame >= 90) { // 3 секунды при 30 fps
+                        if (frame >= 90) {
                             clearInterval(interval);
                             video.pause();
                             mediaRecorder.stop();
@@ -2380,17 +3371,17 @@ const PROFESSIONS = [
                         ctx.clearRect(0, 0, 512, 512);
                         ctx.drawImage(video, 0, 0, 512, 512);
                         frame++;
-                    }, 33); // ~30 fps
+                    }, 33);
                 });
             } catch (error) {
-                addDebugLog('error', `❌ Конвертация не удалась: ${error.message}`);
-                return await createFallbackAnimation(fallbackImageUrl);
+                addLogMessage(`❌ Конвертация не удалась`, 'error');
+                return await createFallbackAnimation(imageDataUrl);
             }
         }
 
-        // ========== ЗАПАСНАЯ АНИМАЦИЯ (ЕСЛИ KLING НЕ ДОСТУПЕН) ==========
+        // ========== ЗАПАСНАЯ АНИМАЦИЯ ==========
         async function createFallbackAnimation(imageDataUrl) {
-            addDebugLog('warn', '⚠️ Используется запасная анимация');
+            addLogMessage(`⚠️ Используется запасная анимация`, 'warning');
             
             const img = new Image();
             await new Promise(resolve => { img.onload = resolve; img.src = imageDataUrl; });
@@ -2429,7 +3420,6 @@ const PROFESSIONS = [
                     ctx.save();
                     ctx.translate(256, 256);
                     
-                    // Простая пульсация
                     const scale = 1 + Math.sin(frame * 0.2) * 0.02;
                     ctx.scale(scale, scale);
                     
@@ -2442,150 +3432,117 @@ const PROFESSIONS = [
         }
 
         // ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ ==========
-        // ========== ФУНКЦИИ ДЛЯ ЛОГА ВЫПОЛНЕНИЯ ==========
-function showProgressLog() {
-    document.getElementById('progressLog').style.display = 'block';
-}
-
-function updateLogCounter(current, total) {
-    document.getElementById('logCounter').textContent = `${current}/${total}`;
-}
-
-function addLogMessage(message, type = 'info') {
-    const logMessages = document.getElementById('logMessages');
-    const timestamp = new Date().toLocaleTimeString();
-    
-    const messageEl = document.createElement('div');
-    messageEl.className = `log-message ${type}`;
-    messageEl.innerHTML = `
-        <span class="log-timestamp">[${timestamp}]</span>
-        <span>${message}</span>
-    `;
-    
-    logMessages.appendChild(messageEl);
-    logMessages.scrollTop = logMessages.scrollHeight;
-}
-
-function clearProgressLog() {
-    document.getElementById('logMessages').innerHTML = '';
-    document.getElementById('logCounter').textContent = '0/0';
-    document.getElementById('progressLog').style.display = 'none';
-}
-		
-		// ========== ОСНОВНАЯ ФУНКЦИЯ ГЕНЕРАЦИИ С ЛОГОМ ==========
-window.generatePack = async () => {
-    const character = document.getElementById('characterPrompt').value.trim();
-    
-    if (!character || !selectedProfession || selectedEmotions.length === 0) {
-        alert('Выберите персонажа, профессию и эмоции');
-        return;
-    }
-
-    // Показываем лог и очищаем старые сообщения
-    clearProgressLog();
-    showProgressLog();
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('generateBtn').disabled = true;
-    
-    addLogMessage('🚀 Начинаем генерацию набора...', 'info');
-    addLogMessage(`📝 Персонаж: ${character}`, 'info');
-    
-    try {
-        generatedPNG = [];
-        generatedWEBM = [];
-        
-        const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS];
-        const profession = allProfessions.find(p => p.id === selectedProfession);
-        
-        addLogMessage(`💼 Профессия: ${profession.name}`, 'info');
-        addLogMessage(`😊 Выбрано эмоций: ${selectedEmotions.length}`, 'info');
-
-        for (let i = 0; i < selectedEmotions.length; i++) {
-            const emotionId = selectedEmotions[i];
-            const emotion = EMOTIONS.find(e => e.id === emotionId);
+        window.generatePack = async () => {
+            const character = document.getElementById('characterPrompt').value.trim();
             
-            // Обновляем счетчик
-            updateLogCounter(i, selectedEmotions.length);
-            
-            const humorItem = profession.humor[Math.floor(Math.random() * profession.humor.length)];
-            
-            document.getElementById('loadingProgress').textContent = 
-                `Генерируем стикер ${i+1}/${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
-            
-            addLogMessage(`🔄 [${i+1}/${selectedEmotions.length}] Генерация ${emotion.icon} ${emotion.name}...`, 'info');
-            addLogMessage(`💬 Шутка: "${humorItem.ru}"`, 'info');
-            
-            // 1. Генерация PNG
-            addLogMessage(`🎨 Recraft: создаем изображение...`, 'info');
-            const pngDataUrl = await generatePNG(profession, emotion, humorItem);
-            
-            if (pngDataUrl) {
-                addLogMessage(`✅ Recraft: изображение готово`, 'success');
-                
-                // Отображаем PNG
-                const img = new Image();
-                await new Promise(resolve => { img.onload = resolve; img.src = pngDataUrl; });
-                
-                const pngCanvas = document.getElementById('pngCanvas');
-                pngCanvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
-                
-                // 2. Анимация через Kling
-                document.getElementById('loadingProgress').textContent = 
-                    `Анимация через Kling AI (может занять 1-2 минуты)...`;
-                
-                addLogMessage(`🎬 Kling AI: отправляем на анимацию (тип: ${selectedMotionType})...`, 'info');
-                
-                const videoUrl = await animateWithKling(pngDataUrl, emotion.id);
-                
-                addLogMessage(`✅ Kling AI: анимация готова`, 'success');
-                
-                // 3. Сохраняем результат
-                const filename = `${character}_${profession.id}_${emotion.id}_${i}.webm`;
-                
-                // Скачиваем файл
-                const videoBlob = await fetch(videoUrl).then(r => r.blob());
-                const downloadUrl = URL.createObjectURL(videoBlob);
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.download = filename;
-                a.click();
-                
-                generatedPNG.push({
-                    emotion: emotion,
-                    profession: profession.name,
-                    humor: humorItem.ru,
-                    dataUrl: pngDataUrl,
-                    filename: `${character}_${profession.id}_${emotion.id}_${i}.png`
-                });
-                
-                generatedWEBM.push({
-                    filename: filename
-                });
-                
-                addLogMessage(`💾 Стикер сохранен: ${filename}`, 'success');
-            } else {
-                addLogMessage(`❌ Ошибка генерации PNG для ${emotion.name}`, 'error');
+            if (!character || !selectedProfession || selectedEmotions.length === 0) {
+                alert('Выберите персонажа, профессию и эмоции');
+                return;
             }
-            
-            // Обновляем счетчик после завершения
-            updateLogCounter(i + 1, selectedEmotions.length);
-        }
 
-        // Финальное сообщение
-        addLogMessage(`✅ Готово! Сгенерировано ${generatedPNG.length} PNG и ${generatedWEBM.length} WEBM стикеров`, 'success');
-        
-        setTimeout(() => {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('generateBtn').disabled = false;
-            addLogMessage('🎉 Генерация завершена!', 'success');
-        }, 2000);
-        
-    } catch (error) {
-        addLogMessage(`❌ Ошибка: ${error.message}`, 'error');
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('generateBtn').disabled = false;
-    }
-};
+            clearProgressLog();
+            showProgressLog();
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('generateBtn').disabled = true;
+            
+            addLogMessage('🚀 Начинаем генерацию набора...', 'info');
+            addLogMessage(`📝 Персонаж: ${character}`, 'info');
+            
+            try {
+                generatedPNG = [];
+                generatedWEBM = [];
+                
+                const allProfessions = [...PROFESSIONS, ...ADDITIONAL_PROFESSIONS];
+                const profession = allProfessions.find(p => p.id === selectedProfession);
+                
+                addLogMessage(`💼 Профессия: ${profession.name}`, 'info');
+                addLogMessage(`😊 Выбрано эмоций: ${selectedEmotions.length}`, 'info');
+
+                for (let i = 0; i < selectedEmotions.length; i++) {
+                    const emotionId = selectedEmotions[i];
+                    const emotion = EMOTIONS.find(e => e.id === emotionId);
+                    
+                    updateLogCounter(i, selectedEmotions.length);
+                    
+                    // ИСПОЛЬЗУЕМ АНАЛИЗ ДЛЯ ВЫБОРА ШУТКИ
+                    const humorResult = getHumorWithAnalysis(profession, emotionId);
+                    const humorItem = humorResult.humor;
+                    
+                    document.getElementById('loadingProgress').textContent = 
+                        `Генерируем стикер ${i+1}/${selectedEmotions.length}: ${profession.name} - ${emotion.name}`;
+                    
+                    addLogMessage(`🔄 [${i+1}/${selectedEmotions.length}] ${emotion.icon} ${emotion.name}`, 'info');
+                    
+                    if (humorResult.isCompatible) {
+                        addLogMessage(`✅ Шутка идеально подходит для ${emotion.name}`, 'success');
+                    } else {
+                        addLogMessage(`⚠️ Шутка может не идеально подходить для ${emotion.name}`, 'warning');
+                    }
+                    
+                    addLogMessage(`💬 Шутка: "${humorItem.ru}"`, 'info');
+                    
+                    // Показываем анализ
+                    if (humorResult.analysis.emotions.length > 0) {
+                        const topEmotions = humorResult.analysis.emotions.slice(0, 3).map(e => e.emotion).join(', ');
+                        addLogMessage(`📊 Анализ: лучше всего подходит для ${topEmotions}`, 'info');
+                    }
+                    
+                    // 1. Генерация PNG
+                    const pngDataUrl = await generatePNG(profession, emotion, humorItem);
+                    
+                    if (pngDataUrl) {
+                        // Отображаем PNG
+                        const img = new Image();
+                        await new Promise(resolve => { img.onload = resolve; img.src = pngDataUrl; });
+                        
+                        const pngCanvas = document.getElementById('pngCanvas');
+                        pngCanvas.getContext('2d').drawImage(img, 0, 0, 512, 512);
+                        
+                        // 2. Анимация через Kling
+                        document.getElementById('loadingProgress').textContent = 
+                            `Анимация через Kling AI (может занять 1-2 минуты)...`;
+                        
+                        const videoUrl = await animateWithKling(pngDataUrl, emotion.id);
+                        
+                        // 3. Сохраняем результат
+                        const filename = `${character}_${profession.id}_${emotion.id}_${i}.webm`;
+                        
+                        const videoBlob = await fetch(videoUrl).then(r => r.blob());
+                        const downloadUrl = URL.createObjectURL(videoBlob);
+                        const a = document.createElement('a');
+                        a.href = downloadUrl;
+                        a.download = filename;
+                        a.click();
+                        
+                        generatedPNG.push({
+                            emotion: emotion,
+                            profession: profession.name,
+                            humor: humorItem.ru,
+                            dataUrl: pngDataUrl,
+                            filename: `${character}_${profession.id}_${emotion.id}_${i}.png`
+                        });
+                        
+                        generatedWEBM.push({ filename });
+                        
+                        addLogMessage(`💾 Стикер сохранен`, 'success');
+                    }
+                    
+                    updateLogCounter(i + 1, selectedEmotions.length);
+                }
+
+                addLogMessage(`✅ Готово! ${generatedPNG.length} стикеров`, 'success');
+                
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('generateBtn').disabled = false;
+                }, 2000);
+                
+            } catch (error) {
+                addLogMessage(`❌ Ошибка: ${error.message}`, 'error');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('generateBtn').disabled = false;
+            }
+        };
 
         // ========== ИНИЦИАЛИЗАЦИЯ ==========
         document.addEventListener('DOMContentLoaded', function() {
@@ -2595,7 +3552,6 @@ window.generatePack = async () => {
             checkAPIs();
 
             setTimeout(() => {
-                // Выбираем первые 5 эмоций по умолчанию
                 EMOTIONS.slice(0, 5).forEach(emotion => {
                     const checkbox = document.querySelector(`input[value="${emotion.id}"]`);
                     if (checkbox) {
