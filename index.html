@@ -2610,46 +2610,14 @@ async function checkProxy() {
 
         // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
 // ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
-// ========== KLING AI ЧЕРЕЗ ПРОКСИ (УПРОЩЕННАЯ) ==========
+// ========== KLING AI ЧЕРЕЗ ПРОКСИ (БЕЗ ЗАПРОСА ТОКЕНА) ==========
 async function animateWithKling(imageDataUrl, emotionId) {
     addLogMessage(`🎬 Kling AI: отправляем через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. ПОЛУЧАЕМ JWT ТОКЕН (просто запрос к прокси)
-        addLogMessage(`🔄 Получаем токен...`, 'info');
-        
-        const tokenResponse = await fetch('http://localhost:3000/api/kling/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                accessKey: KLING_ACCESS_KEY,
-                secretKey: KLING_SECRET_KEY
-            })
-        });
-
-        if (!tokenResponse.ok) {
-            throw new Error('Не удалось получить токен');
-        }
-
-        const tokenData = await tokenResponse.json();
-        
-        if (tokenData.code !== 0) {
-            throw new Error(`Ошибка получения токена: ${tokenData.message || 'Unknown error'}`);
-        }
-        
-        const accessToken = tokenData.data.access_token;
-        
-        if (!accessToken) {
-            throw new Error('Токен не получен');
-        }
-
-        addLogMessage(`✅ Токен получен`, 'success');
-
-        // 2. СОЗДАЕМ ЗАДАЧУ
+        // 1. ОТПРАВЛЯЕМ ЗАДАЧУ (прокси сам сгенерирует токен)
         addLogMessage(`📤 Отправляем изображение в Kling...`, 'info');
         
         const createResponse = await fetch('http://localhost:3000/api/kling/create', {
@@ -2660,7 +2628,8 @@ async function animateWithKling(imageDataUrl, emotionId) {
             body: JSON.stringify({
                 imageDataUrl: imageDataUrl,
                 prompt: motionPrompt,
-                accessToken: accessToken
+                accessKey: KLING_ACCESS_KEY,  // Передаем ключи
+                secretKey: KLING_SECRET_KEY    // Прокси сам сделает токен
             })
         });
 
@@ -2671,6 +2640,11 @@ async function animateWithKling(imageDataUrl, emotionId) {
 
         const createData = await createResponse.json();
         
+        // Проверяем код ответа (по документации code:0 = успех) [citation:1]
+        if (createData.code !== 0) {
+            throw new Error(`Ошибка: ${createData.message || 'Unknown error'}`);
+        }
+        
         if (!createData.data?.task_id) {
             throw new Error('Не получен task_id');
         }
@@ -2678,7 +2652,7 @@ async function animateWithKling(imageDataUrl, emotionId) {
         const taskId = createData.data.task_id;
         addLogMessage(`⏳ Задача создана: ${taskId}`, 'info');
 
-        // 3. ОПРАШИВАЕМ СТАТУС
+        // 2. ОПРАШИВАЕМ СТАТУС
         let attempts = 0;
         let videoUrl = null;
         
@@ -2686,7 +2660,7 @@ async function animateWithKling(imageDataUrl, emotionId) {
             await new Promise(r => setTimeout(r, 3000));
             
             const statusResponse = await fetch(
-                `http://localhost:3000/api/kling/status/${taskId}?accessToken=${accessToken}`
+                `http://localhost:3000/api/kling/status/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}`
             );
             
             if (statusResponse.ok) {
@@ -2698,6 +2672,7 @@ async function animateWithKling(imageDataUrl, emotionId) {
                     addLogMessage(`📊 Статус: ${taskStatus}`, 'info');
                     
                     if (taskStatus === 'succeed') {
+                        // В зависимости от API, результат может быть в разных полях
                         videoUrl = statusData.data?.result?.video_url || statusData.data?.video_url;
                         if (videoUrl) break;
                     } else if (taskStatus === 'failed') {
@@ -2714,7 +2689,7 @@ async function animateWithKling(imageDataUrl, emotionId) {
 
         addLogMessage(`✅ Kling AI: видео готово`, 'success');
 
-        // 4. СКАЧИВАЕМ ВИДЕО
+        // 3. СКАЧИВАЕМ ВИДЕО
         const downloadResponse = await fetch(
             `http://localhost:3000/api/kling/download?videoUrl=${encodeURIComponent(videoUrl)}`
         );
