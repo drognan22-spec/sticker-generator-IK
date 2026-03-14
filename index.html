@@ -2614,28 +2614,72 @@ async function checkProxy() {
 
         // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
 // ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
-// ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
+// ========== KLING AI ЧЕРЕЗ ПРОКСИ С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
 async function animateWithKling(imageDataUrl, emotionId) {
     addLogMessage(`🎬 Kling AI: отправляем через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. Отправляем запрос на создание видео через прокси
-        const createResponse = await fetch('http://localhost:3000/api/kling/create', {
+        // 1. Сначала получаем токен доступа через OAuth
+        addLogMessage(`🔄 Получаем токен доступа...`, 'info');
+        
+        const tokenResponse = await fetch('https://api.klingai.com/v1/auth/token', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
-                imageDataUrl: imageDataUrl,
-                prompt: motionPrompt,
-                accessKey: KLING_ACCESS_KEY,
-                secretKey: KLING_SECRET_KEY
+                access_key: KLING_ACCESS_KEY,
+                secret_key: KLING_SECRET_KEY
             })
         });
 
+        if (!tokenResponse.ok) {
+            const errorText = await tokenResponse.text();
+            throw new Error(`Ошибка получения токена: ${tokenResponse.status} - ${errorText}`);
+        }
+
+        const tokenData = await tokenResponse.json();
+        const accessToken = tokenData.data?.access_token;
+        
+        if (!accessToken) {
+            throw new Error('Не удалось получить токен доступа');
+        }
+
+        addLogMessage(`✅ Токен получен`, 'success');
+
+        // 2. Конвертируем data URL в Blob
+        const base64Data = imageDataUrl.split(',')[1];
+        const binaryData = atob(base64Data);
+        const arrayBuffer = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+            arrayBuffer[i] = binaryData.charCodeAt(i);
+        }
+        const imageBlob = new Blob([arrayBuffer], { type: 'image/png' });
+
+        // 3. Создаем FormData для отправки
+        const formData = new FormData();
+        formData.append('image', imageBlob, 'image.png');
+        formData.append('prompt', motionPrompt);
+        formData.append('model', 'kling-v1');
+        formData.append('duration', '5');
+        formData.append('cfg_scale', '0.8');
+
+        // 4. Отправляем запрос на создание видео с Bearer токеном
+        addLogMessage(`📤 Отправляем запрос на создание видео...`, 'info');
+        
+        const createResponse = await fetch('https://api.klingai.com/v1/images/generations', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: formData
+        });
+
         if (!createResponse.ok) {
-            const error = await createResponse.json();
-            throw new Error(error.error || 'Ошибка создания задачи');
+            const errorText = await createResponse.text();
+            throw new Error(`Kling API ошибка: ${createResponse.status} - ${errorText}`);
         }
 
         const createData = await createResponse.json();
@@ -2647,7 +2691,7 @@ async function animateWithKling(imageDataUrl, emotionId) {
         const taskId = createData.data.task_id;
         addLogMessage(`⏳ Задача создана: ${taskId}`, 'info');
 
-        // 2. Опрашиваем статус через прокси
+        // 5. Опрашиваем статус
         let attempts = 0;
         let videoUrl = null;
         
@@ -2655,7 +2699,12 @@ async function animateWithKling(imageDataUrl, emotionId) {
             await new Promise(r => setTimeout(r, 3000));
             
             const statusResponse = await fetch(
-                `http://localhost:3000/api/kling/status/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}`
+                `https://api.klingai.com/v1/tasks/${taskId}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                }
             );
             
             if (statusResponse.ok) {
@@ -2680,17 +2729,14 @@ async function animateWithKling(imageDataUrl, emotionId) {
 
         addLogMessage(`✅ Kling AI: видео готово`, 'success');
 
-        // 3. Скачиваем видео через прокси
-        const downloadResponse = await fetch(
-            `http://localhost:3000/api/kling/download/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}&videoUrl=${encodeURIComponent(videoUrl)}`
-        );
-
-        if (!downloadResponse.ok) {
+        // 6. Скачиваем видео
+        const videoResponse = await fetch(videoUrl);
+        if (!videoResponse.ok) {
             throw new Error('Не удалось скачать видео');
         }
 
-        const videoBlob = await downloadResponse.blob();
-        return await convertToWEBM(videoBlob);
+        const videoBlob = await videoResponse.blob();
+        return videoBlob;
 
     } catch (error) {
         addLogMessage(`❌ KLING AI ОШИБКА: ${error.message}`, 'error');
@@ -2698,8 +2744,6 @@ async function animateWithKling(imageDataUrl, emotionId) {
         throw error;
     }
 }
-
-// ========== ОБНОВЛЕННАЯ КОНВЕРТАЦИЯ ==========
 // ========== ОБНОВЛЕННАЯ КОНВЕРТАЦИЯ ==========
 async function convertToWEBM(videoBlob) {
     addLogMessage(`🔄 Конвертация в WEBM...`, 'info');
@@ -2857,23 +2901,106 @@ window.generatePack = async () => {
         
         addLogMessage(`😊 Выбрано эмоций: ${selectedEmotions.length}`, 'info');
 
-        // 1. Генерируем мастер-набор
+        // 1. Генерируем мастер-набор (только PNG)
         addLogMessage(`🎨 Генерируем мастер-набор из ${selectedEmotions.length} стикеров...`, 'info');
-        const masterSet = await generateMasterSet(character, professionInfo);
+        const masterSet = [];
+        
+        // Получаем ручные шутки если нужно
+        let customHumors = [];
+        const isCustom = professionInfo === null;
+        if (isCustom) {
+            customHumors = document.getElementById('customHumors').value
+                .split(';').map(h => h.trim()).filter(h => h.length > 0);
+            if (customHumors.length === 0) customHumors = ['обычная шутка'];
+        }
+        
+        for (let i = 0; i < selectedEmotions.length; i++) {
+            const emotionId = selectedEmotions[i];
+            const emotion = EMOTIONS.find(e => e.id === emotionId);
+            
+            let humorItem;
+            let humorSource = '';
+            
+            if (professionInfo) {
+                const humorResult = getHumorWithAnalysis(professionInfo, emotionId);
+                humorItem = humorResult.humor;
+                humorSource = professionInfo.name;
+                
+                addLogMessage(`🎨 Генерация ${i+1}/${selectedEmotions.length}: ${emotion.name}`, 'info');
+                addLogMessage(`${humorResult.isCompatible ? '✅' : '⚠️'} Шутка: "${humorItem.ru}"`, 'info');
+            } else {
+                const humorText = customHumors[i % customHumors.length];
+                humorItem = { ru: humorText, en: humorText };
+                humorSource = 'ручной ввод';
+                
+                addLogMessage(`🎨 Генерация ${i+1}/${selectedEmotions.length}: ${emotion.name} (ручная шутка)`, 'info');
+                addLogMessage(`💬 "${humorText}"`, 'info');
+            }
+            
+            // Генерируем PNG через Recraft
+            const pngDataUrl = await generatePNG(professionInfo, emotion, humorItem, character);
+            
+            if (pngDataUrl) {
+                masterSet.push({
+                    emotion: emotion,
+                    profession: professionInfo?.name || 'свободный промпт',
+                    humorSource: humorSource,
+                    humor: humorItem.ru,
+                    dataUrl: pngDataUrl
+                });
+            }
+        }
         
         if (masterSet.length === 0) {
             throw new Error('Не удалось создать мастер-набор');
         }
         
         // 2. Генерируем описание пакета
-        const packDescription = generatePackDescription(
-            character, 
-            professionInfo, 
-            masterSet, 
-            isLimited, 
-            editionSize, 
-            copyPrice
-        );
+        const emotionList = masterSet.map(s => `${s.emotion.name} ${s.emotion.icon}`).join(', ');
+        const humorSamples = masterSet.slice(0, 5).map(s => `• "${s.humor}" (${s.emotion.icon})`).join('\n');
+        const packId = `STICKER-${Date.now().toString().slice(-6)}`;
+        
+        let packDescription = `🎨 ПРЕМИУМ НАБОР СТИКЕРОВ "${character}"
+        
+📦 Состав набора:
+- ${masterSet.length} уникальных анимированных стикеров
+- Эмоции: ${emotionList}
+
+`;
+        if (professionInfo) {
+            packDescription += `💼 Профессия: ${professionInfo.name}\n`;
+        } else {
+            packDescription += `💼 Режим: свободный промпт (ручные шутки)\n`;
+            packDescription += `✏️ Шутки: введены пользователем\n`;
+        }
+        
+        packDescription += `🎨 Стиль: ${currentStyle}
+
+✨ Особенности:
+- AI-подбор шуток под каждую эмоцию
+- 60 FPS плавная анимация
+- Высокое качество 512x512
+- Прозрачный фон
+
+📝 Примеры шуток:
+${humorSamples}
+
+`;
+        if (isLimited) {
+            packDescription += `🔥 ТИП: Лимитированная серия
+🔢 Тираж: ${editionSize} нумерованных копий
+💰 Цена за копию: ${copyPrice.toLocaleString()} ₽
+💎 ID коллекции: ${packId}
+
+📈 Потенциальный доход: ${(editionSize * copyPrice).toLocaleString()} ₽
+`;
+        } else {
+            packDescription += `🔄 ТИП: Бессрочная лицензия
+💎 ID набора: ${packId}
+`;
+        }
+        
+        packDescription += `\n📅 Дата создания: ${new Date().toLocaleDateString('ru-RU')}`;
         
         // Сохраняем описание в файл
         const descriptionBlob = new Blob([packDescription], { type: 'text/plain;charset=utf-8' });
@@ -2885,7 +3012,7 @@ window.generatePack = async () => {
         
         addLogMessage(`📝 Описание пакета сохранено`, 'success');
         
-        // 3. Для каждой копии (если лимитированная серия)
+        // 3. Для каждой копии генерируем анимацию
         const timestamp = Date.now();
         for (let copyNum = 1; copyNum <= editionSize; copyNum++) {
             updateLogCounter(copyNum, editionSize);
@@ -2898,23 +3025,19 @@ window.generatePack = async () => {
             for (let stickerIdx = 0; stickerIdx < masterSet.length; stickerIdx++) {
                 const sticker = masterSet[stickerIdx];
                 
-                // Получаем PNG и анимируем через Kling
-                addLogMessage(`🖼️ Генерируем стикер ${stickerIdx + 1}/${masterSet.length}...`, 'info');
-                
-                // Используем готовые данные из мастер-сета
-                const pngDataUrl = sticker.dataUrl;
+                addLogMessage(`🖼️ Анимируем стикер ${stickerIdx + 1}/${masterSet.length}: ${sticker.emotion.name}`, 'info');
                 
                 // Отображаем PNG в превью
                 const img = new Image();
-                await new Promise(resolve => { img.onload = resolve; img.src = pngDataUrl; });
+                await new Promise(resolve => { img.onload = resolve; img.src = sticker.dataUrl; });
                 document.getElementById('pngCanvas').getContext('2d').drawImage(img, 0, 0, 512, 512);
                 
-                // Анимация через Kling (через прокси)
+                // Анимация через Kling
                 addLogMessage(`🎬 Отправляем в Kling AI...`, 'info');
-                const videoUrl = await animateWithKling(pngDataUrl, sticker.emotion.id);
+                const videoBlob = await animateWithKling(sticker.dataUrl, sticker.emotion.id);
                 
                 // Конвертируем в WEBM
-                const webmUrl = await convertToWEBM(videoUrl);
+                const webmUrl = await convertToWEBM(videoBlob);
                 
                 // Сохраняем WEBM файл
                 let filename;
@@ -2942,15 +3065,48 @@ window.generatePack = async () => {
             
             // Если лимитированная, создаем сертификат для этой копии
             if (isLimited) {
-                const folder = `edition_${timestamp}`;
-                await createCertificate(copyNum, editionSize, masterSet, folder);
+                const certificate = {
+                    copyNumber: copyNum,
+                    totalCopies: editionSize,
+                    date: new Date().toISOString(),
+                    editionId: `EDITION-${timestamp}`,
+                    stickers: masterSet.map(s => ({
+                        emotion: s.emotion.name,
+                        icon: s.emotion.icon,
+                        humor: s.humor
+                    }))
+                };
+                
+                const certBlob = new Blob([JSON.stringify(certificate, null, 2)], { type: 'application/json' });
+                const certUrl = URL.createObjectURL(certBlob);
+                const certLink = document.createElement('a');
+                certLink.href = certUrl;
+                certLink.download = `edition_${timestamp}/certificate_${String(copyNum).padStart(3, '0')}.json`;
+                certLink.click();
             }
         }
         
         // Если лимитированная, создаем манифест
         if (isLimited) {
-            const folder = `edition_${timestamp}`;
-            await createManifest(editionSize, copyPrice, masterSet, folder);
+            const manifest = {
+                editionId: `EDITION-${timestamp}`,
+                totalCopies: editionSize,
+                pricePerCopy: copyPrice,
+                totalValue: editionSize * copyPrice,
+                date: new Date().toISOString(),
+                masterSet: {
+                    professions: [...new Set(masterSet.map(s => s.profession))],
+                    emotions: masterSet.map(s => s.emotion.name),
+                    humorSamples: masterSet.slice(0, 3).map(s => s.humor)
+                }
+            };
+            
+            const manifestBlob = new Blob([JSON.stringify(manifest, null, 2)], { type: 'application/json' });
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            const manifestLink = document.createElement('a');
+            manifestLink.href = manifestUrl;
+            manifestLink.download = `edition_${timestamp}/manifest.json`;
+            manifestLink.click();
         }
         
         addLogMessage(`✅ ГЕНЕРАЦИЯ ЗАВЕРШЕНА!`, 'success');
