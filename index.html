@@ -2610,15 +2610,18 @@ async function checkProxy() {
 
         // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
 // ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
-// ========== KLING AI ЧЕРЕЗ ПРОКСИ (БЕЗ ЗАПРОСА ТОКЕНА) ==========
+// ========== KLING AI С МАКСИМАЛЬНЫМ ЛОГИРОВАНИЕМ ==========
 async function animateWithKling(imageDataUrl, emotionId) {
-    addLogMessage(`🎬 Kling AI: отправляем через прокси...`, 'info');
+    const reqId = Date.now();
+    addLogMessage(`🎬 [${reqId}] Kling AI: отправляем через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. ОТПРАВЛЯЕМ ЗАДАЧУ (прокси сам сгенерирует токен)
-        addLogMessage(`📤 Отправляем изображение в Kling...`, 'info');
+        // 1. ОТПРАВЛЯЕМ ЗАДАЧУ
+        addLogMessage(`📤 [${reqId}] Отправляем изображение в Kling...`, 'info');
+        addLogMessage(`   - prompt: "${motionPrompt}"`, 'info');
+        addLogMessage(`   - accessKey: ${KLING_ACCESS_KEY.substring(0, 5)}...`, 'info');
         
         const createResponse = await fetch('http://localhost:3000/api/kling/create', {
             method: 'POST',
@@ -2628,29 +2631,33 @@ async function animateWithKling(imageDataUrl, emotionId) {
             body: JSON.stringify({
                 imageDataUrl: imageDataUrl,
                 prompt: motionPrompt,
-                accessKey: KLING_ACCESS_KEY,  // Передаем ключи
-                secretKey: KLING_SECRET_KEY    // Прокси сам сделает токен
+                accessKey: KLING_ACCESS_KEY,
+                secretKey: KLING_SECRET_KEY
             })
         });
 
+        addLogMessage(`📥 [${reqId}] Ответ от прокси: статус ${createResponse.status}`, 'info');
+        
         if (!createResponse.ok) {
-            const error = await createResponse.json();
-            throw new Error(error.error || 'Ошибка создания задачи');
+            const errorText = await createResponse.text();
+            addLogMessage(`❌ [${reqId}] Ошибка от прокси: ${errorText}`, 'error');
+            throw new Error(`HTTP ${createResponse.status}: ${errorText.substring(0, 100)}`);
         }
 
         const createData = await createResponse.json();
+        addLogMessage(`📦 [${reqId}] Данные ответа:`, 'info');
+        addLogMessage(JSON.stringify(createData, null, 2), 'info');
         
-        // Проверяем код ответа (по документации code:0 = успех) [citation:1]
         if (createData.code !== 0) {
-            throw new Error(`Ошибка: ${createData.message || 'Unknown error'}`);
+            throw new Error(`Ошибка API: ${createData.message || 'Unknown error'}`);
         }
         
         if (!createData.data?.task_id) {
-            throw new Error('Не получен task_id');
+            throw new Error('Не получен task_id в ответе');
         }
         
         const taskId = createData.data.task_id;
-        addLogMessage(`⏳ Задача создана: ${taskId}`, 'info');
+        addLogMessage(`⏳ [${reqId}] Задача создана: ${taskId}`, 'success');
 
         // 2. ОПРАШИВАЕМ СТАТУС
         let attempts = 0;
@@ -2658,6 +2665,9 @@ async function animateWithKling(imageDataUrl, emotionId) {
         
         while (attempts < 30 && !videoUrl) {
             await new Promise(r => setTimeout(r, 3000));
+            attempts++;
+            
+            addLogMessage(`🔄 [${reqId}] Проверка статуса (попытка ${attempts}/30)...`, 'info');
             
             const statusResponse = await fetch(
                 `http://localhost:3000/api/kling/status/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}`
@@ -2669,43 +2679,46 @@ async function animateWithKling(imageDataUrl, emotionId) {
                 if (statusData.code === 0 && statusData.data) {
                     const taskStatus = statusData.data.task_status;
                     
-                    addLogMessage(`📊 Статус: ${taskStatus}`, 'info');
+                    addLogMessage(`📊 [${reqId}] Статус: ${taskStatus}`, 'info');
                     
                     if (taskStatus === 'succeed') {
-                        // В зависимости от API, результат может быть в разных полях
                         videoUrl = statusData.data?.result?.video_url || statusData.data?.video_url;
-                        if (videoUrl) break;
+                        addLogMessage(`✅ [${reqId}] Видео готово! URL: ${videoUrl}`, 'success');
+                        break;
                     } else if (taskStatus === 'failed') {
                         throw new Error('Генерация не удалась');
                     }
+                } else {
+                    addLogMessage(`⚠️ [${reqId}] Странный ответ статуса: ${JSON.stringify(statusData)}`, 'warn');
                 }
+            } else {
+                addLogMessage(`⚠️ [${reqId}] Ошибка при проверке статуса: ${statusResponse.status}`, 'warn');
             }
-            attempts++;
         }
 
         if (!videoUrl) {
             throw new Error('Таймаут ожидания генерации');
         }
 
-        addLogMessage(`✅ Kling AI: видео готово`, 'success');
-
         // 3. СКАЧИВАЕМ ВИДЕО
+        addLogMessage(`📥 [${reqId}] Скачиваем видео...`, 'info');
+        
         const downloadResponse = await fetch(
             `http://localhost:3000/api/kling/download?videoUrl=${encodeURIComponent(videoUrl)}`
         );
 
         if (!downloadResponse.ok) {
-            throw new Error('Не удалось скачать видео');
+            throw new Error(`Не удалось скачать видео: ${downloadResponse.status}`);
         }
 
         const videoBlob = await downloadResponse.blob();
-        addLogMessage(`📦 Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
+        addLogMessage(`📦 [${reqId}] Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
         
         return videoBlob;
 
     } catch (error) {
-        addLogMessage(`❌ KLING AI ОШИБКА: ${error.message}`, 'error');
-        addLogMessage(`⚠️ Процесс остановлен. Запасные анимации не используются.`, 'error');
+        addLogMessage(`❌ [${reqId}] KLING AI ОШИБКА: ${error.message}`, 'error');
+        addLogMessage(`⚠️ [${reqId}] Процесс остановлен. Запасные анимации не используются.`, 'error');
         throw error;
     }
 }
