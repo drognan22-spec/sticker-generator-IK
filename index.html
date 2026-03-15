@@ -2609,13 +2609,14 @@ async function checkProxy() {
         }
 
         // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
-// ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
 async function animateWithKling(imageDataUrl, emotionId) {
     addLogMessage(`🎬 Kling AI: отправляем через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
+        addLogMessage(`📤 Отправляем запрос...`, 'info');
+        
         const response = await fetch('http://localhost:3000/create', {
             method: 'POST',
             headers: {
@@ -2624,22 +2625,64 @@ async function animateWithKling(imageDataUrl, emotionId) {
             body: JSON.stringify({
                 imageDataUrl: imageDataUrl,
                 prompt: motionPrompt,
-                accessKey: 'ADPABabYdgNpEteCLG9KayNthPL8Pahb',
-                secretKey: 'GQ4M3b3DaKkHPKPJEtFN4GNNeMr4fnAJ'
+                accessKey: KLING_ACCESS_KEY,
+                secretKey: KLING_SECRET_KEY
             })
         });
 
         const data = await response.json();
+        addLogMessage(`📥 Ответ: ${JSON.stringify(data)}`, 'info');
         
         if (data.code === 0 && data.data?.task_id) {
             const taskId = data.data.task_id;
             addLogMessage(`✅ Задача создана: ${taskId}`, 'success');
             
-            // Здесь нужно добавить опрос статуса
-            return taskId;
+            // Опрос статуса
+            let attempts = 0;
+            let videoUrl = null;
+            
+            while (attempts < 30 && !videoUrl) {
+                await new Promise(r => setTimeout(r, 3000));
+                
+                const statusResponse = await fetch(
+                    `http://localhost:3000/status/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}`
+                );
+                
+                if (statusResponse.ok) {
+                    const statusData = await statusResponse.json();
+                    
+                    if (statusData.code === 0 && statusData.data) {
+                        const taskStatus = statusData.data.task_status;
+                        addLogMessage(`📊 Статус: ${taskStatus}`, 'info');
+                        
+                        if (taskStatus === 'succeed') {
+                            videoUrl = statusData.data?.result?.video_url;
+                            break;
+                        } else if (taskStatus === 'failed') {
+                            throw new Error('Генерация не удалась');
+                        }
+                    }
+                }
+                attempts++;
+            }
+            
+            if (!videoUrl) {
+                throw new Error('Таймаут ожидания');
+            }
+            
+            addLogMessage(`✅ Видео готово, скачиваем...`, 'success');
+            
+            // Скачиваем видео
+            const downloadResponse = await fetch(
+                `http://localhost:3000/download?videoUrl=${encodeURIComponent(videoUrl)}`
+            );
+            
+            const videoBlob = await downloadResponse.blob();
+            return videoBlob;
+            
         } else {
-            addLogMessage(`❌ Ошибка: ${JSON.stringify(data)}`, 'error');
-            throw new Error(data.message || 'Ошибка');
+            addLogMessage(`❌ Ошибка API: ${data.message || JSON.stringify(data)}`, 'error');
+            throw new Error(data.message || 'Ошибка создания задачи');
         }
         
     } catch (error) {
