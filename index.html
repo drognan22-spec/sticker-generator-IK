@@ -2609,7 +2609,7 @@ async function checkProxy() {
         }
 
 // ========== KLING 3.0 С БОЛЬШИМ ТАЙМАУТОМ ==========
-// ========== KLING 3.0 С ОПРОСОМ СТАТУСА ==========
+// ========== KLING 3.0 С УВЕЛИЧЕННЫМ ТАЙМАУТОМ И ПОВТОРНЫМИ ПОПЫТКАМИ ==========
 async function animateWithKling(imageDataUrl, emotionId) {
     addLogMessage(`🎬 Kling 3.0: отправляем через прокси...`, 'info');
     
@@ -2638,59 +2638,90 @@ async function animateWithKling(imageDataUrl, emotionId) {
             const taskId = createData.data.task_id;
             addLogMessage(`✅ Задача создана: ${taskId}`, 'success');
 
-            // 2. ОПРАШИВАЕМ СТАТУС (до 10 минут)
-let attempts = 0;
-const maxAttempts = 180; // 180 * 10 сек = 30 минут
-let videoUrl = null;
-addLogMessage(`⏳ Ожидание генерации (до 30 минут, проверка каждые 10 сек)...`, 'info');
+            // 2. ОПРОС СТАТУСА С УВЕЛИЧЕННЫМ ТАЙМАУТОМ (30 МИНУТ)
+            let attempts = 0;
+            const maxAttempts = 180; // 180 * 10 сек = 30 минут
+            let videoUrl = null;
+            let consecutiveErrors = 0;
+            
+            addLogMessage(`⏳ Ожидание генерации (до 30 минут, проверка каждые 10 сек)...`, 'info');
             
             const startTime = Date.now();
             
             while (attempts < maxAttempts && !videoUrl) {
-                await new Promise(r => setTimeout(r, 10000)); // проверка каждые 10 сек
+                await new Promise(r => setTimeout(r, 10000)); // проверка каждые 10 секунд
                 attempts++;
                 
-                const statusResponse = await fetch(
-                    `http://localhost:3000/api/kling/status/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}`
-                );
-                
-                if (statusResponse.ok) {
+                try {
+                    const statusResponse = await fetch(
+                        `http://localhost:3000/api/kling/status/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}`
+                    );
+                    
+                    if (!statusResponse.ok) {
+                        consecutiveErrors++;
+                        if (consecutiveErrors > 5) {
+                            const waitTime = 60000; // Пауза 1 минута
+                            addLogMessage(`⚠️ Слишком много ошибок (${consecutiveErrors}), делаем паузу ${waitTime/1000} сек...`, 'warn');
+                            await new Promise(r => setTimeout(r, waitTime));
+                            consecutiveErrors = 0;
+                        }
+                        continue;
+                    }
+                    
                     const statusData = await statusResponse.json();
+                    consecutiveErrors = 0; // Сброс счетчика ошибок
                     
                     if (statusData.code === 0 && statusData.data) {
                         const taskStatus = statusData.data.task_status;
                         
+                        // Логируем каждые 30 секунд
                         if (attempts % 3 === 0) {
-                            const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-                            addLogMessage(`⏳ Статус: ${taskStatus} (прошло ${elapsedSeconds} сек.)`, 'info');
+                            const elapsedMinutes = Math.floor((Date.now() - startTime) / 60000);
+                            const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000) % 60;
+                            addLogMessage(`⏳ Статус: ${taskStatus} (прошло ${elapsedMinutes} мин ${elapsedSeconds} сек)`, 'info');
                         }
                         
                         if (taskStatus === 'succeed') {
-                            videoUrl = statusData.data?.result?.video_url;
+                            videoUrl = statusData.data?.task_result?.video_url;
                             break;
                         } else if (taskStatus === 'failed') {
                             throw new Error('Генерация не удалась');
                         }
+                    } else if (statusData.code === 1200) {
+                        // Временная ошибка, продолжаем ждать
+                        if (attempts % 6 === 0) {
+                            addLogMessage(`⚠️ Временная ошибка API (код 1200), продолжаем ожидание...`, 'warn');
+                        }
                     }
+                } catch (e) {
+                    console.log('Ошибка при проверке статуса:', e.message);
                 }
             }
             
             if (!videoUrl) {
-                throw new Error('Таймаут ожидания генерации');
+                const elapsedMinutes = Math.floor((Date.now() - startTime) / 60000);
+                throw new Error(`Таймаут ожидания после ${elapsedMinutes} минут`);
             }
             
-            addLogMessage(`✅ Видео готово!`, 'success');
+            const totalTime = Math.floor((Date.now() - startTime) / 1000);
+            addLogMessage(`✅ Видео готово! Время генерации: ${totalTime} сек.`, 'success');
             
             // 3. СКАЧИВАЕМ ВИДЕО
+            addLogMessage(`📥 Скачивание видео...`, 'info');
+            
             const downloadResponse = await fetch(
                 `http://localhost:3000/api/kling/download?videoUrl=${encodeURIComponent(videoUrl)}`
             );
 
+            if (!downloadResponse.ok) {
+                throw new Error(`Не удалось скачать видео: ${downloadResponse.status}`);
+            }
+
             const videoBlob = await downloadResponse.blob();
-            addLogMessage(`📦 Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
+            addLogMessage(`✅ Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
             
             return videoBlob;
-            
+
         } else {
             throw new Error(createData.message || 'Ошибка создания задачи');
         }
