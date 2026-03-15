@@ -2610,20 +2610,13 @@ async function checkProxy() {
 
         // ========== KLING AI С ПРАВИЛЬНОЙ АВТОРИЗАЦИЕЙ ==========
 // ========== KLING AI ЧЕРЕЗ ПРОКСИ ==========
-// ========== KLING AI С МАКСИМАЛЬНЫМ ЛОГИРОВАНИЕМ ==========
 async function animateWithKling(imageDataUrl, emotionId) {
-    const reqId = Date.now();
-    addLogMessage(`🎬 [${reqId}] Kling AI: отправляем через прокси...`, 'info');
+    addLogMessage(`🎬 Kling AI: отправляем через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. ОТПРАВЛЯЕМ ЗАДАЧУ
-        addLogMessage(`📤 [${reqId}] Отправляем изображение в Kling...`, 'info');
-        addLogMessage(`   - prompt: "${motionPrompt}"`, 'info');
-        addLogMessage(`   - accessKey: ${KLING_ACCESS_KEY.substring(0, 5)}...`, 'info');
-        
-        const createResponse = await fetch('http://localhost:3000/api/kling/create', {
+        const response = await fetch('http://localhost:3000/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -2631,94 +2624,26 @@ async function animateWithKling(imageDataUrl, emotionId) {
             body: JSON.stringify({
                 imageDataUrl: imageDataUrl,
                 prompt: motionPrompt,
-                accessKey: KLING_ACCESS_KEY,
-                secretKey: KLING_SECRET_KEY
+                accessKey: 'ADPABabYdgNpEteCLG9KayNthPL8Pahb',
+                secretKey: 'GQ4M3b3DaKkHPKPJEtFN4GNNeMr4fnAJ'
             })
         });
 
-        addLogMessage(`📥 [${reqId}] Ответ от прокси: статус ${createResponse.status}`, 'info');
+        const data = await response.json();
         
-        if (!createResponse.ok) {
-            const errorText = await createResponse.text();
-            addLogMessage(`❌ [${reqId}] Ошибка от прокси: ${errorText}`, 'error');
-            throw new Error(`HTTP ${createResponse.status}: ${errorText.substring(0, 100)}`);
-        }
-
-        const createData = await createResponse.json();
-        addLogMessage(`📦 [${reqId}] Данные ответа:`, 'info');
-        addLogMessage(JSON.stringify(createData, null, 2), 'info');
-        
-        if (createData.code !== 0) {
-            throw new Error(`Ошибка API: ${createData.message || 'Unknown error'}`);
-        }
-        
-        if (!createData.data?.task_id) {
-            throw new Error('Не получен task_id в ответе');
-        }
-        
-        const taskId = createData.data.task_id;
-        addLogMessage(`⏳ [${reqId}] Задача создана: ${taskId}`, 'success');
-
-        // 2. ОПРАШИВАЕМ СТАТУС
-        let attempts = 0;
-        let videoUrl = null;
-        
-        while (attempts < 30 && !videoUrl) {
-            await new Promise(r => setTimeout(r, 3000));
-            attempts++;
+        if (data.code === 0 && data.data?.task_id) {
+            const taskId = data.data.task_id;
+            addLogMessage(`✅ Задача создана: ${taskId}`, 'success');
             
-            addLogMessage(`🔄 [${reqId}] Проверка статуса (попытка ${attempts}/30)...`, 'info');
-            
-            const statusResponse = await fetch(
-                `http://localhost:3000/api/kling/status/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}`
-            );
-            
-            if (statusResponse.ok) {
-                const statusData = await statusResponse.json();
-                
-                if (statusData.code === 0 && statusData.data) {
-                    const taskStatus = statusData.data.task_status;
-                    
-                    addLogMessage(`📊 [${reqId}] Статус: ${taskStatus}`, 'info');
-                    
-                    if (taskStatus === 'succeed') {
-                        videoUrl = statusData.data?.result?.video_url || statusData.data?.video_url;
-                        addLogMessage(`✅ [${reqId}] Видео готово! URL: ${videoUrl}`, 'success');
-                        break;
-                    } else if (taskStatus === 'failed') {
-                        throw new Error('Генерация не удалась');
-                    }
-                } else {
-                    addLogMessage(`⚠️ [${reqId}] Странный ответ статуса: ${JSON.stringify(statusData)}`, 'warn');
-                }
-            } else {
-                addLogMessage(`⚠️ [${reqId}] Ошибка при проверке статуса: ${statusResponse.status}`, 'warn');
-            }
+            // Здесь нужно добавить опрос статуса
+            return taskId;
+        } else {
+            addLogMessage(`❌ Ошибка: ${JSON.stringify(data)}`, 'error');
+            throw new Error(data.message || 'Ошибка');
         }
-
-        if (!videoUrl) {
-            throw new Error('Таймаут ожидания генерации');
-        }
-
-        // 3. СКАЧИВАЕМ ВИДЕО
-        addLogMessage(`📥 [${reqId}] Скачиваем видео...`, 'info');
         
-        const downloadResponse = await fetch(
-            `http://localhost:3000/api/kling/download?videoUrl=${encodeURIComponent(videoUrl)}`
-        );
-
-        if (!downloadResponse.ok) {
-            throw new Error(`Не удалось скачать видео: ${downloadResponse.status}`);
-        }
-
-        const videoBlob = await downloadResponse.blob();
-        addLogMessage(`📦 [${reqId}] Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
-        
-        return videoBlob;
-
     } catch (error) {
-        addLogMessage(`❌ [${reqId}] KLING AI ОШИБКА: ${error.message}`, 'error');
-        addLogMessage(`⚠️ [${reqId}] Процесс остановлен. Запасные анимации не используются.`, 'error');
+        addLogMessage(`❌ Ошибка: ${error.message}`, 'error');
         throw error;
     }
 }
