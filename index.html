@@ -2608,46 +2608,43 @@ async function checkProxy() {
             });
         }
 
-// ========== НОВАЯ ФУНКЦИЯ ДЛЯ FAL.AI (LTX FAST) ==========
-const FAL_KEY = '3a3bd1f1-1ad1-48c6-abfb-1a28419a106c:55c71031f4a7dd76571ff859922e8fb3'; // Получите после регистрации
+// ========== НОВАЯ ФУНКЦИЯ ДЛЯ FAL.AI ЧЕРЕЗ ПРОКСИ ==========
+const FAL_KEY = '3a3bd1f1-1ad1-48c6-abfb-1a28419a106c:55c71031f4a7dd76571ff859922e8fb3'; // Тот же ключ с fal.ai
 
 async function animateWithKling(imageDataUrl, emotionId) {
-    addLogMessage(`🎬 fal.ai: запуск LTX Fast...`, 'info');
+    addLogMessage(`🎬 fal.ai: отправляем через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. Извлекаем base64
-        const base64Data = imageDataUrl.split(',')[1];
-        
-        // 2. Используем LTX Fast - самая дешевая и быстрая модель
-        addLogMessage(`📤 Отправка в LTX Fast...`, 'info');
-        
-        const response = await fetch('https://fal.ai/models/ltx-2/image-to-video/fast', {
+        // 1. Отправляем запрос в наш прокси
+        const proxyResponse = await fetch('http://localhost:3000/fal-proxy', {
             method: 'POST',
             headers: {
-                'Authorization': `Key ${FAL_KEY}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                image_url: `data:image/png;base64,${base64Data}`,
+                imageDataUrl: imageDataUrl,
                 prompt: motionPrompt,
-                duration: 6, // 6 секунд (минимум)
-                resolution: "1080p",
-                fps: 25,
-                generate_audio: false // Для стикеров звук не нужен
+                falKey: FAL_KEY
             })
         });
 
-        const data = await response.json();
+        if (!proxyResponse.ok) {
+            throw new Error(`Прокси вернул ${proxyResponse.status}`);
+        }
+
+        const data = await proxyResponse.json();
         
         if (data.video?.url) {
             addLogMessage(`✅ Видео готово!`, 'success');
             
-            // 3. Скачиваем
-            const videoResponse = await fetch(data.video.url);
-            const videoBlob = await videoResponse.blob();
+            // 2. Скачиваем через прокси
+            const downloadResponse = await fetch(
+                `http://localhost:3000/fal-download?videoUrl=${encodeURIComponent(data.video.url)}`
+            );
             
+            const videoBlob = await downloadResponse.blob();
             addLogMessage(`📦 Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
             return videoBlob;
             
