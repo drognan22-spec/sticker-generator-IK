@@ -2609,14 +2609,15 @@ async function checkProxy() {
         }
 
 // ========== KLING 3.0 С БОЛЬШИМ ТАЙМАУТОМ ==========
+// ========== KLING 3.0 С ОПРОСОМ СТАТУСА ==========
 async function animateWithKling(imageDataUrl, emotionId) {
     addLogMessage(`🎬 Kling 3.0: отправляем через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        addLogMessage(`📤 Отправляем запрос...`, 'info');
-        addLogMessage(`📝 Prompt: ${motionPrompt}`, 'info');
+        // 1. СОЗДАЕМ ЗАДАЧУ
+        addLogMessage(`📤 Отправляем изображение...`, 'info');
         
         const createResponse = await fetch('http://localhost:3000/api/kling/create', {
             method: 'POST',
@@ -2631,91 +2632,72 @@ async function animateWithKling(imageDataUrl, emotionId) {
             })
         });
 
-        if (!createResponse.ok) {
-            throw new Error(`HTTP ${createResponse.status}`);
-        }
-
         const createData = await createResponse.json();
         
-        if (createData.code !== 0) {
-            throw new Error(createData.message || 'Ошибка создания задачи');
-        }
-        
-        if (!createData.data?.task_id) {
-            throw new Error('Не получен task_id');
-        }
-        
-        const taskId = createData.data.task_id;
-        addLogMessage(`✅ Задача создана: ${taskId}`, 'success');
+        if (createData.code === 0 && createData.data?.task_id) {
+            const taskId = createData.data.task_id;
+            addLogMessage(`✅ Задача создана: ${taskId}`, 'success');
 
-        // ⏳ ОПРОС СТАТУСА С БОЛЬШИМ ТАЙМАУТОМ (60 МИНУТ)
-        let attempts = 0;
-        const maxAttempts = 360; // 360 * 10 сек = 60 минут
-        let videoUrl = null;
-        
-        addLogMessage(`⏳ Ожидание генерации (может занять 5-40 минут)...`, 'info');
-        addLogMessage(`⏱️ Максимальное время ожидания: 60 минут`, 'info');
-        
-        const startTime = Date.now();
-        
-        while (attempts < maxAttempts && !videoUrl) {
-            await new Promise(r => setTimeout(r, 10000)); // проверка каждые 10 секунд
-            attempts++;
+            // 2. ОПРАШИВАЕМ СТАТУС (до 10 минут)
+            let attempts = 0;
+            const maxAttempts = 60; // 60 * 10 сек = 10 минут
+            let videoUrl = null;
             
-            try {
+            addLogMessage(`⏳ Ожидание генерации (до 10 минут)...`, 'info');
+            
+            const startTime = Date.now();
+            
+            while (attempts < maxAttempts && !videoUrl) {
+                await new Promise(r => setTimeout(r, 10000)); // проверка каждые 10 сек
+                attempts++;
+                
                 const statusResponse = await fetch(
                     `http://localhost:3000/api/kling/status/${taskId}?accessKey=${KLING_ACCESS_KEY}&secretKey=${KLING_SECRET_KEY}`
                 );
                 
-                if (!statusResponse.ok) continue;
-                
-                const statusData = await statusResponse.json();
-                
-                if (statusData.code === 0 && statusData.data) {
-                    const taskStatus = statusData.data.task_status;
+                if (statusResponse.ok) {
+                    const statusData = await statusResponse.json();
                     
-                    // Логируем каждые 30 секунд
-                    if (attempts % 3 === 0) {
-                        const elapsedMinutes = Math.floor((Date.now() - startTime) / 60000);
-                        addLogMessage(`⏳ Статус: ${taskStatus} (прошло ${elapsedMinutes} мин.)`, 'info');
-                    }
-                    
-                    if (taskStatus === 'succeed') {
-                        videoUrl = statusData.data?.result?.video_url;
-                        addLogMessage(`✅ Видео готово! Время генерации: ${Math.floor((Date.now() - startTime) / 1000)} сек.`, 'success');
-                        break;
-                    } else if (taskStatus === 'failed') {
-                        throw new Error('Генерация не удалась');
+                    if (statusData.code === 0 && statusData.data) {
+                        const taskStatus = statusData.data.task_status;
+                        
+                        if (attempts % 3 === 0) {
+                            const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+                            addLogMessage(`⏳ Статус: ${taskStatus} (прошло ${elapsedSeconds} сек.)`, 'info');
+                        }
+                        
+                        if (taskStatus === 'succeed') {
+                            videoUrl = statusData.data?.result?.video_url;
+                            break;
+                        } else if (taskStatus === 'failed') {
+                            throw new Error('Генерация не удалась');
+                        }
                     }
                 }
-            } catch (e) {
-                console.log('Ошибка при проверке статуса:', e.message);
             }
-        }
-        
-        if (!videoUrl) {
-            const elapsedMinutes = Math.floor((Date.now() - startTime) / 60000);
-            throw new Error(`Таймаут ожидания после ${elapsedMinutes} минут`);
-        }
-        
-        // 3. СКАЧИВАЕМ ВИДЕО
-        addLogMessage(`📥 Скачивание видео...`, 'info');
-        
-        const downloadResponse = await fetch(
-            `http://localhost:3000/api/kling/download?videoUrl=${encodeURIComponent(videoUrl)}`
-        );
+            
+            if (!videoUrl) {
+                throw new Error('Таймаут ожидания генерации');
+            }
+            
+            addLogMessage(`✅ Видео готово!`, 'success');
+            
+            // 3. СКАЧИВАЕМ ВИДЕО
+            const downloadResponse = await fetch(
+                `http://localhost:3000/api/kling/download?videoUrl=${encodeURIComponent(videoUrl)}`
+            );
 
-        if (!downloadResponse.ok) {
-            throw new Error(`Не удалось скачать видео: ${downloadResponse.status}`);
+            const videoBlob = await downloadResponse.blob();
+            addLogMessage(`📦 Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
+            
+            return videoBlob;
+            
+        } else {
+            throw new Error(createData.message || 'Ошибка создания задачи');
         }
-
-        const videoBlob = await downloadResponse.blob();
-        addLogMessage(`✅ Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
-        
-        return videoBlob;
 
     } catch (error) {
-        addLogMessage(`❌ KLING 3.0 ОШИБКА: ${error.message}`, 'error');
+        addLogMessage(`❌ Ошибка: ${error.message}`, 'error');
         throw error;
     }
 }
