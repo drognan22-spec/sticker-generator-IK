@@ -2639,11 +2639,10 @@ async function animateWithKling(imageDataUrl, emotionId) {
             addLogMessage(`✅ Задача создана: ${taskId}`, 'success');
 
             // 2. ОПРАШИВАЕМ СТАТУС (до 10 минут)
-            let attempts = 0;
-            const maxAttempts = 60; // 60 * 10 сек = 10 минут
-            let videoUrl = null;
-            
-            addLogMessage(`⏳ Ожидание генерации (до 10 минут)...`, 'info');
+let attempts = 0;
+const maxAttempts = 180; // 180 * 10 сек = 30 минут
+let videoUrl = null;
+addLogMessage(`⏳ Ожидание генерации (до 30 минут, проверка каждые 10 сек)...`, 'info');
             
             const startTime = Date.now();
             
