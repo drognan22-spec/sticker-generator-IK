@@ -2609,18 +2609,20 @@ async function checkProxy() {
         }
 
 // ========== НОВАЯ ФУНКЦИЯ ДЛЯ FAL.AI ==========
-const FAL_KEY = '3a3bd1f1-1ad1-48c6-abfb-1a28419a106c:55c71031f4a7dd76571ff859922e8fb3'; // Получите после регистрации
+const FAL_KEY = '3a3bd1f1-1ad1-48c6-abfb-1a28419a106c:55c71031f4a7dd76571ff859922e8fb3'; // ВАЖНО: получите ключ на fal.ai
 
-async function animateWithFal(imageDataUrl, emotionId) {
+async function animateWithKling(imageDataUrl, emotionId) {
     addLogMessage(`🎬 fal.ai: отправляем запрос...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. Кодируем изображение в base64
+        // 1. Извлекаем base64 из data URL
         const base64Data = imageDataUrl.split(',')[1];
         
-        // 2. Используем LTX Fast для максимальной скорости [citation:5]
+        addLogMessage(`📤 Отправка в fal.ai (модель: LTX Fast)...`, 'info');
+        
+        // 2. Отправляем запрос напрямую в fal.ai (без прокси!)
         const response = await fetch('https://fal.ai/models/ltx-2/image-to-video/fast', {
             method: 'POST',
             headers: {
@@ -2637,7 +2639,13 @@ async function animateWithFal(imageDataUrl, emotionId) {
             })
         });
 
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`HTTP ${response.status}: ${error}`);
+        }
+
         const data = await response.json();
+        addLogMessage(`✅ Ответ получен`, 'info');
         
         if (data.video?.url) {
             addLogMessage(`✅ Видео готово!`, 'success');
@@ -2646,9 +2654,11 @@ async function animateWithFal(imageDataUrl, emotionId) {
             const videoResponse = await fetch(data.video.url);
             const videoBlob = await videoResponse.blob();
             
+            addLogMessage(`📦 Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
             return videoBlob;
+            
         } else {
-            throw new Error('Не удалось получить видео');
+            throw new Error('Не удалось получить URL видео');
         }
 
     } catch (error) {
