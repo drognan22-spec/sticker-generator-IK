@@ -2608,7 +2608,7 @@ async function checkProxy() {
             });
         }
 
-// ========== НОВАЯ ФУНКЦИЯ С fal.subscribe ==========
+// ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ С ПРЯМОЙ ССЫЛКОЙ ==========
 const FAL_KEY = '3a3bd1f1-1ad1-48c6-abfb-1a28419a106c:55c71031f4a7dd76571ff859922e8fb3';
 
 async function animateWithKling(imageDataUrl, emotionId) {
@@ -2619,7 +2619,6 @@ async function animateWithKling(imageDataUrl, emotionId) {
     try {
         addLogMessage(`📤 Отправляем изображение...`, 'info');
         
-        // ОТПРАВЛЯЕМ ЗАПРОС - ПРОКСИ САМ БУДЕТ ЖДАТЬ РЕЗУЛЬТАТ!
         const response = await fetch('http://localhost:3000/fal-proxy', {
             method: 'POST',
             headers: {
@@ -2632,19 +2631,55 @@ async function animateWithKling(imageDataUrl, emotionId) {
             })
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
         const data = await response.json();
         
         if (data.video?.url) {
             addLogMessage(`✅ Видео готово!`, 'success');
             
-            // Скачиваем видео
-            const downloadResponse = await fetch(
-                `http://localhost:3000/fal-download?videoUrl=${encodeURIComponent(data.video.url)}`
-            );
-
-            const videoBlob = await downloadResponse.blob();
-            addLogMessage(`📦 Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
-            return videoBlob;
+            // Пробуем скачать
+            addLogMessage(`📥 Пытаемся скачать видео...`, 'info');
+            
+            try {
+                const downloadResponse = await fetch(data.video.url, {
+                    timeout: 30000
+                });
+                
+                if (downloadResponse.ok) {
+                    const videoBlob = await downloadResponse.blob();
+                    addLogMessage(`✅ Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
+                    return videoBlob;
+                }
+            } catch (downloadError) {
+                addLogMessage(`⚠️ Автоматическое скачивание не удалось`, 'warn');
+            }
+            
+            // Если не скачалось, даем прямую ссылку
+            addLogMessage(`🔗 Прямая ссылка на видео:`, 'info');
+            addLogMessage(`${data.video.url}`, 'info');
+            
+            // Создаем кнопку для скачивания
+            const downloadLink = document.createElement('a');
+            downloadLink.href = data.video.url;
+            downloadLink.target = '_blank';
+            downloadLink.innerHTML = '📥 СКАЧАТЬ ВИДЕО';
+            downloadLink.style.display = 'block';
+            downloadLink.style.margin = '20px 0';
+            downloadLink.style.padding = '15px';
+            downloadLink.style.background = 'linear-gradient(145deg, #fbbf24, #f59e0b)';
+            downloadLink.style.color = '#1a1f2e';
+            downloadLink.style.borderRadius = '40px';
+            downloadLink.style.textAlign = 'center';
+            downloadLink.style.textDecoration = 'none';
+            downloadLink.style.fontWeight = 'bold';
+            downloadLink.style.fontSize = '1.2em';
+            
+            document.getElementById('results').appendChild(downloadLink);
+            
+            return data.video.url; // Возвращаем ссылку вместо blob
             
         } else {
             throw new Error('Не удалось получить видео');
