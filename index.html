@@ -2608,17 +2608,19 @@ async function checkProxy() {
             });
         }
 
-// ========== НОВАЯ ФУНКЦИЯ ДЛЯ FAL.AI ЧЕРЕЗ ПРОКСИ ==========
-const FAL_KEY = '3a3bd1f1-1ad1-48c6-abfb-1a28419a106c:55c71031f4a7dd76571ff859922e8fb3'; // Тот же ключ с fal.ai
+// ========== НОВАЯ ФУНКЦИЯ ДЛЯ FAL.AI ==========
+const FAL_KEY = '3a3bd1f1-1ad1-48c6-abfb-1a28419a106c:55c71031f4a7dd76571ff859922e8fb3';
 
 async function animateWithKling(imageDataUrl, emotionId) {
-    addLogMessage(`🎬 fal.ai: отправляем через прокси...`, 'info');
+    addLogMessage(`🎬 fal.ai: отправляем запрос через прокси...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
     try {
-        // 1. Отправляем запрос в наш прокси
-        const proxyResponse = await fetch('http://localhost:3000/fal-proxy', {
+        // 1. СОЗДАЕМ ЗАДАЧУ
+        addLogMessage(`📤 Отправляем изображение...`, 'info');
+        
+        const createResponse = await fetch('http://localhost:3000/fal-proxy', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -2626,30 +2628,69 @@ async function animateWithKling(imageDataUrl, emotionId) {
             body: JSON.stringify({
                 imageDataUrl: imageDataUrl,
                 prompt: motionPrompt,
-                falKey: FAL_KEY
+                falKey: FAL_KEY,
+                model: 'fast' // можно менять: 'fast', 'pro', 'kandinsky'
             })
         });
 
-        if (!proxyResponse.ok) {
-            throw new Error(`Прокси вернул ${proxyResponse.status}`);
-        }
-
-        const data = await proxyResponse.json();
+        const createData = await createResponse.json();
         
-        if (data.video?.url) {
+        if (createData.request_id) {
+            const requestId = createData.request_id;
+            addLogMessage(`✅ Задача создана: ${requestId}`, 'success');
+
+            // 2. ОПРАШИВАЕМ СТАТУС (до 5 минут)
+            let attempts = 0;
+            const maxAttempts = 30; // 30 * 10 сек = 5 минут
+            let videoUrl = null;
+            
+            addLogMessage(`⏳ Ожидание генерации (до 5 минут)...`, 'info');
+            
+            while (attempts < maxAttempts && !videoUrl) {
+                await new Promise(r => setTimeout(r, 10000)); // проверка каждые 10 сек
+                attempts++;
+                
+                const statusResponse = await fetch(
+                    `http://localhost:3000/fal-status/${requestId}?falKey=${FAL_KEY}`
+                );
+                
+                if (statusResponse.ok) {
+                    const statusData = await statusResponse.json();
+                    
+                    if (statusData.status === 'COMPLETED') {
+                        // Получаем результат
+                        const resultResponse = await fetch(
+                            `http://localhost:3000/fal-result/${requestId}?falKey=${FAL_KEY}`
+                        );
+                        const resultData = await resultResponse.json();
+                        
+                        videoUrl = resultData.video?.url;
+                        break;
+                        
+                    } else if (statusData.status === 'FAILED') {
+                        throw new Error('Генерация не удалась');
+                    }
+                }
+            }
+            
+            if (!videoUrl) {
+                throw new Error('Таймаут ожидания');
+            }
+            
             addLogMessage(`✅ Видео готово!`, 'success');
             
-            // 2. Скачиваем через прокси
+            // 3. СКАЧИВАЕМ ВИДЕО
             const downloadResponse = await fetch(
-                `http://localhost:3000/fal-download?videoUrl=${encodeURIComponent(data.video.url)}`
+                `http://localhost:3000/fal-download?videoUrl=${encodeURIComponent(videoUrl)}`
             );
-            
+
             const videoBlob = await downloadResponse.blob();
             addLogMessage(`📦 Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
+            
             return videoBlob;
             
         } else {
-            throw new Error('Не удалось получить видео');
+            throw new Error('Не получен request_id');
         }
 
     } catch (error) {
