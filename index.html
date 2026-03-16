@@ -2608,11 +2608,11 @@ async function checkProxy() {
             });
         }
 
-// ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ С ПРЯМОЙ ССЫЛКОЙ ==========
+// ========== УПРОЩЕННАЯ ФУНКЦИЯ С ПРЯМОЙ ССЫЛКОЙ ==========
 const FAL_KEY = '3a3bd1f1-1ad1-48c6-abfb-1a28419a106c:55c71031f4a7dd76571ff859922e8fb3';
 
 async function animateWithKling(imageDataUrl, emotionId) {
-    addLogMessage(`🎬 fal.ai: отправляем запрос через прокси...`, 'info');
+    addLogMessage(`🎬 fal.ai: отправляем запрос...`, 'info');
     
     const motionPrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
     
@@ -2640,46 +2640,47 @@ async function animateWithKling(imageDataUrl, emotionId) {
         if (data.video?.url) {
             addLogMessage(`✅ Видео готово!`, 'success');
             
-            // Пробуем скачать
-            addLogMessage(`📥 Пытаемся скачать видео...`, 'info');
+            // ПОКАЗЫВАЕМ ПРЯМУЮ ССЫЛКУ
+            const videoUrl = data.video.url;
+            addLogMessage(`🔗 Ссылка на видео: ${videoUrl}`, 'info');
             
-            try {
-                const downloadResponse = await fetch(data.video.url, {
-                    timeout: 30000
-                });
-                
-                if (downloadResponse.ok) {
-                    const videoBlob = await downloadResponse.blob();
-                    addLogMessage(`✅ Видео загружено: ${(videoBlob.size / 1024 / 1024).toFixed(2)} MB`, 'success');
-                    return videoBlob;
-                }
-            } catch (downloadError) {
-                addLogMessage(`⚠️ Автоматическое скачивание не удалось`, 'warn');
-            }
+            // Создаем большую красивую кнопку
+            const resultsDiv = document.getElementById('results');
             
-            // Если не скачалось, даем прямую ссылку
-            addLogMessage(`🔗 Прямая ссылка на видео:`, 'info');
-            addLogMessage(`${data.video.url}`, 'info');
+            const downloadSection = document.createElement('div');
+            downloadSection.style.margin = '30px 0';
+            downloadSection.style.padding = '25px';
+            downloadSection.style.background = 'linear-gradient(145deg, #1a1f2e, #0f172a)';
+            downloadSection.style.borderRadius = '24px';
+            downloadSection.style.textAlign = 'center';
             
-            // Создаем кнопку для скачивания
-            const downloadLink = document.createElement('a');
-            downloadLink.href = data.video.url;
-            downloadLink.target = '_blank';
-            downloadLink.innerHTML = '📥 СКАЧАТЬ ВИДЕО';
-            downloadLink.style.display = 'block';
-            downloadLink.style.margin = '20px 0';
-            downloadLink.style.padding = '15px';
-            downloadLink.style.background = 'linear-gradient(145deg, #fbbf24, #f59e0b)';
-            downloadLink.style.color = '#1a1f2e';
-            downloadLink.style.borderRadius = '40px';
-            downloadLink.style.textAlign = 'center';
-            downloadLink.style.textDecoration = 'none';
-            downloadLink.style.fontWeight = 'bold';
-            downloadLink.style.fontSize = '1.2em';
+            downloadSection.innerHTML = `
+                <h3 style="color: #fbbf24; margin-bottom: 15px;">✨ ВИДЕО ГОТОВО!</h3>
+                <p style="color: #e2e8f0; margin-bottom: 20px;">Нажмите кнопку ниже, чтобы скачать видео</p>
+                <a href="${videoUrl}" 
+                   target="_blank" 
+                   style="display: inline-block; 
+                          padding: 15px 40px; 
+                          background: linear-gradient(145deg, #fbbf24, #f59e0b);
+                          color: #1a1f2e;
+                          text-decoration: none;
+                          border-radius: 40px;
+                          font-weight: bold;
+                          font-size: 1.2em;">
+                    📥 СКАЧАТЬ ВИДЕО
+                </a>
+                <p style="color: #94a3b8; margin-top: 15px; font-size: 0.9em;">
+                    Если кнопка не работает, скопируйте ссылку:<br>
+                    <code style="background: #1e293b; padding: 8px; border-radius: 8px; display: inline-block; margin-top: 10px;">
+                        ${videoUrl}
+                    </code>
+                </p>
+            `;
             
-            document.getElementById('results').appendChild(downloadLink);
+            resultsDiv.appendChild(downloadSection);
             
-            return data.video.url; // Возвращаем ссылку вместо blob
+            // Возвращаем ссылку
+            return videoUrl;
             
         } else {
             throw new Error('Не удалось получить видео');
