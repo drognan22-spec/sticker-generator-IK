@@ -2635,18 +2635,22 @@ async function checkProxy() {
             });
         }
 
-// ========== НОВАЯ ФУНКЦИЯ С LTX PRO ==========
+// ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ LTX PRO ==========
 const FAL_KEY = '3a3bd1f1-1ad1-48c6-abfb-1a28419a106c:55c71031f4a7dd76571ff859922e8fb3';
 
 async function animateWithKling(imageDataUrl, emotionId) {
-    addLogMessage(`🎬 LTX Pro: создаем кинематографичную анимацию...`, 'info');
+    addLogMessage(`🎬 LTX Pro: создаём кинематографичную анимацию...`, 'info');
     
-    // Используем улучшенный промпт
-    const enhancedPrompt = ENHANCED_PROMPTS.subtle[emotionId] || ENHANCED_PROMPTS.subtle.default;
-    const basePrompt = MOTION_PROMPTS.subtle[emotionId] || MOTION_PROMPTS.subtle.default;
+    // Используем структурированный промпт из документации [citation:2]
+    const basePrompt = `cinematic shot, ${MOTION_PROMPTS.subtle[emotionId] || 'natural character movement'}.`;
     
-    // Комбинируем для лучшего результата
-    const fullPrompt = `${basePrompt}. ${enhancedPrompt}`;
+    // Добавляем описание движения камеры
+    const cameraPrompt = "The camera slowly dollies in as gentle movement occurs.";
+    
+    // Добавляем кинематографические элементы
+    const cinematicPrompt = "Cinematic composition, professional lighting, smooth motion, realistic physics, high quality, 4k detail.";
+    
+    const fullPrompt = `${basePrompt} ${cameraPrompt} ${cinematicPrompt}`;
     
     addLogMessage(`📝 Промпт: ${fullPrompt}`, 'info');
     
@@ -2672,12 +2676,12 @@ async function animateWithKling(imageDataUrl, emotionId) {
         const data = await response.json();
         
         if (data.video?.url) {
-            addLogMessage(`✅ Кинематографичное видео готово!`, 'success');
+            addLogMessage(`✅ Видео готово!`, 'success');
             
             const videoUrl = data.video.url;
             addLogMessage(`🔗 Ссылка: ${videoUrl}`, 'info');
             
-            // Создаем кнопку для скачивания
+            // Создаём кнопку для скачивания
             const resultsDiv = document.getElementById('results');
             
             const downloadSection = document.createElement('div');
@@ -2686,11 +2690,9 @@ async function animateWithKling(imageDataUrl, emotionId) {
             downloadSection.style.background = 'linear-gradient(145deg, #667eea, #764ba2)';
             downloadSection.style.borderRadius = '24px';
             downloadSection.style.textAlign = 'center';
-            downloadSection.style.boxShadow = '0 20px 40px rgba(102, 126, 234, 0.4)';
             
             downloadSection.innerHTML = `
-                <h3 style="color: #fbbf24; margin-bottom: 15px; font-size: 1.8em;">🎬 КИНЕМАТОГРАФИЧНОЕ ВИДЕО</h3>
-                <p style="color: #e2e8f0; margin-bottom: 20px;">Ваша анимация с реалистичными движениями готова!</p>
+                <h3 style="color: #fbbf24; margin-bottom: 15px;">🎬 LTX PRO ВИДЕО</h3>
                 <a href="${videoUrl}" 
                    target="_blank" 
                    style="display: inline-block; 
@@ -2700,13 +2702,11 @@ async function animateWithKling(imageDataUrl, emotionId) {
                           text-decoration: none;
                           border-radius: 40px;
                           font-weight: bold;
-                          font-size: 1.2em;
-                          box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3);
-                          transition: transform 0.2s;">
-                    📥 СКАЧАТЬ ВИДЕО LTX PRO
+                          font-size: 1.2em;">
+                    📥 СКАЧАТЬ ВИДЕО
                 </a>
-                <p style="color: #e2e8f0; margin-top: 15px; font-size: 0.9em;">
-                    ⚡ Кинематографичное качество • Плавные движения • 1080p
+                <p style="color: #e2e8f0; margin-top: 15px;">
+                    ⚡ Кинематографичное качество • 1080p • 25 fps
                 </p>
             `;
             
